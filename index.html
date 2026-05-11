@@ -1,2 +1,815 @@
-<p>Hellow</p>
-  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AdBot — Yandex Mobile Ads for Unreal Engine</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<button id="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+
+<!-- ===== SIDEBAR ===== -->
+<nav id="sidebar">
+  <div class="brand">
+    <h1>AdBot</h1>
+    <div class="tagline">Yandex Mobile Ads · Unreal Engine · Android</div>
+  </div>
+  <nav>
+    <div class="nav-section">Overview</div>
+    <a href="#" class="top-level active" onclick="show('home',this)">Plugin Details</a>
+    <a href="#" onclick="show('features',this)">Features</a>
+    <a href="#" onclick="show('setup',this)">Get Started</a>
+    <a href="#" onclick="show('settings',this)">Project Settings</a>
+
+    <div class="nav-section">Privacy &amp; GDPR</div>
+    <a href="#" onclick="show('privacy',this)">Privacy &amp; Consent</a>
+    <a href="#" onclick="show('coppa',this)">COPPA / Age Restricted</a>
+
+    <div class="nav-section">Ads</div>
+    <a href="#" onclick="show('appopen',this)">App Open</a>
+    <a href="#" onclick="show('banner',this)">Banner</a>
+    <a href="#" onclick="show('interstitial',this)">Interstitial</a>
+    <a href="#" onclick="show('rewarded',this)">Rewarded Video</a>
+
+    <div class="nav-section">Targeting</div>
+    <a href="#" onclick="show('targeting',this)">Ad Targeting</a>
+
+    <div class="nav-section">Blueprint Examples</div>
+    <a href="#" onclick="show('bp-privacy',this)">Privacy</a>
+    <a href="#" onclick="show('bp-appopen',this)">App Open</a>
+    <a href="#" onclick="show('bp-banner',this)">Banner</a>
+    <a href="#" onclick="show('bp-interstitial',this)">Interstitial</a>
+    <a href="#" onclick="show('bp-rewarded',this)">Rewarded Video</a>
+
+    <div class="nav-section">C++ Examples</div>
+    <a href="#" onclick="show('cpp-setup',this)">C++ Setup</a>
+    <a href="#" onclick="show('cpp-banner',this)">Banner</a>
+    <a href="#" onclick="show('cpp-interstitial',this)">Interstitial</a>
+    <a href="#" onclick="show('cpp-rewarded',this)">Rewarded Video</a>
+
+    <div class="nav-section">Mediation</div>
+    <a href="#" onclick="show('mediation',this)">VK Ads (myTarget)</a>
+
+    <div class="nav-section">Support</div>
+    <a href="#" onclick="show('faq',this)">FAQ</a>
+    <a href="#" onclick="show('debug',this)">Debug Panel</a>
+    <a href="#" onclick="show('contact',this)">Contact</a>
+  </nav>
+</nav>
+
+<!-- ===== CONTENT ===== -->
+<div id="content">
+
+<!-- HOME -->
+<section id="home" class="page-section active">
+  <div class="topbar"><h2>Plugin Details</h2></div>
+  <article>
+    <h1>AdBot</h1>
+    <p>An Unreal Engine plugin for displaying Yandex Mobile Ads on <span class="badge android">Android</span>.</p>
+    <div class="img-placeholder lg">[ Plugin Banner Image ]</div>
+    <h2>What is AdBot?</h2>
+    <p>AdBot integrates <strong>Yandex Mobile Ads SDK 8</strong> into Unreal Engine. It provides a complete Blueprint and C++ API to show banner, interstitial, rewarded, and app-open ads — without writing any Java or Android-specific code yourself.</p>
+    <p>The plugin ships as a standard Unreal plugin (UPL + C++ module). Drop it into your project's <code>Plugins/</code> folder and configure ad unit IDs in <strong>Project Settings</strong>.</p>
+    <div class="feature-grid">
+      <div class="feature-card"><div class="icon">🎯</div><h4>4 Ad Formats</h4><p>Banner, Interstitial, Rewarded Video, App Open.</p></div>
+      <div class="feature-card"><div class="icon">🔵</div><h4>Blueprint First</h4><p>Every feature exposed as BlueprintCallable or async node. No C++ required.</p></div>
+      <div class="feature-card"><div class="icon">🔒</div><h4>Privacy Controls</h4><p>User consent, COPPA, location tracking, GDPR-style flags.</p></div>
+      <div class="feature-card"><div class="icon">📡</div><h4>VK Mediation</h4><p>VK Ads (ex. myTarget) via Yandex mediation adapter out of the box.</p></div>
+      <div class="feature-card"><div class="icon">📊</div><h4>AppMetrica</h4><p>Optional AppMetrica SDK activation for analytics and stable ad fill.</p></div>
+      <div class="feature-card"><div class="icon">🛠</div><h4>Debug Panel</h4><p>One Blueprint call opens Yandex Debug Panel to verify integration.</p></div>
+    </div>
+    <div class="page-nav">
+      <span></span>
+      <a href="#" class="next" onclick="show('features',document.querySelector('[onclick*=features]'))">
+        <span class="label">Next</span>Features
+      </a>
+    </div>
+  </article>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="page-section">
+  <div class="topbar"><h2>Features</h2></div>
+  <article>
+    <h1>Features</h1>
+    <h2>Ad Formats</h2>
+    <table>
+      <thead><tr><th>Format</th><th>Blueprint</th><th>C++</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Banner</td><td>✅</td><td>✅</td><td>Sticky / Inline, 6 size presets, auto no-fill retry</td></tr>
+        <tr><td>Interstitial</td><td>✅</td><td>✅</td><td>Full-screen, load → show pattern</td></tr>
+        <tr><td>Rewarded Video</td><td>✅ Async nodes</td><td>✅</td><td>Load → Show async chain, Reward Granted callback</td></tr>
+        <tr><td>App Open</td><td>✅</td><td>✅</td><td>Vertical format, ideal for splash screens</td></tr>
+      </tbody>
+    </table>
+    <h2>Privacy &amp; Compliance</h2>
+    <table>
+      <thead><tr><th>Feature</th><th>Blueprint Node</th></tr></thead>
+      <tbody>
+        <tr><td>User Consent (GDPR)</td><td>Set Yandex Ads User Consent</td></tr>
+        <tr><td>Location Tracking</td><td>Set Yandex Ads Location Tracking Enabled</td></tr>
+        <tr><td>Age Restricted (COPPA)</td><td>Set Yandex Ads Age Restricted User</td></tr>
+        <tr><td>IAB TCF v2.0</td><td>Via certified CMP — SDK reads SharedPreferences</td></tr>
+      </tbody>
+    </table>
+    <h2>Ad Targeting</h2>
+    <p>Optional per-request targeting via <code>AdTargeting</code>: age, gender, geo-location, context query, context tags. All configured through Blueprint before loading ads.</p>
+    <h2>Mediation</h2>
+    <p>VK Ads (ex. myTarget) via <code>com.yandex.ads.mediation:mobileads-mytarget</code>. Enabled in the Yandex Advertising Network cabinet per block — no extra Blueprint code required.</p>
+    <div class="page-nav">
+      <a href="#" onclick="show('home',document.querySelector('[onclick*=home]'))"><span class="label">Previous</span>Plugin Details</a>
+      <a href="#" class="next" onclick="show('setup',document.querySelector('[onclick*=setup]'))"><span class="label">Next</span>Get Started</a>
+    </div>
+  </article>
+</section>
+
+<!-- GET STARTED -->
+<section id="setup" class="page-section">
+  <div class="topbar"><h2>Get Started</h2></div>
+  <article>
+    <h1>Get Started</h1>
+    <h2>Requirements</h2>
+    <ul>
+      <li>Unreal Engine 5.x</li>
+      <li>Android target platform configured in project</li>
+      <li>minSdkVersion 21 or higher</li>
+      <li>Account in <a href="https://partner.yandex.ru/" target="_blank">Yandex Advertising Network</a></li>
+    </ul>
+    <h2>1. Add the Plugin</h2>
+    <p>Copy the <code>AdBot</code> plugin folder into your project's <code>Plugins/</code> directory:</p>
+    <pre><code>YourProject/
+  Plugins/
+    AdBot/          ← paste here
+      AdBot.uplugin
+      Source/
+      Platforms/</code></pre>
+    <p>Restart the editor. In <strong>Edit → Plugins</strong>, find <em>AdBot</em> under the Advertising category and enable it.</p>
+    <h2>2. Configure Ad Unit IDs</h2>
+    <p>Open <strong>Edit → Project Settings → Plugins → AdBot</strong> and enter your Yandex Advertising Network placement IDs:</p>
+    <div class="img-placeholder md">[ Project Settings screenshot ]</div>
+    <table>
+      <thead><tr><th>Setting</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Banner Ad Unit ID</td><td>Placement ID for banner ads</td></tr>
+        <tr><td>Interstitial Unit ID</td><td>Placement ID for interstitial ads</td></tr>
+        <tr><td>Rewarded Unit ID</td><td>Placement ID for rewarded video</td></tr>
+        <tr><td>App Open Ad Unit ID</td><td>Placement ID for app-open format</td></tr>
+        <tr><td>AppMetrica API Key</td><td>Optional — required for full AppMetrica integration</td></tr>
+        <tr><td>Banner No-Fill Max Retries</td><td>Auto-retry count on empty inventory (0 = disabled)</td></tr>
+        <tr><td>Banner No-Fill Retry Delay</td><td>Seconds between auto-retries (1–600)</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <strong>Demo ad units for testing</strong>
+      Yandex provides demo placement IDs that always return test ads:<br>
+      <code>demo-banner-yandex</code> · <code>demo-interstitial-yandex</code> · <code>demo-rewarded-yandex</code> · <code>demo-appopenad-yandex</code>
+    </div>
+    <h2>3. Initialize in Blueprint</h2>
+    <p>Call <strong>Load Ad Data</strong> once at game start — ideally from your GameMode or persistent widget:</p>
+    <div class="img-placeholder sm">[ Load Ad Data Blueprint node ]</div>
+    <div class="callout warn">
+      <strong>Privacy first</strong>
+      If you use a consent dialog, call <strong>Set Yandex Ads User Consent</strong> and other privacy nodes <em>before</em> Load Ad Data.
+    </div>
+    <h2>4. Package for Android</h2>
+    <p>Build the project targeting Android. The plugin's UPL adds Yandex SDK and VK adapter Gradle dependencies automatically.</p>
+    <div class="page-nav">
+      <a href="#" onclick="show('features',document.querySelector('[onclick*=features]'))"><span class="label">Previous</span>Features</a>
+      <a href="#" class="next" onclick="show('settings',document.querySelector('[onclick*=settings]'))"><span class="label">Next</span>Project Settings</a>
+    </div>
+  </article>
+</section>
+
+<!-- PROJECT SETTINGS -->
+<section id="settings" class="page-section">
+  <div class="topbar"><h2>Project Settings</h2></div>
+  <article>
+    <h1>Project Settings</h1>
+    <p>All AdBot settings live in <strong>Edit → Project Settings → Plugins → AdBot</strong> and are stored in <code>DefaultGame.ini</code>.</p>
+    <div class="img-placeholder md">[ Project Settings AdBot panel screenshot ]</div>
+    <h2>Yandex Mobile Ads</h2>
+    <table>
+      <thead><tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Banner Ad Unit ID</td><td>String</td><td>—</td><td>Yandex banner placement ID</td></tr>
+        <tr><td>Interstitial Unit ID</td><td>String</td><td>—</td><td>Interstitial placement ID</td></tr>
+        <tr><td>Rewarded Unit ID</td><td>String</td><td>—</td><td>Rewarded video placement ID</td></tr>
+        <tr><td>App Open Ad Unit ID</td><td>String</td><td>—</td><td>App-open placement ID</td></tr>
+        <tr><td>Banner No-Fill Max Retries</td><td>Int (0–20)</td><td>3</td><td>Auto-retries on empty ad inventory</td></tr>
+        <tr><td>Banner No-Fill Retry Delay</td><td>Int (1–600 s)</td><td>20</td><td>Pause between auto-retries</td></tr>
+      </tbody>
+    </table>
+    <h2>AppMetrica</h2>
+    <table>
+      <thead><tr><th>Property</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>AppMetrica API Key</td><td>AppMetrica analytics key from your AppMetrica cabinet. Required for stable ad fill with real placements.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <strong>DefaultGame.ini</strong>
+      Settings are saved under <code>[/Script/AdBot.AdBotSettings]</code>. You can also edit the .ini directly.
+    </div>
+    <div class="page-nav">
+      <a href="#" onclick="show('setup',document.querySelector('[onclick*=setup]'))"><span class="label">Previous</span>Get Started</a>
+      <a href="#" class="next" onclick="show('privacy',document.querySelector('[onclick*=privacy]'))"><span class="label">Next</span>Privacy &amp; Consent</a>
+    </div>
+  </article>
+</section>
+
+<!-- PRIVACY -->
+<section id="privacy" class="page-section">
+  <div class="topbar"><h2>Privacy &amp; Consent</h2></div>
+  <article>
+    <h1>Privacy &amp; Consent</h1>
+    <p>AdBot exposes all Yandex SDK privacy controls as Blueprint nodes in the <strong>AdBot | Yandex Privacy</strong> category.</p>
+    <div class="callout warn">
+      <strong>Call privacy nodes before Load Ad Data</strong>
+      Privacy flags are applied to Yandex SDK before <code>YandexAds.initialize</code>. Calling them after initialization is supported but preferred before.
+    </div>
+    <h2>Available Nodes</h2>
+    <table>
+      <thead><tr><th>Blueprint Node</th><th>Android API</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Set Yandex Ads User Consent</td><td>YandexAds.setUserConsent</td><td>GDPR-style personalized ad consent (true/false)</td></tr>
+        <tr><td>Set Yandex Ads Location Tracking Enabled</td><td>YandexAds.setLocationTracking</td><td>Enable after user consents to location use</td></tr>
+        <tr><td>Set Yandex Ads Age Restricted User</td><td>YandexAds.setAgeRestricted</td><td>COPPA — mark user as under 13</td></tr>
+        <tr><td>Set Yandex Ads SDK Logging Enabled</td><td>YandexAds.enableLogging</td><td>Logcat integration logs. Default: OFF</td></tr>
+        <tr><td>Set Yandex Ads Debug Error Indicator Enabled</td><td>YandexAds.enableDebugErrorIndicator</td><td>Toast indicator for debug builds</td></tr>
+        <tr><td>Show Yandex Ads Debug Panel</td><td>YandexAds.showDebugPanel</td><td>Opens Yandex in-app debug panel</td></tr>
+      </tbody>
+    </table>
+    <h2>IAB TCF v2.0</h2>
+    <p>If you use a certified CMP (Consent Management Platform), Yandex SDK reads <code>IABTCF_*</code> keys from Android <code>SharedPreferences</code> automatically. You do not need Blueprint nodes for this — just delay ads until the CMP finishes.</p>
+    <div class="page-nav">
+      <a href="#" onclick="show('settings',document.querySelector('[onclick*=settings]'))"><span class="label">Previous</span>Project Settings</a>
+      <a href="#" class="next" onclick="show('coppa',document.querySelector('[onclick*=coppa]'))"><span class="label">Next</span>COPPA</a>
+    </div>
+  </article>
+</section>
+
+<!-- COPPA -->
+<section id="coppa" class="page-section">
+  <div class="topbar"><h2>COPPA / Age Restricted</h2></div>
+  <article>
+    <h1>COPPA / Age Restricted User</h1>
+    <p>If your app targets children under 13, you must notify the Yandex Mobile Ads SDK on every app launch.</p>
+    <div class="callout danger">
+      <strong>Must call every launch</strong>
+      Yandex documentation requires <code>setAgeRestricted</code> to be transmitted each time the app starts.
+    </div>
+    <h2>Blueprint</h2>
+    <div class="img-placeholder sm">[ Set Yandex Ads Age Restricted User node ]</div>
+    <pre><code><span class="cm">// Call before Load Ad Data</span>
+<span class="kw">Set Yandex Ads Age Restricted User</span> (Age Restricted: <span class="kw">true</span>)</code></pre>
+    <h2>C++</h2>
+    <pre><code><span class="kw">#include</span> <span class="str">"AdBotBlueprintLibrary.h"</span>
+
+<span class="cm">// On BeginPlay or before LoadAdData</span>
+<span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">SetYandexAdsAgeRestrictedUser</span>(<span class="kw">true</span>);</code></pre>
+    <div class="page-nav">
+      <a href="#" onclick="show('privacy',document.querySelector('[onclick*=privacy]'))"><span class="label">Previous</span>Privacy &amp; Consent</a>
+      <a href="#" class="next" onclick="show('appopen',document.querySelector('[onclick*=appopen]'))"><span class="label">Next</span>App Open</a>
+    </div>
+  </article>
+</section>
+
+<!-- APP OPEN -->
+<section id="appopen" class="page-section">
+  <div class="topbar"><h2>App Open</h2></div>
+  <article>
+    <h1>App Open Ads</h1>
+    <p>App open ads appear when users launch or return to the app. They can be closed at any time and are served from the vertical-only format in the Yandex network.</p>
+    <h2>How It Works</h2>
+    <ol>
+      <li>Configure <strong>App Open Ad Unit ID</strong> in Project Settings.</li>
+      <li>Call <strong>Load App Open</strong> early (e.g. on game start).</li>
+      <li>On <code>OnAppOpenLoaded</code> delegate — call <strong>Show App Open</strong>.</li>
+      <li>After dismiss, reload for next session.</li>
+    </ol>
+    <h2>Delegates (AdBotManager)</h2>
+    <table>
+      <thead><tr><th>Delegate</th><th>When it fires</th></tr></thead>
+      <tbody>
+        <tr><td>OnAppOpenLoaded</td><td>Ad is ready to show</td></tr>
+        <tr><td>OnAppOpenFailedToLoad</td><td>Load failed</td></tr>
+        <tr><td>OnAppOpenShown</td><td>Ad appeared on screen</td></tr>
+        <tr><td>OnAppOpenFailedToShow</td><td>Show call failed (message param)</td></tr>
+        <tr><td>OnAppOpenDismissed</td><td>User closed the ad</td></tr>
+        <tr><td>OnAppOpenImpression</td><td>Impression recorded</td></tr>
+        <tr><td>OnAppOpenClicked</td><td>User tapped the ad</td></tr>
+      </tbody>
+    </table>
+    <div class="img-placeholder md">[ App Open Blueprint graph ]</div>
+    <div class="page-nav">
+      <a href="#" onclick="show('coppa',document.querySelector('[onclick*=coppa]'))"><span class="label">Previous</span>COPPA</a>
+      <a href="#" class="next" onclick="show('banner',document.querySelector('[onclick*=banner]'))"><span class="label">Next</span>Banner</a>
+    </div>
+  </article>
+</section>
+
+<!-- BANNER -->
+<section id="banner" class="page-section">
+  <div class="topbar"><h2>Banner</h2></div>
+  <article>
+    <h1>Banner Ads</h1>
+    <p>Banners are small ads displayed at the bottom of the screen without blocking content. AdBot supports sticky and adaptive inline sizes.</p>
+    <h2>Banner Size Presets</h2>
+    <table>
+      <thead><tr><th>Preset</th><th>Yandex SDK</th><th>Height</th></tr></thead>
+      <tbody>
+        <tr><td>Sticky 320 dp</td><td>BannerAdSize.sticky(activity, 320)</td><td>Auto</td></tr>
+        <tr><td>Sticky full width</td><td>BannerAdSize.sticky(activity, screenWidth)</td><td>Auto (≤15% screen)</td></tr>
+        <tr><td>Inline max height 250 dp</td><td>BannerAdSize.inline(activity, w, 250)</td><td>Up to 250 dp</td></tr>
+        <tr><td>Inline max height 300 dp</td><td>BannerAdSize.inline(activity, w, 300)</td><td>Up to 300 dp</td></tr>
+        <tr><td>Inline max height 400 dp</td><td>BannerAdSize.inline(activity, w, 400)</td><td>Up to 400 dp</td></tr>
+        <tr><td>Inline max height = screen</td><td>BannerAdSize.inline(activity, w, screenH)</td><td>Adaptive full</td></tr>
+      </tbody>
+    </table>
+    <h2>No-Fill Auto-Retry</h2>
+    <p>When Yandex returns empty inventory, the plugin automatically retries. Configure retries and delay in Project Settings (<em>Banner No-Fill Max Retries</em> / <em>Banner No-Fill Retry Delay Seconds</em>).</p>
+    <h2>Delegates</h2>
+    <table>
+      <thead><tr><th>Delegate</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>OnBannerLoaded</td><td>Banner ready and visible</td></tr>
+        <tr><td>OnBannerFailed</td><td>Load failed after all retries</td></tr>
+        <tr><td>OnBannerClicked</td><td>User tapped banner</td></tr>
+        <tr><td>OnBannerImpression</td><td>Impression recorded</td></tr>
+      </tbody>
+    </table>
+    <div class="img-placeholder md">[ Banner Blueprint graph ]</div>
+    <div class="page-nav">
+      <a href="#" onclick="show('appopen',document.querySelector('[onclick*=appopen]'))"><span class="label">Previous</span>App Open</a>
+      <a href="#" class="next" onclick="show('interstitial',document.querySelector('[onclick*=interstitial]'))"><span class="label">Next</span>Interstitial</a>
+    </div>
+  </article>
+</section>
+
+<!-- INTERSTITIAL -->
+<section id="interstitial" class="page-section">
+  <div class="topbar"><h2>Interstitial</h2></div>
+  <article>
+    <h1>Interstitial Ads</h1>
+    <p>Full-screen ads displayed during natural breaks in the app, such as between game levels. Users can close them and return to the game.</p>
+    <h2>Flow</h2>
+    <ol>
+      <li>Call <strong>Load Interstitial</strong>.</li>
+      <li>Wait for <code>OnInterstitialLoaded</code>.</li>
+      <li>Call <strong>Show Interstitial</strong> at a natural pause.</li>
+      <li>After <code>OnInterstitialDismissed</code>, call Load again for next time.</li>
+    </ol>
+    <div class="callout">
+      <strong>One ad at a time</strong>
+      The plugin guards against double-show. Only one interstitial can be shown at a time.
+    </div>
+    <h2>Delegates</h2>
+    <table>
+      <thead><tr><th>Delegate</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>OnInterstitialLoaded</td><td>Ready to show</td></tr>
+        <tr><td>OnInterstitialFailed</td><td>Load failed</td></tr>
+        <tr><td>OnInterstitialShown</td><td>Appeared on screen</td></tr>
+        <tr><td>OnInterstitialFailedToShow</td><td>Show failed (message)</td></tr>
+        <tr><td>OnInterstitialDismissed</td><td>Closed by user</td></tr>
+        <tr><td>OnInterstitialImpression</td><td>Impression recorded</td></tr>
+        <tr><td>OnInterstitialClicked</td><td>Ad tapped</td></tr>
+      </tbody>
+    </table>
+    <div class="img-placeholder md">[ Interstitial Blueprint graph ]</div>
+    <div class="page-nav">
+      <a href="#" onclick="show('banner',document.querySelector('[onclick*=banner]'))"><span class="label">Previous</span>Banner</a>
+      <a href="#" class="next" onclick="show('rewarded',document.querySelector('[onclick*=rewarded]'))"><span class="label">Next</span>Rewarded Video</a>
+    </div>
+  </article>
+</section>
+
+<!-- REWARDED -->
+<section id="rewarded" class="page-section">
+  <div class="topbar"><h2>Rewarded Video</h2></div>
+  <article>
+    <h1>Rewarded Video</h1>
+    <p>Users voluntarily watch a rewarded video to earn in-game currency, extra lives, or other bonuses. AdBot uses async Blueprint nodes for a clean load → show → reward flow.</p>
+    <h2>Async Node Flow</h2>
+    <div class="img-placeholder md">[ Load Ad Rewarded Video async node ]</div>
+    <ol>
+      <li>Add <strong>Load Ad Rewarded Video</strong> async node. Pass optional <em>Keywords</em> (context tags).</li>
+      <li>On <em>Ad Loaded</em> — save the <code>RewardedVideo</code> object.</li>
+      <li>Add <strong>Show Rewarded Video</strong> async node, pass the saved object.</li>
+      <li>Handle <em>Reward Granted</em> (with <code>RewardName</code> + <code>RewardAmount</code>), <em>Ad Dismissed</em>, <em>Failed To Show</em>.</li>
+    </ol>
+    <h2>Outputs of Show Rewarded Video</h2>
+    <table>
+      <thead><tr><th>Pin</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Reward Granted</td><td>User earned the reward. RewardName + RewardAmount from Yandex SDK.</td></tr>
+        <tr><td>Ad Shown</td><td>Ad appeared on screen</td></tr>
+        <tr><td>Ad Dismissed</td><td>User closed the ad</td></tr>
+        <tr><td>Failed To Show</td><td>Show failed. Use <em>Get Last Rewarded Show Error</em> for message.</td></tr>
+        <tr><td>Ad Impression</td><td>Impression recorded</td></tr>
+      </tbody>
+    </table>
+    <div class="callout warn">
+      <strong>Context tags &amp; keywords</strong>
+      Keywords passed to <em>Load Ad Rewarded Video</em> are merged with the global targeting snapshot (Set Yandex Ad Targeting Context Tags). Snapshot tags appear first; per-load keywords are appended without duplicates.
+    </div>
+    <div class="page-nav">
+      <a href="#" onclick="show('interstitial',document.querySelector('[onclick*=interstitial]'))"><span class="label">Previous</span>Interstitial</a>
+      <a href="#" class="next" onclick="show('targeting',document.querySelector('[onclick*=targeting]'))"><span class="label">Next</span>Ad Targeting</a>
+    </div>
+  </article>
+</section>
+
+<!-- TARGETING -->
+<section id="targeting" class="page-section">
+  <div class="topbar"><h2>Ad Targeting</h2></div>
+  <article>
+    <h1>Ad Targeting</h1>
+    <p>Optional additional data improves ad relevance and revenue. Configure a targeting snapshot once; it is applied automatically to all ad requests (banner, interstitial, rewarded, app open).</p>
+    <div class="callout warn">
+      <strong>Location consent required</strong>
+      Before passing location data, call <strong>Set Yandex Ads Location Tracking Enabled (true)</strong> — only after the user consents to location use.
+    </div>
+    <h2>Targeting Nodes (AdBot | Yandex Targeting)</h2>
+    <table>
+      <thead><tr><th>Blueprint Node</th><th>Parameter</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>Set Yandex Ad Targeting Age</td><td>String</td><td>"25"</td></tr>
+        <tr><td>Set Yandex Ad Targeting Gender</td><td>EAdBotYandexTargetingGender</td><td>Male / Female / Unknown</td></tr>
+        <tr><td>Set Yandex Ad Targeting Location</td><td>bool, Latitude, Longitude, Provider</td><td>true, 55.75, 37.62, "gps"</td></tr>
+        <tr><td>Set Yandex Ad Targeting Context Query</td><td>String</td><td>"Buy a car in Moscow"</td></tr>
+        <tr><td>Set Yandex Ad Targeting Context Tags</td><td>Array of String</td><td>["car", "used", "Moscow"]</td></tr>
+        <tr><td>Clear Yandex Ad Targeting</td><td>—</td><td>Resets all targeting fields</td></tr>
+      </tbody>
+    </table>
+    <h2>Recommended Order</h2>
+    <pre><code>① <span class="kw">Set Yandex Ads User Consent</span>
+② <span class="kw">Set Yandex Ad Targeting Age/Gender/etc.</span>  (optional)
+③ <span class="kw">Load Ad Data</span>          ← initializes Yandex SDK
+④ <span class="kw">Load Banner</span> / <span class="kw">Load Interstitial</span> / etc.</code></pre>
+    <div class="page-nav">
+      <a href="#" onclick="show('rewarded',document.querySelector('[onclick*=rewarded]'))"><span class="label">Previous</span>Rewarded Video</a>
+      <a href="#" class="next" onclick="show('bp-privacy',document.querySelector('[onclick*=bp-privacy]'))"><span class="label">Next</span>Blueprint: Privacy</a>
+    </div>
+  </article>
+</section>
+
+<!-- BP PRIVACY -->
+<section id="bp-privacy" class="page-section">
+  <div class="topbar"><h2>Blueprint Examples — Privacy</h2></div>
+  <article>
+    <h1>Blueprint: Privacy Setup</h1>
+    <p>Place this in your <strong>GameMode BeginPlay</strong> or a persistent widget — before any ad loads.</p>
+    <div class="img-placeholder lg">[ Blueprint graph: privacy nodes before Load Ad Data ]</div>
+    <h2>Minimal Consent Setup</h2>
+    <pre><code><span class="cm">// If user accepted your consent dialog:</span>
+<span class="kw">Set Yandex Ads User Consent</span> (Consent: <span class="kw">true</span>)
+<span class="kw">Load Ad Data</span></code></pre>
+    <h2>With Logging (Development)</h2>
+    <pre><code><span class="kw">Set Yandex Ads SDK Logging Enabled</span> (Enabled: <span class="kw">true</span>)
+<span class="kw">Set Yandex Ads Debug Error Indicator Enabled</span> (Enabled: <span class="kw">true</span>)
+<span class="kw">Set Yandex Ads User Consent</span> (Consent: <span class="kw">true</span>)
+<span class="kw">Load Ad Data</span></code></pre>
+    <div class="callout">
+      <strong>Shipping builds</strong>
+      Keep <em>SDK Logging</em> and <em>Debug Error Indicator</em> disabled (default) for release. Only enable for debug/development builds.
+    </div>
+    <div class="page-nav">
+      <a href="#" onclick="show('targeting',document.querySelector('[onclick*=targeting]'))"><span class="label">Previous</span>Ad Targeting</a>
+      <a href="#" class="next" onclick="show('bp-appopen',document.querySelector('[onclick*=bp-appopen]'))"><span class="label">Next</span>Blueprint: App Open</a>
+    </div>
+  </article>
+</section>
+
+<!-- BP APP OPEN -->
+<section id="bp-appopen" class="page-section">
+  <div class="topbar"><h2>Blueprint Examples — App Open</h2></div>
+  <article>
+    <h1>Blueprint: App Open</h1>
+    <div class="img-placeholder lg">[ Blueprint graph: Load App Open → OnAppOpenLoaded → Show App Open ]</div>
+    <h2>Step-by-Step</h2>
+    <pre><code><span class="cm">// BeginPlay:</span>
+<span class="kw">Load Ad Data</span>
+  ↓ OnAdDataLoaded
+<span class="kw">Load App Open</span>
+  ↓ OnAppOpenLoaded
+<span class="kw">Show App Open</span>
+  ↓ OnAppOpenDismissed
+<span class="kw">Load App Open</span>   <span class="cm">// reload for next session</span></code></pre>
+    <div class="page-nav">
+      <a href="#" onclick="show('bp-privacy',document.querySelector('[onclick*=bp-privacy]'))"><span class="label">Previous</span>Blueprint: Privacy</a>
+      <a href="#" class="next" onclick="show('bp-banner',document.querySelector('[onclick*=bp-banner]'))"><span class="label">Next</span>Blueprint: Banner</a>
+    </div>
+  </article>
+</section>
+
+<!-- BP BANNER -->
+<section id="bp-banner" class="page-section">
+  <div class="topbar"><h2>Blueprint Examples — Banner</h2></div>
+  <article>
+    <h1>Blueprint: Banner</h1>
+    <div class="img-placeholder lg">[ Blueprint graph: Load Banner → OnBannerLoaded → Show Banner ]</div>
+    <h2>Basic Example</h2>
+    <pre><code><span class="kw">Load Ad Data</span>
+  ↓ OnAdDataLoaded
+<span class="kw">Load Banner</span> (Banner Size: Sticky Full Width)
+  ↓ OnBannerLoaded
+<span class="kw">Show Banner</span></code></pre>
+    <h2>Hide on Pause / Show on Resume</h2>
+    <pre><code><span class="cm">// On pause:</span>
+<span class="kw">Hide Banner</span>
+
+<span class="cm">// On resume:</span>
+<span class="kw">Show Banner</span></code></pre>
+    <div class="callout">
+      <strong>Is Banner Loaded?</strong>
+      Use the <em>Is Banner Loaded</em> pure node to gate <em>Show Banner</em> if needed.
+    </div>
+    <div class="page-nav">
+      <a href="#" onclick="show('bp-appopen',document.querySelector('[onclick*=bp-appopen]'))"><span class="label">Previous</span>Blueprint: App Open</a>
+      <a href="#" class="next" onclick="show('bp-interstitial',document.querySelector('[onclick*=bp-interstitial]'))"><span class="label">Next</span>Blueprint: Interstitial</a>
+    </div>
+  </article>
+</section>
+
+<!-- BP INTERSTITIAL -->
+<section id="bp-interstitial" class="page-section">
+  <div class="topbar"><h2>Blueprint Examples — Interstitial</h2></div>
+  <article>
+    <h1>Blueprint: Interstitial</h1>
+    <div class="img-placeholder lg">[ Blueprint graph: Load Interstitial → OnInterstitialLoaded → Show Interstitial ]</div>
+    <h2>Between-Level Flow</h2>
+    <pre><code><span class="cm">// Pre-load before level ends:</span>
+<span class="kw">Load Interstitial</span>
+
+<span class="cm">// On level end:</span>
+<span class="kw">Is Interstitial Loaded</span> → <span class="kw">Show Interstitial</span>
+  ↓ OnInterstitialDismissed
+<span class="kw">Load Interstitial</span>   <span class="cm">// pre-load for next</span></code></pre>
+    <div class="page-nav">
+      <a href="#" onclick="show('bp-banner',document.querySelector('[onclick*=bp-banner]'))"><span class="label">Previous</span>Blueprint: Banner</a>
+      <a href="#" class="next" onclick="show('bp-rewarded',document.querySelector('[onclick*=bp-rewarded]'))"><span class="label">Next</span>Blueprint: Rewarded Video</a>
+    </div>
+  </article>
+</section>
+
+<!-- BP REWARDED -->
+<section id="bp-rewarded" class="page-section">
+  <div class="topbar"><h2>Blueprint Examples — Rewarded Video</h2></div>
+  <article>
+    <h1>Blueprint: Rewarded Video</h1>
+    <div class="img-placeholder lg">[ Blueprint graph: Load Ad Rewarded Video async → Show Rewarded Video async ]</div>
+    <h2>Full Async Flow</h2>
+    <pre><code><span class="cm">// Player taps "Watch ad" button:</span>
+
+<span class="kw">Load Ad Rewarded Video</span> (Keywords: ["bonus", "coins"])
+  ↓ Ad Loaded (RewardedVideo object)
+<span class="kw">Show Rewarded Video</span> (Rewarded Video: &lt;from Ad Loaded&gt;)
+  ↓ Reward Granted (RewardName, RewardAmount)
+      → Grant coins to player
+  ↓ Ad Dismissed
+      → Resume game
+  ↓ Failed To Show
+      → Read <span class="kw">Get Last Rewarded Show Error</span></code></pre>
+    <div class="callout warn">
+      <strong>RewardedVideo object</strong>
+      Do not cache the <code>RewardedVideo</code> output across frames. It is consumed by <em>Show Rewarded Video</em>. Always use the freshest object from <em>Ad Loaded</em>.
+    </div>
+    <div class="page-nav">
+      <a href="#" onclick="show('bp-interstitial',document.querySelector('[onclick*=bp-interstitial]'))"><span class="label">Previous</span>Blueprint: Interstitial</a>
+      <a href="#" class="next" onclick="show('cpp-setup',document.querySelector('[onclick*=cpp-setup]'))"><span class="label">Next</span>C++ Setup</a>
+    </div>
+  </article>
+</section>
+
+<!-- CPP SETUP -->
+<section id="cpp-setup" class="page-section">
+  <div class="topbar"><h2>C++ Setup</h2></div>
+  <article>
+    <h1>C++ Setup</h1>
+    <p>You can call all AdBot functions directly from C++ using <code>UAdBotBlueprintLibrary</code> and <code>UAdBotManager</code>.</p>
+    <h2>Add Module Dependency</h2>
+    <p>In your project's <code>Build.cs</code>:</p>
+    <pre><code><span class="type">PublicDependencyModuleNames</span>.AddRange(<span class="kw">new</span> <span class="type">string</span>[] { <span class="str">"AdBot"</span> });</code></pre>
+    <h2>Include Headers</h2>
+    <pre><code><span class="kw">#include</span> <span class="str">"AdBotBlueprintLibrary.h"</span>
+<span class="kw">#include</span> <span class="str">"AdBotManager.h"</span>
+<span class="kw">#include</span> <span class="str">"AdBotBannerTypes.h"</span>
+<span class="kw">#include</span> <span class="str">"AdBotYandexTypes.h"</span></code></pre>
+    <h2>Initialize</h2>
+    <pre><code><span class="cm">// Before init — privacy flags:</span>
+<span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">SetYandexAdsUserConsent</span>(<span class="kw">true</span>);
+
+<span class="cm">// Initialize SDK + ads:</span>
+<span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">LoadAdData</span>();</code></pre>
+    <div class="page-nav">
+      <a href="#" onclick="show('bp-rewarded',document.querySelector('[onclick*=bp-rewarded]'))"><span class="label">Previous</span>Blueprint: Rewarded</a>
+      <a href="#" class="next" onclick="show('cpp-banner',document.querySelector('[onclick*=cpp-banner]'))"><span class="label">Next</span>C++: Banner</a>
+    </div>
+  </article>
+</section>
+
+<!-- CPP BANNER -->
+<section id="cpp-banner" class="page-section">
+  <div class="topbar"><h2>C++ — Banner</h2></div>
+  <article>
+    <h1>C++: Banner</h1>
+    <pre><code><span class="kw">#include</span> <span class="str">"AdBotBlueprintLibrary.h"</span>
+<span class="kw">#include</span> <span class="str">"AdBotManager.h"</span>
+<span class="kw">#include</span> <span class="str">"AdBotBannerTypes.h"</span>
+
+<span class="cm">// Load banner with sticky full-width preset:</span>
+<span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">LoadBanner</span>(<span class="kw">nullptr</span>, <span class="type">EAdBotBannerSizePreset</span>::StickyFullWidth);
+
+<span class="cm">// Listen for events via AdBotManager:</span>
+<span class="type">UAdBotManager</span>* Manager = <span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">GetAdBotManager</span>(<span class="kw">this</span>);
+Manager-><span class="fn">OnBannerLoaded</span>.AddDynamic(<span class="kw">this</span>, &amp;<span class="type">AMyActor</span>::OnBannerReady);
+
+<span class="cm">// Show / Hide:</span>
+<span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">ShowBanner</span>();
+<span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">HideBanner</span>();</code></pre>
+    <div class="page-nav">
+      <a href="#" onclick="show('cpp-setup',document.querySelector('[onclick*=cpp-setup]'))"><span class="label">Previous</span>C++ Setup</a>
+      <a href="#" class="next" onclick="show('cpp-interstitial',document.querySelector('[onclick*=cpp-interstitial]'))"><span class="label">Next</span>C++: Interstitial</a>
+    </div>
+  </article>
+</section>
+
+<!-- CPP INTERSTITIAL -->
+<section id="cpp-interstitial" class="page-section">
+  <div class="topbar"><h2>C++ — Interstitial</h2></div>
+  <article>
+    <h1>C++: Interstitial</h1>
+    <pre><code><span class="kw">#include</span> <span class="str">"AdBotBlueprintLibrary.h"</span>
+<span class="kw">#include</span> <span class="str">"AdBotManager.h"</span>
+
+<span class="type">UAdBotManager</span>* Manager = <span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">GetAdBotManager</span>(<span class="kw">this</span>);
+Manager-><span class="fn">OnInterstitialLoaded</span>.AddDynamic(<span class="kw">this</span>, &amp;<span class="type">AMyActor</span>::OnInterstitialReady);
+Manager-><span class="fn">OnInterstitialDismissed</span>.AddDynamic(<span class="kw">this</span>, &amp;<span class="type">AMyActor</span>::OnInterstitialDone);
+
+<span class="cm">// Pre-load:</span>
+<span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">LoadInterstitial</span>();
+
+<span class="cm">// Show when ready:</span>
+<span class="kw">void</span> <span class="type">AMyActor</span>::<span class="fn">OnInterstitialReady</span>() {
+    <span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">ShowInterstitial</span>();
+}
+
+<span class="cm">// After dismiss — reload for next time:</span>
+<span class="kw">void</span> <span class="type">AMyActor</span>::<span class="fn">OnInterstitialDone</span>() {
+    <span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">LoadInterstitial</span>();
+}</code></pre>
+    <div class="page-nav">
+      <a href="#" onclick="show('cpp-banner',document.querySelector('[onclick*=cpp-banner]'))"><span class="label">Previous</span>C++: Banner</a>
+      <a href="#" class="next" onclick="show('cpp-rewarded',document.querySelector('[onclick*=cpp-rewarded]'))"><span class="label">Next</span>C++: Rewarded</a>
+    </div>
+  </article>
+</section>
+
+<!-- CPP REWARDED -->
+<section id="cpp-rewarded" class="page-section">
+  <div class="topbar"><h2>C++ — Rewarded Video</h2></div>
+  <article>
+    <h1>C++: Rewarded Video</h1>
+    <pre><code><span class="kw">#include</span> <span class="str">"AdBotManager.h"</span>
+<span class="kw">#include</span> <span class="str">"AdBotBlueprintLibrary.h"</span>
+
+<span class="type">UAdBotManager</span>* Manager = <span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">GetAdBotManager</span>(<span class="kw">this</span>);
+
+Manager-><span class="fn">OnRewardGranted</span>.AddDynamic(<span class="kw">this</span>, &amp;<span class="type">AMyActor</span>::HandleReward);
+Manager-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">this</span>, &amp;<span class="type">AMyActor</span>::HandleDismissed);
+
+<span class="cm">// Load with optional keywords:</span>
+<span class="type">TArray</span>&lt;<span class="type">FString</span>&gt; Keywords = { <span class="str">"bonus"</span>, <span class="str">"coins"</span> };
+Manager-><span class="fn">LoadRewarded</span>(Keywords);
+
+<span class="cm">// Show:</span>
+Manager-><span class="fn">ShowRewarded</span>();
+
+<span class="cm">// Reward callback:</span>
+<span class="kw">void</span> <span class="type">AMyActor</span>::<span class="fn">HandleReward</span>(<span class="type">FString</span> RewardName, <span class="type">int64</span> RewardAmount) {
+    <span class="cm">// Grant RewardAmount of RewardName to player</span>
+}</code></pre>
+    <div class="page-nav">
+      <a href="#" onclick="show('cpp-interstitial',document.querySelector('[onclick*=cpp-interstitial]'))"><span class="label">Previous</span>C++: Interstitial</a>
+      <a href="#" class="next" onclick="show('mediation',document.querySelector('[onclick*=mediation]'))"><span class="label">Next</span>VK Ads Mediation</a>
+    </div>
+  </article>
+</section>
+
+<!-- MEDIATION -->
+<section id="mediation" class="page-section">
+  <div class="topbar"><h2>VK Ads Mediation</h2></div>
+  <article>
+    <h1>VK Ads (myTarget) Mediation</h1>
+    <p>AdBot ships with the Yandex mediation adapter for <strong>VK Ads (ex. myTarget)</strong>. No additional Blueprint or C++ code is required — mediation is controlled from the <a href="https://partner.yandex.ru/" target="_blank">Yandex Advertising Network cabinet</a>.</p>
+    <div class="callout">
+      <strong>AdMob not included</strong>
+      This plugin does not use or require Google Mobile Ads (AdMob). The only mediation adapter bundled is VK Ads.
+    </div>
+    <h2>How It Works</h2>
+    <ol>
+      <li>In the Yandex Advertising Network cabinet, open the waterfall/mediation settings for your ad block.</li>
+      <li>Enable <strong>VK Ads</strong> as an additional demand source for the block.</li>
+      <li>Build the Android APK — the adapter <code>mobileads-mytarget</code> is already included by the plugin's UPL.</li>
+    </ol>
+    <h2>Gradle Dependency (auto-added by UPL)</h2>
+    <pre><code>implementation(<span class="str">'com.yandex.ads.mediation:mobileads-mytarget:5.45.3.1'</span>)</code></pre>
+    <div class="page-nav">
+      <a href="#" onclick="show('cpp-rewarded',document.querySelector('[onclick*=cpp-rewarded]'))"><span class="label">Previous</span>C++: Rewarded</a>
+      <a href="#" class="next" onclick="show('faq',document.querySelector('[onclick*=faq]'))"><span class="label">Next</span>FAQ</a>
+    </div>
+  </article>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="page-section">
+  <div class="topbar"><h2>FAQ</h2></div>
+  <article>
+    <h1>Frequently Asked Questions</h1>
+    <h3>Ads don't show on device — "Invalid SDK state" in Logcat</h3>
+    <p>Enable SDK logging (<em>Set Yandex Ads SDK Logging Enabled</em> before <em>Load Ad Data</em>), open Logcat and search for <code>YandexAds</code>. Common causes: AppMetrica key not set, BannerAdView not yet in the view hierarchy, or calling load before initialization completes.</p>
+    <h3>Can I use this plugin without the AppMetrica key?</h3>
+    <p>Yes. Ads may work without a key, but Yandex Mobile Ads SDK 8 requires AppMetrica SDK to be present. Leave the key empty and monitor Logcat for any warnings. For production, provide a real AppMetrica API key.</p>
+    <h3>Does this plugin support iOS?</h3>
+    <p>No. The plugin targets <strong>Android</strong> only via the Yandex Mobile Ads Android SDK. All JNI/UPL code is Android-specific. Blueprint nodes are safe to call on non-Android platforms (they do nothing).</p>
+    <h3>Which Yandex SDK version is included?</h3>
+    <p>The plugin bundles <code>mobileads 8.0.0</code> (local Maven AAR) and the VK adapter <code>mobileads-mytarget 5.45.3.1</code>.</p>
+    <h3>How do I test ads without a real Yandex account?</h3>
+    <p>Use the demo placement IDs:<br>
+    <code>demo-banner-yandex</code>, <code>demo-interstitial-yandex</code>, <code>demo-rewarded-yandex</code>, <code>demo-appopenad-yandex</code></p>
+    <h3>Rewarded video closes instantly without showing anything</h3>
+    <p>This can happen when UE's SurfaceView overlaps the ad. Check that the rewarded ad lifecycle (<em>Ad Shown</em> → <em>Reward Granted</em>) fires in Logcat. If <em>Ad Shown</em> fires but no creative is visible, it is a surface ordering issue — contact support with a Logcat report.</p>
+    <div class="page-nav">
+      <a href="#" onclick="show('mediation',document.querySelector('[onclick*=mediation]'))"><span class="label">Previous</span>VK Ads Mediation</a>
+      <a href="#" class="next" onclick="show('debug',document.querySelector('[onclick*=debug]'))"><span class="label">Next</span>Debug Panel</a>
+    </div>
+  </article>
+</section>
+
+<!-- DEBUG PANEL -->
+<section id="debug" class="page-section">
+  <div class="topbar"><h2>Debug Panel</h2></div>
+  <article>
+    <h1>Yandex Ads Debug Panel</h1>
+    <p>The Yandex Debug Panel is a built-in tool that displays SDK integration status, mediation adapter info, and privacy settings directly on the device.</p>
+    <h2>How to Open</h2>
+    <p>Call the Blueprint node <strong>Show Yandex Ads Debug Panel</strong> (category: AdBot | Yandex Privacy). It wraps <code>YandexAds.showDebugPanel(context)</code>.</p>
+    <div class="img-placeholder sm">[ Show Yandex Ads Debug Panel node ]</div>
+    <div class="callout warn">
+      <strong>Development only</strong>
+      Do not show the Debug Panel in shipping builds. Gate it behind a debug flag or developer menu.
+    </div>
+    <h2>What the Panel Shows</h2>
+    <ul>
+      <li>App info (version, API level)</li>
+      <li>SDK integration status</li>
+      <li>Mediation adapter versions and status (VK Ads)</li>
+      <li>Privacy settings (User Consent, Location Consent, TCF, Age Restricted)</li>
+      <li>Integration error report</li>
+    </ul>
+    <div class="page-nav">
+      <a href="#" onclick="show('faq',document.querySelector('[onclick*=faq]'))"><span class="label">Previous</span>FAQ</a>
+      <a href="#" class="next" onclick="show('contact',document.querySelector('[onclick*=contact]'))"><span class="label">Next</span>Contact</a>
+    </div>
+  </article>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="page-section">
+  <div class="topbar"><h2>Contact</h2></div>
+  <article>
+    <h1>Contact &amp; Support</h1>
+    <p>If you have questions or found a bug, open an issue on GitHub or reach out directly.</p>
+    <h2>GitHub Repository</h2>
+    <p><a href="https://github.com/xaser3d/AdBot" target="_blank">github.com/xaser3d/AdBot</a></p>
+    <h2>Before Contacting Support</h2>
+    <ol>
+      <li>Enable SDK Logging and capture a Logcat output filtered by <code>YandexAds</code> and <code>AdBot</code>.</li>
+      <li>Open the <a href="#" onclick="show('debug',document.querySelector('[onclick*=debug]'))">Debug Panel</a> and take a screenshot of the integration status.</li>
+      <li>Include your Unreal Engine version, plugin version, and Android device model.</li>
+    </ol>
+    <div class="callout">
+      <strong>Demo ad units</strong>
+      Always test with demo placement IDs first to confirm the plugin is wired correctly before filing a bug.
+    </div>
+  </article>
+</section>
+
+</div><!-- #content -->
+
+<script>
+function show(id, link) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('#sidebar nav a').forEach(a => a.classList.remove('active'));
+  if (link) link.classList.add('active');
+  window.scrollTo(0, 0);
+  if (window.innerWidth < 900) document.getElementById('sidebar').classList.remove('open');
+  return false;
+}
+</script>
+</body>
+</html>
