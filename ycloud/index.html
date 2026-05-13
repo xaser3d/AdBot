@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YCloud — Яндекс.Диск для Unreal Engine</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<button id="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+
+<nav id="sidebar">
+  <div class="brand">
+    <h1>YCloud</h1>
+    <div class="tagline">Яндекс.Диск · OAuth · Слоты</div>
+    <p style="margin-top:12px;font-size:12px;"><a href="../index.html" style="color:#5b8cff;">← Все плагины</a></p>
+  </div>
+  <nav>
+    <div class="nav-section">Обзор</div>
+    <a href="#" class="top-level active" onclick="show('home',this)">О плагине</a>
+    <a href="#" onclick="show('features',this)">Возможности</a>
+    <a href="#" onclick="show('setup',this)">Подключение</a>
+    <a href="#" onclick="show('settings',this)">Project Settings</a>
+    <div class="nav-section">Работа</div>
+    <a href="#" onclick="show('oauth',this)">Вход (Яндекс ID)</a>
+    <a href="#" onclick="show('slots',this)">Слоты и файлы</a>
+    <a href="#" onclick="show('bp',this)">Пример Blueprint</a>
+    <div class="nav-section">Прочее</div>
+    <a href="#" onclick="show('faq',this)">FAQ</a>
+  </nav>
+</nav>
+
+<div id="content">
+
+<section id="home" class="page-section active">
+  <div class="topbar"><h2>О плагине</h2></div>
+  <article>
+    <h1>YCloud</h1>
+    <p>Плагин для сохранений на <strong>Яндекс.Диске</strong>: OAuth 2.0 через <strong>Яндекс ID</strong>, REST API диска, слоты как именованные файлы в настраиваемой корневой папке.</p>
+    <p>Архитектура совпадает с GCloud: подсистема на Game Instance, async-ноды для входа и операций со слотами.</p>
+    <div class="feature-grid">
+      <div class="feature-card"><div class="icon">🔐</div><h4>OAuth Яндекса</h4><p>Open Sign In In Browser + Exchange Auth Code.</p></div>
+      <div class="feature-card"><div class="icon">📁</div><h4>Root Path</h4><p>По умолчанию <code>app:/UnrealGameSaves</code> — папка приложения на Диске.</p></div>
+      <div class="feature-card"><div class="icon">💾</div><h4>Слоты</h4><p>Байты и <code>USaveGame</code>, список и удаление.</p></div>
+    </div>
+    <div class="page-nav">
+      <span></span>
+      <a href="#" class="next" onclick="show('features',document.querySelector('[onclick*=features]'))"><span class="label">Далее</span>Возможности</a>
+    </div>
+  </article>
+</section>
+
+<section id="features" class="page-section">
+  <div class="topbar"><h2>Возможности</h2></div>
+  <article>
+    <h1>Возможности</h1>
+    <table>
+      <thead><tr><th>Функция</th><th>Blueprint</th></tr></thead>
+      <tbody>
+        <tr><td>Вход Яндекс</td><td>Open Sign In In Browser, Exchange Auth Code</td></tr>
+        <tr><td>Сессия</td><td>Is Y Cloud Signed In, Sign Out, Get/Clear Last Error</td></tr>
+        <tr><td>Слоты</td><td>Upload/Download/Delete/List Slot, Upload/Download Save Game</td></tr>
+        <tr><td>URL для кастомного UI</td><td>Y Cloud Get Sign In Url</td></tr>
+      </tbody>
+    </table>
+    <div class="page-nav">
+      <a href="#" onclick="show('home',document.querySelector('[onclick*=home]'))"><span class="label">Назад</span>О плагине</a>
+      <a href="#" class="next" onclick="show('setup',document.querySelector('[onclick*=setup]'))"><span class="label">Далее</span>Подключение</a>
+    </div>
+  </article>
+</section>
+
+<section id="setup" class="page-section">
+  <div class="topbar"><h2>Подключение</h2></div>
+  <article>
+    <h1>Подключение</h1>
+    <ol>
+      <li>Создайте приложение в <a href="https://oauth.yandex.com/" target="_blank">кабинете Яндекс OAuth</a>: получите <strong>Client ID</strong> и <strong>Client Secret</strong>.</li>
+      <li>Укажите redirect URI согласно настройкам (часто страница с кодом <code>https://oauth.yandex.com/verification_code</code> — значение по умолчанию в плагине).</li>
+      <li>Включите плагин <code>YCloud</code>, заполните <strong>Project Settings → YCloud (Yandex Disk)</strong>.</li>
+    </ol>
+    <div class="page-nav">
+      <a href="#" onclick="show('features',document.querySelector('[onclick*=features]'))"><span class="label">Назад</span>Возможности</a>
+      <a href="#" class="next" onclick="show('settings',document.querySelector('[onclick*=settings]'))"><span class="label">Далее</span>Настройки</a>
+    </div>
+  </article>
+</section>
+
+<section id="settings" class="page-section">
+  <div class="topbar"><h2>Project Settings</h2></div>
+  <article>
+    <h1>YCloud (Yandex Disk)</h1>
+    <table>
+      <thead><tr><th>Поле</th><th>Описание</th></tr></thead>
+      <tbody>
+        <tr><td>Client Id</td><td>Идентификатор приложения OAuth</td></tr>
+        <tr><td>Client Secret</td><td>Секрет приложения (для обмена кода на токен)</td></tr>
+        <tr><td>Redirect Uri</td><td>Должен совпадать с зарегистрированным; по умолчанию страница проверки Яндекса</td></tr>
+        <tr><td>Root Path</td><td>Папка на Диске, по умолчанию <code>app:/UnrealGameSaves</code></td></tr>
+        <tr><td>Slot File Prefix</td><td>Префикс имён файлов слотов</td></tr>
+      </tbody>
+    </table>
+    <div class="page-nav">
+      <a href="#" onclick="show('setup',document.querySelector('[onclick*=setup]'))"><span class="label">Назад</span>Подключение</a>
+      <a href="#" class="next" onclick="show('oauth',document.querySelector('[onclick*=oauth]'))"><span class="label">Далее</span>OAuth</a>
+    </div>
+  </article>
+</section>
+
+<section id="oauth" class="page-section">
+  <div class="topbar"><h2>Вход (Яндекс ID)</h2></div>
+  <article>
+    <h1>OAuth</h1>
+    <ol>
+      <li><strong>Open Sign In In Browser</strong> — PKCE и URL подготовлены в <code>UYCloudSubsystem</code>.</li>
+      <li>Пользователь входит в Яндекс; получаете код подтверждения (в зависимости от Redirect URI).</li>
+      <li><strong>Exchange Auth Code</strong> с этим кодом — сохранение токенов во vault.</li>
+      <li><strong>Is Y Cloud Signed In</strong> — проверка наличия access token.</li>
+    </ol>
+    <div class="page-nav">
+      <a href="#" onclick="show('settings',document.querySelector('[onclick*=settings]'))"><span class="label">Назад</span>Настройки</a>
+      <a href="#" class="next" onclick="show('slots',document.querySelector('[onclick*=slots]'))"><span class="label">Далее</span>Слоты</a>
+    </div>
+  </article>
+</section>
+
+<section id="slots" class="page-section">
+  <div class="topbar"><h2>Слоты и файлы</h2></div>
+  <article>
+    <h1>Слоты на Яндекс.Диске</h1>
+    <p>Ноды категории <strong>YCloud | Slots</strong>: загрузка/выгрузка байтов, список <code>FYCloudSlotInfo</code>, удаление, сериализация <code>USaveGame</code>. Завершение через <code>On Complete</code> с флагом успеха (и байты для Download Slot).</p>
+    <div class="page-nav">
+      <a href="#" onclick="show('oauth',document.querySelector('[onclick*=oauth]'))"><span class="label">Назад</span>OAuth</a>
+      <a href="#" class="next" onclick="show('bp',document.querySelector('[onclick*=bp]'))"><span class="label">Далее</span>Blueprint</a>
+    </div>
+  </article>
+</section>
+
+<section id="bp" class="page-section">
+  <div class="topbar"><h2>Пример Blueprint</h2></div>
+  <article>
+    <h1>Цепочка</h1>
+    <pre><code>① Open Sign In In Browser
+② Exchange Auth Code (код с redirect)
+③ List Slots / Download Save Game …</code></pre>
+    <div class="page-nav">
+      <a href="#" onclick="show('slots',document.querySelector('[onclick*=slots]'))"><span class="label">Назад</span>Слоты</a>
+      <a href="#" class="next" onclick="show('faq',document.querySelector('[onclick*=faq]'))"><span class="label">Далее</span>FAQ</a>
+    </div>
+  </article>
+</section>
+
+<section id="faq" class="page-section">
+  <div class="topbar"><h2>FAQ</h2></div>
+  <article>
+    <h1>Частые вопросы</h1>
+    <h3>invalid_client / неверный redirect</h3>
+    <p>Сверьте Redirect URI в OAuth-приложении Яндекса и в Project Settings.</p>
+    <h3>Нет прав на папку</h3>
+    <p>Проверьте scope при регистрации приложения и что <code>Root Path</code> указывает на доступное приложению пространство (например app-папку).</p>
+  </article>
+</section>
+
+</div>
+
+<script>
+function show(id, link) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('#sidebar nav a').forEach(a => a.classList.remove('active'));
+  if (link) link.classList.add('active');
+  window.scrollTo(0, 0);
+  if (window.innerWidth < 900) document.getElementById('sidebar').classList.remove('open');
+  return false;
+}
+</script>
+</body>
+</html>

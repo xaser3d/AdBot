@@ -251,3 +251,45 @@ tbody tr:hover { background: #f8f9fc; }
 
 /* Syntax highlight extras */
 pre .comment { color: #5c7099; }
+
+/* ===== HUB (all plugins) ===== */
+body.docs-hub {
+    display: block;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #1a1f2e 0%, #1a1f2e 220px, #f0f3f8 220px);
+}
+body.docs-hub .hub-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 36px 24px 72px;
+}
+body.docs-hub .hub-hero {
+    color: #fff;
+    margin-bottom: 28px;
+}
+body.docs-hub .hub-hero h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+body.docs-hub .hub-hero p { color: #9baac7; font-size: 15px; max-width: 640px; }
+body.docs-hub .plugin-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}
+body.docs-hub .plugin-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 22px;
+    border: 1px solid #e0e7f0;
+    box-shadow: 0 4px 20px rgba(26,31,46,0.06);
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+body.docs-hub .plugin-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(26,31,46,0.1);
+}
+body.docs-hub .plugin-card h2 { font-size: 18px; color: #1a1f2e; margin-bottom: 8px; }
+body.docs-hub .plugin-card .badge-row { margin-bottom: 10px; }
+body.docs-hub .plugin-card p { font-size: 13.5px; color: #5a6570; margin: 0; line-height: 1.55; }
+body.docs-hub .plugin-card .go { margin-top: 14px; font-size: 13px; font-weight: 700; color: #3a6fff; }

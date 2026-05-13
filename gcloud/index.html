@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GCloud — Google Drive для Unreal Engine</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<button id="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+
+<nav id="sidebar">
+  <div class="brand">
+    <h1>GCloud</h1>
+    <div class="tagline">Google Drive · OAuth 2.0 · Слоты</div>
+    <p style="margin-top:12px;font-size:12px;"><a href="../index.html" style="color:#5b8cff;">← Все плагины</a></p>
+  </div>
+  <nav>
+    <div class="nav-section">Обзор</div>
+    <a href="#" class="top-level active" onclick="show('home',this)">О плагине</a>
+    <a href="#" onclick="show('features',this)">Возможности</a>
+    <a href="#" onclick="show('setup',this)">Подключение</a>
+    <a href="#" onclick="show('settings',this)">Project Settings</a>
+    <div class="nav-section">Работа</div>
+    <a href="#" onclick="show('oauth',this)">Вход (OAuth)</a>
+    <a href="#" onclick="show('slots',this)">Слоты и файлы</a>
+    <a href="#" onclick="show('bp',this)">Пример Blueprint</a>
+    <div class="nav-section">Прочее</div>
+    <a href="#" onclick="show('faq',this)">FAQ</a>
+  </nav>
+</nav>
+
+<div id="content">
+
+<section id="home" class="page-section active">
+  <div class="topbar"><h2>О плагине</h2></div>
+  <article>
+    <h1>GCloud</h1>
+    <p>Плагин для Unreal Engine: сохранения игрока в <strong>Google Drive</strong> в скрытой папке приложения (<code>appDataFolder</code>), без собственного бэкенда.</p>
+    <p>Используется <strong>OAuth 2.0</strong> с PKCE (безопасный вход из игры через браузер). Токены хранятся во внутреннем хранилище движка (encrypted game key).</p>
+    <div class="feature-grid">
+      <div class="feature-card"><div class="icon">🔐</div><h4>OAuth + PKCE</h4><p>Асинхронные ноды открытия браузера и обмена кода на токены.</p></div>
+      <div class="feature-card"><div class="icon">📁</div><h4>Слоты</h4><p>Загрузка/выгрузка байтов или готового <code>USaveGame</code>.</p></div>
+      <div class="feature-card"><div class="icon">⚙️</div><h4>GameInstance Subsystem</h4><p><code>UGCloudSubsystem</code> на экземпляр игры.</p></div>
+    </div>
+    <div class="page-nav">
+      <span></span>
+      <a href="#" class="next" onclick="show('features',document.querySelector('[onclick*=features]'))"><span class="label">Далее</span>Возможности</a>
+    </div>
+  </article>
+</section>
+
+<section id="features" class="page-section">
+  <div class="topbar"><h2>Возможности</h2></div>
+  <article>
+    <h1>Возможности</h1>
+    <table>
+      <thead><tr><th>Функция</th><th>Blueprint</th><th>Описание</th></tr></thead>
+      <tbody>
+        <tr><td>Вход Google</td><td>✅ Async</td><td>Open Sign In In Browser → Exchange Auth Code</td></tr>
+        <tr><td>Проверка сессии</td><td>✅</td><td>Is G Cloud Signed In</td></tr>
+        <tr><td>Слот (байты)</td><td>✅ Async</td><td>Upload Slot / Download Slot / Delete Slot / List Slots</td></tr>
+        <tr><td>SaveGame</td><td>✅ Async</td><td>Upload Save Game / Download Save Game</td></tr>
+        <tr><td>Ошибки</td><td>✅</td><td>G Cloud Get Last Error, Clear Last Error, Sign Out</td></tr>
+      </tbody>
+    </table>
+    <div class="page-nav">
+      <a href="#" onclick="show('home',document.querySelector('[onclick*=home]'))"><span class="label">Назад</span>О плагине</a>
+      <a href="#" class="next" onclick="show('setup',document.querySelector('[onclick*=setup]'))"><span class="label">Далее</span>Подключение</a>
+    </div>
+  </article>
+</section>
+
+<section id="setup" class="page-section">
+  <div class="topbar"><h2>Подключение</h2></div>
+  <article>
+    <h1>Подключение</h1>
+    <h2>Требования</h2>
+    <ul>
+      <li>Unreal Engine 5.7 (как в <code>GCloud.uplugin</code>)</li>
+      <li>Проект в <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a>: OAuth client (Web или Android), redirect URI</li>
+      <li>Включённый API Google Drive (доступ к файлам приложения)</li>
+    </ul>
+    <h2>Шаги</h2>
+    <ol>
+      <li>Скопируйте папку <code>Plugins/GCloud</code> в проект.</li>
+      <li><strong>Edit → Plugins</strong> — включите <em>GCloud</em>.</li>
+      <li>Заполните <strong>Project Settings → Plugins → GCloud (Google Drive)</strong> (см. следующий раздел).</li>
+      <li>В Blueprint используйте ноды категорий <strong>GCloud | Auth</strong> и <strong>GCloud | Slots</strong>.</li>
+    </ol>
+    <div class="callout warn"><strong>Android</strong> Для публичного клиента без секрета используйте PKCE; Client Secret можно оставить пустым.</div>
+    <div class="page-nav">
+      <a href="#" onclick="show('features',document.querySelector('[onclick*=features]'))"><span class="label">Назад</span>Возможности</a>
+      <a href="#" class="next" onclick="show('settings',document.querySelector('[onclick*=settings]'))"><span class="label">Далее</span>Настройки</a>
+    </div>
+  </article>
+</section>
+
+<section id="settings" class="page-section">
+  <div class="topbar"><h2>Project Settings</h2></div>
+  <article>
+    <h1>Project Settings → GCloud (Google Drive)</h1>
+    <p>Параметры пишутся в <code>DefaultGame.ini</code>, секция <code>[/Script/GCloud.GCloudDeveloperSettings]</code>.</p>
+    <table>
+      <thead><tr><th>Поле</th><th>Описание</th></tr></thead>
+      <tbody>
+        <tr><td>Client Id</td><td>OAuth 2.0 Client ID из Google Cloud Console</td></tr>
+        <tr><td>Client Secret</td><td>Для Web-клиента; для Android PKCE часто пусто</td></tr>
+        <tr><td>Redirect Uri</td><td>Должен совпадать с консолью Google, например <code>com.epicgames.unreal:/gcloud-oauth</code></td></tr>
+        <tr><td>Scopes</td><td>По умолчанию <code>https://www.googleapis.com/auth/drive.appdata</code> — доступ к скрытой папке приложения</td></tr>
+        <tr><td>Slot File Prefix</td><td>Префикс имён файлов слотов на диске, по умолчанию <code>save_</code></td></tr>
+      </tbody>
+    </table>
+    <div class="page-nav">
+      <a href="#" onclick="show('setup',document.querySelector('[onclick*=setup]'))"><span class="label">Назад</span>Подключение</a>
+      <a href="#" class="next" onclick="show('oauth',document.querySelector('[onclick*=oauth]'))"><span class="label">Далее</span>OAuth</a>
+    </div>
+  </article>
+</section>
+
+<section id="oauth" class="page-section">
+  <div class="topbar"><h2>Вход (OAuth)</h2></div>
+  <article>
+    <h1>Вход через Google</h1>
+    <ol>
+      <li>Вызовите async-ноду <strong>Open Sign In In Browser</strong> — откроется системный браузер с URL авторизации (PKCE подготовлен в подсистеме).</li>
+      <li>После успешного входа Google перенаправит на ваш <em>Redirect Uri</em> с параметром <code>code</code>.</li>
+      <li>Передайте код в <strong>Exchange Auth Code</strong> — нода завершится с <code>On Complete (bSuccess)</code>.</li>
+      <li>Проверка: <strong>Is G Cloud Signed In</strong> (чистая функция, World Context).</li>
+    </ol>
+    <table>
+      <thead><tr><th>Нода</th><th>Категория</th></tr></thead>
+      <tbody>
+        <tr><td>Open Sign In In Browser</td><td>GCloud | Auth</td></tr>
+        <tr><td>Exchange Auth Code</td><td>GCloud | Auth</td></tr>
+        <tr><td>Is G Cloud Signed In</td><td>GCloud | Auth</td></tr>
+        <tr><td>G Cloud Sign Out</td><td>GCloud | Auth</td></tr>
+        <tr><td>G Cloud Get Last Error / Clear Last Error</td><td>GCloud | Auth</td></tr>
+        <tr><td>G Cloud Get Sign In Url</td><td>GCloud | Auth — опционально получить URL без открытия браузера</td></tr>
+      </tbody>
+    </table>
+    <div class="page-nav">
+      <a href="#" onclick="show('settings',document.querySelector('[onclick*=settings]'))"><span class="label">Назад</span>Настройки</a>
+      <a href="#" class="next" onclick="show('slots',document.querySelector('[onclick*=slots]'))"><span class="label">Далее</span>Слоты</a>
+    </div>
+  </article>
+</section>
+
+<section id="slots" class="page-section">
+  <div class="topbar"><h2>Слоты и файлы</h2></div>
+  <article>
+    <h1>Слоты (Google Drive)</h1>
+    <p>Имя слота — логическое имя сохранения; плагин сопоставляет его с файлом в <code>appDataFolder</code> с учётом <em>Slot File Prefix</em>.</p>
+    <table>
+      <thead><tr><th>Async-нода</th><th>On Complete</th></tr></thead>
+      <tbody>
+        <tr><td>Upload Slot</td><td>bool bSuccess</td></tr>
+        <tr><td>Download Slot</td><td>bool bSuccess, TArray&lt;uint8&gt; Bytes</td></tr>
+        <tr><td>Delete Slot</td><td>bool bSuccess</td></tr>
+        <tr><td>List Slots</td><td>bool bSuccess, массив <code>FGCloudSlotInfo</code> (имя, размер, дата)</td></tr>
+        <tr><td>Upload Save Game</td><td>bool bSuccess — сериализация <code>USaveGame</code></td></tr>
+        <tr><td>Download Save Game</td><td>bool bSuccess — в существующий объект SaveGame</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Subsystem</strong> Вся логика на <code>UGCloudSubsystem</code> (Game Instance). Ноды сами берут подсистему из World Context.</div>
+    <div class="page-nav">
+      <a href="#" onclick="show('oauth',document.querySelector('[onclick*=oauth]'))"><span class="label">Назад</span>OAuth</a>
+      <a href="#" class="next" onclick="show('bp',document.querySelector('[onclick*=bp]'))"><span class="label">Далее</span>Blueprint</a>
+    </div>
+  </article>
+</section>
+
+<section id="bp" class="page-section">
+  <div class="topbar"><h2>Пример Blueprint</h2></div>
+  <article>
+    <h1>Пример цепочки</h1>
+    <pre><code>① Open Sign In In Browser → On Launched / On Failed
+② (из redirect) Exchange Auth Code (Authorization Code)
+③ On Complete (true) → List Slots
+④ Download Save Game (SlotName, SaveGameObject) → загрузить в объект
+⑤ После игры: Upload Save Game</code></pre>
+    <div class="page-nav">
+      <a href="#" onclick="show('slots',document.querySelector('[onclick*=slots]'))"><span class="label">Назад</span>Слоты</a>
+      <a href="#" class="next" onclick="show('faq',document.querySelector('[onclick*=faq]'))"><span class="label">Далее</span>FAQ</a>
+    </div>
+  </article>
+</section>
+
+<section id="faq" class="page-section">
+  <div class="topbar"><h2>FAQ</h2></div>
+  <article>
+    <h1>Частые вопросы</h1>
+    <h3>redirect_uri_mismatch</h3>
+    <p>Точное совпадение Redirect URI в консоли Google и в Project Settings.</p>
+    <h3>Нет доступа к Drive</h3>
+    <p>Проверьте scope <code>drive.appdata</code> и что OAuth consent screen опубликован (или тестовые пользователи добавлены).</p>
+    <h3>Где хранятся токены?</h3>
+    <p>В зашифрованном хранилище UE после успешного Exchange Auth Code.</p>
+  </article>
+</section>
+
+</div>
+
+<script>
+function show(id, link) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('#sidebar nav a').forEach(a => a.classList.remove('active'));
+  if (link) link.classList.add('active');
+  window.scrollTo(0, 0);
+  if (window.innerWidth < 900) document.getElementById('sidebar').classList.remove('open');
+  return false;
+}
+</script>
+</body>
+</html>

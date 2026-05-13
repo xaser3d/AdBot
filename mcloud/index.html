@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCloud — Mail.ru Cloud (WebDAV) для Unreal Engine</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<button id="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+
+<nav id="sidebar">
+  <div class="brand">
+    <h1>MCloud</h1>
+    <div class="tagline">Mail.ru Cloud · WebDAV · Слоты</div>
+    <p style="margin-top:12px;font-size:12px;"><a href="../index.html" style="color:#5b8cff;">← Все плагины</a></p>
+  </div>
+  <nav>
+    <div class="nav-section">Обзор</div>
+    <a href="#" class="top-level active" onclick="show('home',this)">О плагине</a>
+    <a href="#" onclick="show('features',this)">Возможности</a>
+    <a href="#" onclick="show('setup',this)">Подключение</a>
+    <a href="#" onclick="show('settings',this)">Project Settings</a>
+    <div class="nav-section">Работа</div>
+    <a href="#" onclick="show('auth',this)">Учётные данные</a>
+    <a href="#" onclick="show('folder',this)">Папка на диске</a>
+    <a href="#" onclick="show('slots',this)">Слоты</a>
+    <a href="#" onclick="show('bp',this)">Пример Blueprint</a>
+    <div class="nav-section">Прочее</div>
+    <a href="#" onclick="show('faq',this)">FAQ</a>
+  </nav>
+</nav>
+
+<div id="content">
+
+<section id="home" class="page-section active">
+  <div class="topbar"><h2>О плагине</h2></div>
+  <article>
+    <h1>MCloud</h1>
+    <p>Плагин для сохранений в <strong>Облаке Mail.ru</strong> через протокол <strong>WebDAV</strong> и пароль приложения (Basic authentication). Отдельного OAuth в текущей версии нет — вход по почте и специальному паролю из настроек Mail.ru.</p>
+    <div class="feature-grid">
+      <div class="feature-card"><div class="icon">🔑</div><h4>Пароль приложения</h4><p>Хранение во внутреннем зашифрованном хранилище UE.</p></div>
+      <div class="feature-card"><div class="icon">📂</div><h4>Корневая папка</h4><p>Настраиваемый <code>RootPath</code> в облаке.</p></div>
+      <div class="feature-card"><div class="icon">⚡</div><h4>Ensure Folder</h4><p>Async-создание цепочки каталогов MKCOL.</p></div>
+    </div>
+    <div class="page-nav">
+      <span></span>
+      <a href="#" class="next" onclick="show('features',document.querySelector('[onclick*=features]'))"><span class="label">Далее</span>Возможности</a>
+    </div>
+  </article>
+</section>
+
+<section id="features" class="page-section">
+  <div class="topbar"><h2>Возможности</h2></div>
+  <article>
+    <h1>Возможности</h1>
+    <table>
+      <thead><tr><th>Функция</th><th>Blueprint</th></tr></thead>
+      <tbody>
+        <tr><td>Установка логина/пароля WebDAV</td><td>Set M Cloud Web Dav Credentials</td></tr>
+        <tr><td>Проверка входа</td><td>Is M Cloud Signed In</td></tr>
+        <tr><td>Создать папки по RootPath</td><td>Async Ensure Folder</td></tr>
+        <tr><td>Слоты байтами / SaveGame</td><td>Upload/Download/Delete/List + SaveGame</td></tr>
+        <tr><td>Выход / ошибки</td><td>M Cloud Sign Out, Get/Clear Last Error</td></tr>
+      </tbody>
+    </table>
+    <div class="page-nav">
+      <a href="#" onclick="show('home',document.querySelector('[onclick*=home]'))"><span class="label">Назад</span>О плагине</a>
+      <a href="#" class="next" onclick="show('setup',document.querySelector('[onclick*=setup]'))"><span class="label">Далее</span>Подключение</a>
+    </div>
+  </article>
+</section>
+
+<section id="setup" class="page-section">
+  <div class="topbar"><h2>Подключение</h2></div>
+  <article>
+    <h1>Подключение</h1>
+    <ol>
+      <li>Включите плагин <code>MCloud</code> в проекте.</li>
+      <li>В кабинете Mail.ru создайте <strong>пароль для внешних приложений</strong> для Облака.</li>
+      <li>В игре вызовите <strong>Set M Cloud Web Dav Credentials</strong> (email + пароль приложения) — для релиза предпочтительнее, чем хранить пароль в <code>DefaultGame.ini</code>.</li>
+      <li>При необходимости вызовите <strong>Ensure Folder</strong> один раз перед первой загрузкой.</li>
+    </ol>
+    <div class="page-nav">
+      <a href="#" onclick="show('features',document.querySelector('[onclick*=features]'))"><span class="label">Назад</span>Возможности</a>
+      <a href="#" class="next" onclick="show('settings',document.querySelector('[onclick*=settings]'))"><span class="label">Далее</span>Настройки</a>
+    </div>
+  </article>
+</section>
+
+<section id="settings" class="page-section">
+  <div class="topbar"><h2>Project Settings</h2></div>
+  <article>
+    <h1>MCloud (Mail.ru Cloud WebDAV)</h1>
+    <table>
+      <thead><tr><th>Поле</th><th>Описание</th></tr></thead>
+      <tbody>
+        <tr><td>Web Dav Base Url</td><td>По умолчанию <code>https://webdav.cloud.mail.ru</code></td></tr>
+        <tr><td>Root Path</td><td>Путь в облаке без ведущего слэша, напр. <code>UnrealGameSaves/MyGame</code></td></tr>
+        <tr><td>Slot File Prefix</td><td>Префикс файлов слотов, по умолчанию <code>save_</code></td></tr>
+        <tr><td>Dev Email / Dev App Password</td><td>Только для разработки; в сборке лучше <strong>Set Web Dav Credentials</strong></td></tr>
+      </tbody>
+    </table>
+    <div class="page-nav">
+      <a href="#" onclick="show('setup',document.querySelector('[onclick*=setup]'))"><span class="label">Назад</span>Подключение</a>
+      <a href="#" class="next" onclick="show('auth',document.querySelector('[onclick*=auth]'))"><span class="label">Далее</span>Учётные данные</a>
+    </div>
+  </article>
+</section>
+
+<section id="auth" class="page-section">
+  <div class="topbar"><h2>Учётные данные</h2></div>
+  <article>
+    <h1>Вход без OAuth</h1>
+    <p>Нода <strong>Set M Cloud Web Dav Credentials</strong> (категория <em>MCloud | Auth</em>) сохраняет email и пароль приложения во внутренний vault UE.</p>
+    <p>После успешной установки <strong>Is M Cloud Signed In</strong> вернёт true, если оба поля непустые.</p>
+    <table>
+      <thead><tr><th>Нода</th><th>Назначение</th></tr></thead>
+      <tbody>
+        <tr><td>M Cloud Sign Out</td><td>Очистить сохранённые учётные данные</td></tr>
+        <tr><td>M Cloud Get Last Error / Clear Last Error</td><td>Диагностика запросов WebDAV</td></tr>
+      </tbody>
+    </table>
+    <div class="page-nav">
+      <a href="#" onclick="show('settings',document.querySelector('[onclick*=settings]'))"><span class="label">Назад</span>Настройки</a>
+      <a href="#" class="next" onclick="show('folder',document.querySelector('[onclick*=folder]'))"><span class="label">Далее</span>Папка</a>
+    </div>
+  </article>
+</section>
+
+<section id="folder" class="page-section">
+  <div class="topbar"><h2>Папка на диске</h2></div>
+  <article>
+    <h1>Ensure Folder</h1>
+    <p>Async-нода <strong>Ensure Folder</strong> создаёт цепочку каталогов для <code>RootPath</code> (MKCOL по сегментам). Вызовите до первой загрузки, если папка в облаке ещё не создана вручную.</p>
+    <div class="page-nav">
+      <a href="#" onclick="show('auth',document.querySelector('[onclick*=auth]'))"><span class="label">Назад</span>Учётные данные</a>
+      <a href="#" class="next" onclick="show('slots',document.querySelector('[onclick*=slots]'))"><span class="label">Далее</span>Слоты</a>
+    </div>
+  </article>
+</section>
+
+<section id="slots" class="page-section">
+  <div class="topbar"><h2>Слоты</h2></div>
+  <article>
+    <h1>Слоты WebDAV</h1>
+    <p>Те же паттерны, что и у GCloud/YCloud: <strong>Upload Slot</strong>, <strong>Download Slot</strong>, <strong>Delete Slot</strong>, <strong>List Slots</strong>, <strong>Upload Save Game</strong>, <strong>Download Save Game</strong> — категория <em>MCloud | Slots</em>. Делегат завершения: <code>On Complete (bSuccess)</code> или для скачивания байт — байты + успех.</p>
+    <div class="page-nav">
+      <a href="#" onclick="show('folder',document.querySelector('[onclick*=folder]'))"><span class="label">Назад</span>Папка</a>
+      <a href="#" class="next" onclick="show('bp',document.querySelector('[onclick*=bp]'))"><span class="label">Далее</span>Blueprint</a>
+    </div>
+  </article>
+</section>
+
+<section id="bp" class="page-section">
+  <div class="topbar"><h2>Пример Blueprint</h2></div>
+  <article>
+    <h1>Типичная цепочка</h1>
+    <pre><code>① Set M Cloud Web Dav Credentials (Email, App Password)
+② Ensure Folder → On Complete (true)
+③ List Slots / Download Save Game / Upload Save Game</code></pre>
+    <div class="page-nav">
+      <a href="#" onclick="show('slots',document.querySelector('[onclick*=slots]'))"><span class="label">Назад</span>Слоты</a>
+      <a href="#" class="next" onclick="show('faq',document.querySelector('[onclick*=faq]'))"><span class="label">Далее</span>FAQ</a>
+    </div>
+  </article>
+</section>
+
+<section id="faq" class="page-section">
+  <div class="topbar"><h2>FAQ</h2></div>
+  <article>
+    <h1>Частые вопросы</h1>
+    <h3>401 Unauthorized</h3>
+    <p>Проверьте пароль приложения (не обычный пароль почты) и email.</p>
+    <h3>404 / путь не найден</h3>
+    <p>Выполните <strong>Ensure Folder</strong> или создайте <code>RootPath</code> вручную в веб-интерфейсе Облака.</p>
+  </article>
+</section>
+
+</div>
+
+<script>
+function show(id, link) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('#sidebar nav a').forEach(a => a.classList.remove('active'));
+  if (link) link.classList.add('active');
+  window.scrollTo(0, 0);
+  if (window.innerWidth < 900) document.getElementById('sidebar').classList.remove('open');
+  return false;
+}
+</script>
+</body>
+</html>
