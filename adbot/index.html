@@ -37,6 +37,14 @@
     <div class="nav-section">Targeting</div>
     <a href="#" onclick="show('targeting',this)">Ad Targeting</a>
 
+    <div class="nav-section">AppMetrica</div>
+    <a href="#" onclick="show('appmetrica',this)">Analytics (AppMetrica 8)</a>
+    <a href="#" onclick="show('bp-metrica',this)">Blueprint: AppMetrica</a>
+
+    <div class="nav-section">Build &amp; SDK</div>
+    <a href="#" onclick="show('sdk-build',this)">SDK Versions &amp; Android Build</a>
+    <a href="#" onclick="show('known-issues',this)">Known Issues</a>
+
     <div class="nav-section">Blueprint Examples</div>
     <a href="#" onclick="show('bp-privacy',this)">Privacy</a>
     <a href="#" onclick="show('bp-appopen',this)">App Open</a>
@@ -78,8 +86,12 @@
       <div class="feature-card"><div class="icon">🔵</div><h4>Blueprint First</h4><p>Every feature exposed as BlueprintCallable or async node. No C++ required.</p></div>
       <div class="feature-card"><div class="icon">🔒</div><h4>Privacy Controls</h4><p>User consent, COPPA, location tracking, GDPR-style flags.</p></div>
       <div class="feature-card"><div class="icon">📡</div><h4>VK Mediation</h4><p>VK Ads (ex. myTarget) via Yandex mediation adapter out of the box.</p></div>
-      <div class="feature-card"><div class="icon">📊</div><h4>AppMetrica</h4><p>Optional AppMetrica SDK activation for analytics and stable ad fill.</p></div>
+      <div class="feature-card"><div class="icon">📊</div><h4>AppMetrica 8</h4><p>Custom events, user profiles, sessions, device ID, crash reporting.</p></div>
       <div class="feature-card"><div class="icon">🛠</div><h4>Debug Panel</h4><p>One Blueprint call opens Yandex Debug Panel to verify integration.</p></div>
+    </div>
+
+    <div class="callout warn" style="margin-top:16px;">
+      <strong>Rewarded video</strong> — known issue in current build (may not display). See <a href="#" onclick="show('known-issues',document.querySelector('[onclick*=known-issues]'));return false;">Known Issues</a>.
     </div>
     <div class="page-nav">
       <span></span>
@@ -99,9 +111,9 @@
     <table>
       <thead><tr><th>Format</th><th>Blueprint</th><th>C++</th><th>Notes</th></tr></thead>
       <tbody>
-        <tr><td>Banner</td><td>✅</td><td>✅</td><td>Sticky / Inline, 6 size presets, auto no-fill retry</td></tr>
+        <tr><td>Banner</td><td>✅</td><td>✅</td><td>8 size presets (0–7), auto-load at startup, Invalid SDK retries, no-fill retry</td></tr>
         <tr><td>Interstitial</td><td>✅</td><td>✅</td><td>Full-screen, load → show pattern</td></tr>
-        <tr><td>Rewarded Video</td><td>✅ Async nodes</td><td>✅</td><td>Load → Show async chain, Reward Granted callback</td></tr>
+        <tr><td>Rewarded Video</td><td>✅ Async nodes</td><td>✅</td><td>⚠️ Known issues — see <a href="#" onclick="show('known-issues',document.querySelector('[onclick*=known-issues]'));return false;">Known Issues</a></td></tr>
         <tr><td>App Open</td><td>✅</td><td>✅</td><td>Vertical format, ideal for splash screens</td></tr>
       </tbody>
     </table>
@@ -117,6 +129,8 @@
     </table>
     <h2>Ad Targeting</h2>
     <p>Optional per-request targeting via <code>AdTargeting</code>: age, gender, geo-location, context query, context tags. All configured through Blueprint before loading ads.</p>
+    <h2>AppMetrica Analytics (mobile)</h2>
+    <p>AdBot ships <strong>AppMetrica Android SDK 8.2.x</strong> — this is the mobile analytics product paired with Yandex Ads (not the web Yandex.Metrica counter). Report custom events, user profiles, sessions, and crashes from Blueprint (<em>AdBot|AppMetrica</em>).</p>
     <h2>Mediation</h2>
     <p>VK Ads (ex. myTarget) via <code>com.yandex.ads.mediation:mobileads-mytarget</code>. Enabled in the Yandex Advertising Network cabinet per block — no extra Blueprint code required.</p>
     <div class="page-nav">
@@ -157,7 +171,11 @@
         <tr><td>Interstitial Unit ID</td><td>Placement ID for interstitial ads</td></tr>
         <tr><td>Rewarded Unit ID</td><td>Placement ID for rewarded video</td></tr>
         <tr><td>App Open Ad Unit ID</td><td>Placement ID for app-open format</td></tr>
-        <tr><td>AppMetrica API Key</td><td>Optional — required for full AppMetrica integration</td></tr>
+        <tr><td>Default Banner Size Preset</td><td>Android auto-banner before Blueprint <em>Load Banner</em> (index 7 = Inline 90&nbsp;dp)</td></tr>
+        <tr><td>Init Yandex Ads SDK at Startup</td><td>Initialize from <code>GameActivity.onCreate</code></td></tr>
+        <tr><td>Load Ad Data When Engine Starts</td><td>Call <em>Load Ad Data</em> after world init</td></tr>
+        <tr><td>AppMetrica API Key</td><td>AppMetrica cabinet key — strongly recommended for Ads 8</td></tr>
+        <tr><td>Init AppMetrica at Startup</td><td><code>AppMetrica.activate</code> from onCreate</td></tr>
         <tr><td>Banner No-Fill Max Retries</td><td>Auto-retry count on empty inventory (0 = disabled)</td></tr>
         <tr><td>Banner No-Fill Retry Delay</td><td>Seconds between auto-retries (1–600)</td></tr>
       </tbody>
@@ -168,7 +186,7 @@
       <code>demo-banner-yandex</code> · <code>demo-interstitial-yandex</code> · <code>demo-rewarded-yandex</code> · <code>demo-appopenad-yandex</code>
     </div>
     <h2>3. Initialize in Blueprint</h2>
-    <p>Call <strong>Load Ad Data</strong> once at game start — ideally from your GameMode or persistent widget:</p>
+    <p>Recommended chain: privacy → <strong>Activate AppMetrica</strong> (or enable <em>Init AppMetrica at Startup</em>) → <strong>Load Ad Data</strong> once at game start (GameMode or persistent widget):</p>
     <div class="img-placeholder sm">[ Load Ad Data Blueprint node ]</div>
     <div class="callout warn">
       <strong>Privacy first</strong>
@@ -190,11 +208,21 @@
     <h1>Project Settings</h1>
     <p>All AdBot settings live in <strong>Edit → Project Settings → Plugins → AdBot</strong> and are stored in <code>DefaultGame.ini</code>.</p>
     <div class="img-placeholder md">[ Project Settings AdBot panel screenshot ]</div>
+    <h2>Startup</h2>
+    <table>
+      <thead><tr><th>Property</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Init Yandex Ads SDK at Startup (Android)</td><td>On</td><td>Runs <code>YandexAds.initialize</code> from <code>GameActivity.onCreate</code> using unit IDs below</td></tr>
+        <tr><td>Load Ad Data When Engine Starts</td><td>On</td><td>Module calls <em>Load Ad Data</em> once when the game world is ready</td></tr>
+        <tr><td>Init AppMetrica at Startup (Android)</td><td>Off</td><td>Runs <code>AppMetrica.activate</code> from onCreate — enable if you use analytics before Blueprint</td></tr>
+      </tbody>
+    </table>
     <h2>Yandex Mobile Ads</h2>
     <table>
       <thead><tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
       <tbody>
         <tr><td>Banner Ad Unit ID</td><td>String</td><td>—</td><td>Yandex banner placement ID</td></tr>
+        <tr><td>Default Banner Size Preset</td><td>Enum (0–7)</td><td>Inline 90&nbsp;dp (7)</td><td>Used by Android <code>sdk_init_auto</code> if Blueprint does not call <em>Load Banner</em> first</td></tr>
         <tr><td>Interstitial Unit ID</td><td>String</td><td>—</td><td>Interstitial placement ID</td></tr>
         <tr><td>Rewarded Unit ID</td><td>String</td><td>—</td><td>Rewarded video placement ID</td></tr>
         <tr><td>App Open Ad Unit ID</td><td>String</td><td>—</td><td>App-open placement ID</td></tr>
@@ -204,11 +232,21 @@
     </table>
     <h2>AppMetrica</h2>
     <table>
-      <thead><tr><th>Property</th><th>Description</th></tr></thead>
+      <thead><tr><th>Property</th><th>Default</th><th>Description</th></tr></thead>
       <tbody>
-        <tr><td>AppMetrica API Key</td><td>AppMetrica analytics key from your AppMetrica cabinet. Required for stable ad fill with real placements.</td></tr>
+        <tr><td>AppMetrica API Key</td><td>—</td><td>From <a href="https://appmetrica.yandex.com/" target="_blank">AppMetrica</a> cabinet (same Android app). Required for reliable Yandex Ads 8 banner/WebView path</td></tr>
+        <tr><td>Session Timeout (seconds)</td><td>10</td><td>AppMetrica session timeout</td></tr>
+        <tr><td>Enable SDK Logs</td><td>Off</td><td>AppMetrica Logcat (development)</td></tr>
+        <tr><td>Activity Auto Tracking</td><td>On</td><td>Automatic activity lifecycle events</td></tr>
+        <tr><td>Location Tracking</td><td>Off</td><td>Only enable with user consent</td></tr>
+        <tr><td>Crash Reporting</td><td>On</td><td>Send crashes to AppMetrica</td></tr>
+        <tr><td>Statistics Enabled</td><td>On</td><td>Master switch for sending statistics to AppMetrica servers</td></tr>
       </tbody>
     </table>
+    <div class="callout warn">
+      <strong>Do not mix plugins</strong>
+      Disable the marketplace <em>YandexAppMetrica</em> plugin (mobmetricalib 5.x) when using AdBot — only one AppMetrica integration per app.
+    </div>
     <div class="callout">
       <strong>DefaultGame.ini</strong>
       Settings are saved under <code>[/Script/AdBot.AdBotSettings]</code>. You can also edit the .ini directly.
@@ -317,18 +355,23 @@
   <article>
     <h1>Banner Ads</h1>
     <p>Banners are small ads displayed at the bottom of the screen without blocking content. AdBot supports sticky and adaptive inline sizes.</p>
-    <h2>Banner Size Presets</h2>
+    <h2>Banner Size Presets (<code>EAdBotBannerSizePreset</code>)</h2>
+    <p>Blueprint enum index <strong>0–7</strong> (8 items). In the editor dropdown, <em>Inline max height 90 dp</em> is index <strong>7</strong> (8th item if counting from 1).</p>
     <table>
-      <thead><tr><th>Preset</th><th>Yandex SDK</th><th>Height</th></tr></thead>
+      <thead><tr><th>Index</th><th>Preset name</th><th>Yandex SDK</th><th>Notes</th></tr></thead>
       <tbody>
-        <tr><td>Sticky 320 dp</td><td>BannerAdSize.sticky(activity, 320)</td><td>Auto</td></tr>
-        <tr><td>Sticky full width</td><td>BannerAdSize.sticky(activity, screenWidth)</td><td>Auto (≤15% screen)</td></tr>
-        <tr><td>Inline max height 250 dp</td><td>BannerAdSize.inline(activity, w, 250)</td><td>Up to 250 dp</td></tr>
-        <tr><td>Inline max height 300 dp</td><td>BannerAdSize.inline(activity, w, 300)</td><td>Up to 300 dp</td></tr>
-        <tr><td>Inline max height 400 dp</td><td>BannerAdSize.inline(activity, w, 400)</td><td>Up to 400 dp</td></tr>
-        <tr><td>Inline max height = screen</td><td>BannerAdSize.inline(activity, w, screenH)</td><td>Adaptive full</td></tr>
+        <tr><td>0</td><td>Sticky 320 dp</td><td><code>BannerAdSize.sticky(activity, 320)</code></td><td>Legacy default; on UE + demo ID may hit <em>Invalid SDK state</em></td></tr>
+        <tr><td>1</td><td>Sticky full width</td><td><code>BannerAdSize.sticky(activity, screenWidth)</code></td><td>Full width sticky</td></tr>
+        <tr><td>2</td><td>Inline max height 250 dp</td><td><code>BannerAdSize.inline(activity, w, 250)</code></td><td></td></tr>
+        <tr><td>3</td><td>Inline max height 300 dp</td><td><code>BannerAdSize.inline(activity, w, 300)</code></td><td></td></tr>
+        <tr><td>4</td><td>Inline max height 400 dp</td><td><code>BannerAdSize.inline(activity, w, 400)</code></td><td></td></tr>
+        <tr><td>5</td><td>Inline max height = screen</td><td><code>BannerAdSize.inline(activity, w, min(screenH, 480))</code></td><td>Capped for UE stability</td></tr>
+        <tr><td>6</td><td>Inline max height 50 dp</td><td><code>BannerAdSize.inline(activity, w, 50)</code></td><td>Low strip — not the same as 90&nbsp;dp</td></tr>
+        <tr><td>7</td><td>Inline max height 90 dp</td><td><code>BannerAdSize.inline(activity, w, 90)</code></td><td><strong>Recommended</strong> for bottom HUD; also <em>Default Banner Size Preset</em> in Project Settings</td></tr>
       </tbody>
     </table>
+    <h2>Auto-load at startup</h2>
+    <p>If <em>Init Yandex Ads SDK at Startup</em> is enabled and a banner unit ID is set, Android schedules the first banner load automatically (<code>sdk_init_auto</code>) using <strong>Default Banner Size Preset</strong>. You can still call <em>Load Banner</em> from Blueprint with another size — the plugin recycles <code>BannerAdView</code> when the preset changes.</p>
     <h2>No-Fill Auto-Retry</h2>
     <p>When Yandex returns empty inventory, the plugin automatically retries. Configure retries and delay in Project Settings (<em>Banner No-Fill Max Retries</em> / <em>Banner No-Fill Retry Delay Seconds</em>).</p>
     <h2>Delegates</h2>
@@ -392,6 +435,10 @@
   <div class="topbar"><h2>Rewarded Video</h2></div>
   <article>
     <h1>Rewarded Video</h1>
+    <div class="callout danger">
+      <strong>Current status — not fully working</strong>
+      In recent builds, rewarded ads often <strong>fail to display</strong> or <strong>dismiss in under ~300&nbsp;ms</strong> without an impression (<code>hadImpression=false</code> in Logcat). Load may succeed (<em>Rewarded ad loaded successfully</em>) but the user sees no video. Banner, interstitial, and app open are OK. See <a href="#" onclick="show('known-issues',document.querySelector('[onclick*=known-issues]'));return false;">Known Issues</a> before shipping rewarded monetization.
+    </div>
     <p>Users voluntarily watch a rewarded video to earn in-game currency, extra lives, or other bonuses. AdBot uses async Blueprint nodes for a clean load → show → reward flow.</p>
     <h2>Async Node Flow</h2>
     <div class="img-placeholder md">[ Load Ad Rewarded Video async node ]</div>
@@ -446,10 +493,11 @@
       </tbody>
     </table>
     <h2>Recommended Order</h2>
-    <pre><code>① <span class="kw">Set Yandex Ads User Consent</span>
-② <span class="kw">Set Yandex Ad Targeting Age/Gender/etc.</span>  (optional)
-③ <span class="kw">Load Ad Data</span>          ← initializes Yandex SDK
-④ <span class="kw">Load Banner</span> / <span class="kw">Load Interstitial</span> / etc.</code></pre>
+    <pre><code>① <span class="kw">Set Yandex Ads User Consent</span>     (AdBot|Yandex Privacy)
+② <span class="kw">Activate AppMetrica</span>            (AdBot|AppMetrica) — or enable Init AppMetrica at Startup
+③ <span class="kw">Set Yandex Ad Targeting …</span>      (optional, AdBot|Yandex Targeting)
+④ <span class="kw">Load Ad Data</span>                   ← Yandex Ads initialize (if not already at startup)
+⑤ <span class="kw">Load Banner</span> / <span class="kw">Load Interstitial</span> / etc.</code></pre>
     <div class="page-nav">
       <a href="#" onclick="show('rewarded',document.querySelector('[onclick*=rewarded]'))"><span class="label">Previous</span>Rewarded Video</a>
       <a href="#" class="next" onclick="show('bp-privacy',document.querySelector('[onclick*=bp-privacy]'))"><span class="label">Next</span>Blueprint: Privacy</a>
@@ -695,6 +743,170 @@ Manager-><span class="fn">ShowRewarded</span>();
 }</code></pre>
     <div class="page-nav">
       <a href="#" onclick="show('cpp-interstitial',document.querySelector('[onclick*=cpp-interstitial]'))"><span class="label">Previous</span>C++: Interstitial</a>
+      <a href="#" class="next" onclick="show('appmetrica',document.querySelector('[onclick*=appmetrica]'))"><span class="label">Next</span>AppMetrica</a>
+    </div>
+  </article>
+</section>
+
+<!-- APPMETRICA -->
+<section id="appmetrica" class="page-section">
+  <div class="topbar"><h2>AppMetrica Analytics</h2></div>
+  <article>
+    <h1>AppMetrica 8 (mobile analytics)</h1>
+    <p><strong>AppMetrica</strong> is Yandex's analytics SDK for Android/iOS. It is <em>not</em> the same as web <strong>Yandex.Metrica</strong> (site counter). AdBot bundles <code>io.appmetrica.analytics:analytics:8.2.0</code> and exposes Blueprint nodes under <strong>AdBot|AppMetrica</strong>.</p>
+    <div class="callout">
+      <strong>Why it matters for ads</strong>
+      Yandex Mobile Ads SDK 8 expects AppMetrica to be present. Activating AppMetrica before <code>YandexAds.initialize</code> reduces banner <em>Invalid SDK state</em> and improves fill on production <code>R-M-…</code> placements.
+    </div>
+    <div class="callout warn">
+      <strong>One AppMetrica per app</strong>
+      Do not enable the old marketplace <em>YandexAppMetrica</em> plugin (mobmetricalib 5.x) together with AdBot.
+    </div>
+    <h2>Blueprint nodes</h2>
+    <table>
+      <thead><tr><th>Node</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Activate AppMetrica</td><td>Uses Project Settings (API key, session timeout, logs, tracking flags). Idempotent.</td></tr>
+        <tr><td>Is AppMetrica Activated</td><td>Returns true after successful activate on Android</td></tr>
+        <tr><td>Report AppMetrica Event</td><td>Custom event name + optional JSON parameters (valid JSON or empty)</td></tr>
+        <tr><td>Send AppMetrica Events Buffer</td><td>Flush queued events (e.g. before exit)</td></tr>
+        <tr><td>Set AppMetrica User Profile ID</td><td>Profile ID for subsequent reports</td></tr>
+        <tr><td>Report AppMetrica User Profile</td><td>Name, gender, age, notifications flag</td></tr>
+        <tr><td>Pause / Resume AppMetrica Session</td><td>Session lifecycle (bound to GameActivity)</td></tr>
+        <tr><td>Set AppMetrica Statistics Enabled</td><td>Runtime toggle for sending statistics</td></tr>
+        <tr><td>Get AppMetrica Device ID</td><td>Device ID after activation (SDK 8.1+)</td></tr>
+      </tbody>
+    </table>
+    <h2>Startup vs Blueprint activate</h2>
+    <ul>
+      <li><strong>Init AppMetrica at Startup</strong> — <code>AppMetrica.activate</code> from <code>GameActivity.onCreate</code> (Project Settings).</li>
+      <li><strong>Activate AppMetrica</strong> node — call from Blueprint before <em>Load Ad Data</em> if startup init is off.</li>
+    </ul>
+    <h2>Viewing data</h2>
+    <p>Events and profiles appear in the <a href="https://appmetrica.yandex.com/" target="_blank">AppMetrica web cabinet</a> (reports, funnels, retention). Allow a few minutes delay for first events on a new install.</p>
+    <div class="page-nav">
+      <a href="#" onclick="show('cpp-rewarded',document.querySelector('[onclick*=cpp-rewarded]'))"><span class="label">Previous</span>C++: Rewarded</a>
+      <a href="#" class="next" onclick="show('bp-metrica',document.querySelector('[onclick*=bp-metrica]'))"><span class="label">Next</span>Blueprint: AppMetrica</a>
+    </div>
+  </article>
+</section>
+
+<!-- BP METRICA -->
+<section id="bp-metrica" class="page-section">
+  <div class="topbar"><h2>Blueprint — AppMetrica</h2></div>
+  <article>
+    <h1>Blueprint: AppMetrica examples</h1>
+    <h2>Minimal (with ads)</h2>
+    <pre><code><span class="cm">// GameMode BeginPlay — before Load Ad Data:</span>
+<span class="kw">Set Yandex Ads User Consent</span> (Consent: <span class="kw">true</span>)
+<span class="kw">Activate AppMetrica</span>
+<span class="kw">Load Ad Data</span></code></pre>
+    <h2>Level completed event</h2>
+    <pre><code><span class="kw">Report AppMetrica Event</span>
+  Event Name: <span class="str">"level_complete"</span>
+  Json Parameters: <span class="str">"{\"level\":3,\"score\":1200}"</span></code></pre>
+    <div class="callout">
+      <strong>JSON parameters</strong>
+      Must be valid JSON (e.g. <code>{"key":"value"}</code>) or an empty string. Invalid JSON is ignored or logged on Android.
+    </div>
+    <h2>User profile after login</h2>
+    <pre><code><span class="kw">Set AppMetrica User Profile ID</span> (User Profile ID: PlayerIdString)
+
+<span class="kw">Report AppMetrica User Profile</span>
+  User Profile ID: PlayerIdString
+  Profile: Name = "Player", Age = 25, Gender = Male</code></pre>
+    <h2>Pause statistics (GDPR opt-out)</h2>
+    <pre><code><span class="kw">Set AppMetrica Statistics Enabled</span> (Enabled: <span class="kw">false</span>)
+<span class="cm">// Re-enable after consent:</span>
+<span class="kw">Set AppMetrica Statistics Enabled</span> (Enabled: <span class="kw">true</span>)</code></pre>
+    <h2>Flush before Android back button / quit</h2>
+    <pre><code><span class="kw">Send AppMetrica Events Buffer</span></code></pre>
+    <div class="page-nav">
+      <a href="#" onclick="show('appmetrica',document.querySelector('[onclick*=appmetrica]'))"><span class="label">Previous</span>AppMetrica</a>
+      <a href="#" class="next" onclick="show('sdk-build',document.querySelector('[onclick*=sdk-build]'))"><span class="label">Next</span>SDK &amp; Build</a>
+    </div>
+  </article>
+</section>
+
+<!-- SDK BUILD -->
+<section id="sdk-build" class="page-section">
+  <div class="topbar"><h2>SDK &amp; Android Build</h2></div>
+  <article>
+    <h1>SDK versions &amp; packaging</h1>
+    <p>AdBot injects Gradle dependencies via <code>AdBot_UPL.xml</code> at Android package time. You do not add these lines manually unless you fork the plugin.</p>
+    <h2>Bundled versions (current)</h2>
+    <table>
+      <thead><tr><th>Component</th><th>Coordinate / version</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Yandex Mobile Ads</td><td><code>com.yandex.mobile:mobileads:8.0.0</code></td><td>Local AAR in <code>Plugins/AdBot/Platforms/Android/localrepo/</code></td></tr>
+        <tr><td>AppMetrica</td><td><code>io.appmetrica.analytics:analytics:8.2.0</code></td><td>Required peer for Ads 8 ([8.0.0, 9.0.0))</td></tr>
+        <tr><td>Kotlin Serialization</td><td><code>kotlinx-serialization-json:1.6.0</code></td><td>Required by Ads 8 (local POM has no transitives)</td></tr>
+        <tr><td>VK Ads mediation</td><td><code>com.yandex.ads.mediation:mobileads-mytarget:5.45.3.1</code></td><td>VK only — no AdMob adapter</td></tr>
+      </tbody>
+    </table>
+    <h2>Manifest &amp; init</h2>
+    <ul>
+      <li><code>com.yandex.mobile.ads.AUTOMATIC_SDK_INITIALIZATION=false</code> — plugin calls <code>AppMetrica.activate</code> then <code>YandexAds.initialize</code> in the correct order.</li>
+      <li><code>android.useAndroidX=true</code> and Jetifier enabled in Gradle properties.</li>
+      <li>ProGuard/R8 rules for Yandex Ads, AppMetrica, Kotlin Serialization, and VK/myTarget are included in the UPL.</li>
+    </ul>
+    <h2>After changing AdBot_UPL.xml</h2>
+    <ol>
+      <li>Save the plugin file.</li>
+      <li>Run a full <strong>Android package</strong> (Development or Shipping) — hot-reload in editor does not update Java in the APK.</li>
+      <li>Install the new APK on device; verify Logcat tag <code>YaAdsBridge</code> shows your changes (e.g. <code>defaultBannerPreset=7</code>).</li>
+    </ol>
+    <h2>UE &amp; Android requirements</h2>
+    <ul>
+      <li>Unreal Engine 5.x (tested with 5.7.x)</li>
+      <li>Android minSdk 21+</li>
+      <li>Do not enable HTTPS MITM (Charles) <code>networkSecurityConfig</code> with user certs in shipping — breaks WebView ads/VAST</li>
+    </ul>
+    <h2>Logcat filters (development)</h2>
+    <pre><code>adb logcat -s YaAdsBridge:D YandexAds:I AdBotMetrica:I</code></pre>
+    <div class="page-nav">
+      <a href="#" onclick="show('bp-metrica',document.querySelector('[onclick*=bp-metrica]'))"><span class="label">Previous</span>Blueprint: AppMetrica</a>
+      <a href="#" class="next" onclick="show('known-issues',document.querySelector('[onclick*=known-issues]'))"><span class="label">Next</span>Known Issues</a>
+    </div>
+  </article>
+</section>
+
+<!-- KNOWN ISSUES -->
+<section id="known-issues" class="page-section">
+  <div class="topbar"><h2>Known Issues</h2></div>
+  <article>
+    <h1>Known issues (current build)</h1>
+    <p>Status as of plugin integration with Yandex Mobile Ads <strong>8.0.0</strong> on Unreal <strong>GameActivity</strong> + Android.</p>
+
+    <h2>Rewarded video — not reliable</h2>
+    <div class="callout danger">
+      <strong>Do not rely on rewarded for production yet</strong>
+      API and Blueprint nodes exist, but display is unstable in the current build.
+    </div>
+    <h3>Symptoms</h3>
+    <ul>
+      <li><code>Rewarded ad loaded successfully</code> then <code>Rewarded ad dismissed (durationMs=100–300, hadImpression=false)</code> — user sees no video.</li>
+      <li><code>Failed to load rewarded ad: Ad request completed successfully, but there are no ads available.</code> on production <code>R-M-…</code> blocks (inventory / moderation).</li>
+      <li>Demo unit <code>demo-rewarded-yandex</code> may work once or twice; not stable with HTTPS proxy or heavy fullscreen sequencing.</li>
+    </ul>
+    <h3>Likely causes</h3>
+    <ul>
+      <li><strong>UE SurfaceView</strong> — fullscreen game surface stacking over the ad layer (plugin lowers z-order on show; still fragile on some devices/MIUI).</li>
+      <li><strong>Parallel loaders</strong> — loading rewarded while banner/interstitial/app-open pipelines run (plugin defers loads; avoid manual spam).</li>
+      <li><strong>HTTPS MITM</strong> — Charles/Fiddler without proper <code>networkSecurityConfig</code> breaks VAST/video.</li>
+      <li><strong>Empty inventory</strong> — real rewarded block not approved or no fill in your region.</li>
+    </ul>
+    <h3>What works instead</h3>
+    <p>Banner (with <em>Default Banner Size Preset</em> 90&nbsp;dp), interstitial, and app open are verified in testing. Use those formats until rewarded is fixed in a future AdBot release.</p>
+
+    <h2>Banner — Invalid SDK state (mitigated)</h2>
+    <p>On cold start with <code>demo-banner-yandex</code>, <code>BannerAdView.loadAd</code> could return <em>Invalid SDK state</em>. Mitigations in plugin: WebView warmup, deferred first load, AppMetrica activate, preset 90&nbsp;dp (index 7), retries. Prefer production <code>R-M-…</code> banner ID for release.</p>
+
+    <h2>Interstitial — slow first show</h2>
+    <p>First interstitial may appear ~20–35&nbsp;s after launch while the banner priming pipeline runs (by design to avoid parallel WebView loaders). Subsequent interstitials load faster.</p>
+
+    <div class="page-nav">
+      <a href="#" onclick="show('sdk-build',document.querySelector('[onclick*=sdk-build]'))"><span class="label">Previous</span>SDK &amp; Build</a>
       <a href="#" class="next" onclick="show('mediation',document.querySelector('[onclick*=mediation]'))"><span class="label">Next</span>VK Ads Mediation</a>
     </div>
   </article>
@@ -741,8 +953,12 @@ Manager-><span class="fn">ShowRewarded</span>();
     <h3>How do I test ads without a real Yandex account?</h3>
     <p>Use the demo placement IDs:<br>
     <code>demo-banner-yandex</code>, <code>demo-interstitial-yandex</code>, <code>demo-rewarded-yandex</code>, <code>demo-appopenad-yandex</code></p>
-    <h3>Rewarded video closes instantly without showing anything</h3>
-    <p>This can happen when UE's SurfaceView overlaps the ad. Check that the rewarded ad lifecycle (<em>Ad Shown</em> → <em>Reward Granted</em>) fires in Logcat. If <em>Ad Shown</em> fires but no creative is visible, it is a surface ordering issue — contact support with a Logcat report.</p>
+    <h3>Rewarded video does not work / closes instantly</h3>
+    <p>See the dedicated <a href="#" onclick="show('known-issues',document.querySelector('[onclick*=known-issues]'));return false;">Known Issues</a> page. Typical Logcat: <code>hadImpression=false</code>, duration under 300&nbsp;ms, or <code>no ads available</code> on production units.</p>
+    <h3>AppMetrica vs Yandex.Metrica (web)</h3>
+    <p>AdBot uses <strong>AppMetrica</strong> (mobile SDK). Web site counters (Yandex.Metrica) are a different product — use AppMetrica cabinet for game events.</p>
+    <h3>Wrong banner height (50 dp instead of 90 dp)</h3>
+    <p>Use enum index <strong>7</strong> = <em>Inline max height 90 dp</em> (8th item in the list). Index 6 is 50&nbsp;dp. Set <em>Default Banner Size Preset</em> in Project Settings or pass the correct enum to <em>Load Banner</em>.</p>
     <div class="page-nav">
       <a href="#" onclick="show('mediation',document.querySelector('[onclick*=mediation]'))"><span class="label">Previous</span>VK Ads Mediation</a>
       <a href="#" class="next" onclick="show('debug',document.querySelector('[onclick*=debug]'))"><span class="label">Next</span>Debug Panel</a>
