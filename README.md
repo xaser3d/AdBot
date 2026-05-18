@@ -1,31 +1,36 @@
-# AdBot — документация (GitHub Pages)
+# AdBot — documentation (GitHub Pages)
 
-Unreal Engine Android plugin: **Yandex Mobile Ads SDK 8.0.0**, **AppMetrica 8.2.x**, VK Ads mediation. Форматы: баннер, межстраничная, app open. **Rewarded** — см. Known Issues (нестабилен в текущей сборке).
+Unreal Engine **Android** plugin: **Yandex Mobile Ads SDK 8**, **AppMetrica Analytics 8.2**, optional **AppMetrica Push 4.3** (FCM/HMS), and **Yandex Mediation** adapters (VK, Mintegral, BIGO, Liftoff, InMobi). Ad formats: banner, interstitial, app open; rewarded — see Known Issues.
 
-Публичный сайт: [https://xaser3d.github.io/AdBot/](https://xaser3d.github.io/AdBot/)
+**Live site:** [https://xaser3d.github.io/AdBot/](https://xaser3d.github.io/AdBot/)
 
-## Новое в документации
+## What’s documented
 
-- **AppMetrica 8** — события, профили, сессии, Blueprint-примеры (`AdBot|AppMetrica`)
-- **Project Settings** — startup init, Default Banner Size Preset (90 dp = индекс 7)
-- **SDK & Android Build** — версии Gradle, пересборка APK после UPL
-- **Known Issues** — rewarded video, Invalid SDK state, interstitial delay
+| Topic | Page |
+|--------|------|
+| Overview, setup, Project Settings | [AdBot docs](https://xaser3d.github.io/AdBot/adbot/index.html) |
+| AppMetrica statistics (events, profiles, nodes) | Analytics + Blueprint: AppMetrica |
+| AppMetrica Push (Firebase + HMS setup) | Push Notifications + Blueprint: Push |
+| Yandex Mediation (5 networks) | Mediation |
+| SDK versions & APK rebuild | SDK & Android Build |
 
-## Локальный просмотр и символ `#` в пути Windows
+## Local preview (Windows)
 
-Если репозиторий лежит в папке вроде `D:\#AdBot_backUP\web\`, **не открывайте `index.html` через `file://` двойным щелчком**: в URL символ `#` воспринимается как разделитель фрагмента, и браузер «ломает» путь — стили (`css/style.css`) могут не подгрузиться.
-
-**Варианты:**
-
-1. `npx --yes serve .` из каталога `web` → `http://localhost:3000`
-2. Переименовать родительскую папку без `#` (например `AdBot_backUP`)
-3. GitHub Pages: [https://xaser3d.github.io/AdBot/](https://xaser3d.github.io/AdBot/)
-
-## Публикация на GitHub Pages
+If the repo path contains `#`, do not open `index.html` via `file://` — the browser may break CSS paths.
 
 ```bash
-cd D:\#AdBot_backUP\web
-git add adbot/index.html index.html README.md
-git commit -m "docs: AppMetrica 8, SDK build, known issues (rewarded)"
+cd C:\AdBot
+npx --yes serve .
+# open http://localhost:3000
+```
+
+## Publish to GitHub Pages
+
+```bash
+cd C:\AdBot
+git add .
+git commit -m "docs: mediation, AppMetrica push setup, English hub"
 git push origin main
 ```
+
+Plugin source lives in your UE project under `Plugins/AdBot/`.

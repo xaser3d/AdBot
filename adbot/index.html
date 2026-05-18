@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AdBot — Yandex Mobile Ads for Unreal Engine</title>
+<title>AdBot — Yandex Ads, AppMetrica, Push &amp; Mediation for Unreal Engine</title>
 <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
@@ -14,8 +14,8 @@
 <nav id="sidebar">
   <div class="brand">
     <h1>AdBot</h1>
-    <div class="tagline">Yandex Mobile Ads · Unreal Engine · Android</div>
-    <p style="margin-top:12px;font-size:12px;"><a href="../index.html" style="color:#5b8cff;">← Все плагины</a></p>
+    <div class="tagline">Yandex Mobile Ads · AppMetrica · Mediation · Android</div>
+    <p style="margin-top:12px;font-size:12px;"><a href="../index.html" style="color:#5b8cff;">← All plugins</a></p>
   </div>
   <nav>
     <div class="nav-section">Overview</div>
@@ -39,7 +39,12 @@
 
     <div class="nav-section">AppMetrica</div>
     <a href="#" onclick="show('appmetrica',this)">Analytics (AppMetrica 8)</a>
+    <a href="#" onclick="show('metrica-start',this)">Statistics: Getting Started</a>
     <a href="#" onclick="show('bp-metrica',this)">Blueprint: AppMetrica</a>
+
+    <div class="nav-section">AppMetrica Push</div>
+    <a href="#" onclick="show('push-setup',this)">Push: Setup (FCM &amp; HMS)</a>
+    <a href="#" onclick="show('bp-push',this)">Blueprint: Push</a>
 
     <div class="nav-section">Build &amp; SDK</div>
     <a href="#" onclick="show('sdk-build',this)">SDK Versions &amp; Android Build</a>
@@ -59,7 +64,7 @@
     <a href="#" onclick="show('cpp-rewarded',this)">Rewarded Video</a>
 
     <div class="nav-section">Mediation</div>
-    <a href="#" onclick="show('mediation',this)">VK Ads (myTarget)</a>
+    <a href="#" onclick="show('mediation',this)">Yandex Mediation (5 networks)</a>
 
     <div class="nav-section">Support</div>
     <a href="#" onclick="show('faq',this)">FAQ</a>
@@ -76,18 +81,19 @@
   <div class="topbar"><h2>Plugin Details</h2></div>
   <article>
     <h1>AdBot</h1>
-    <p>An Unreal Engine plugin for displaying Yandex Mobile Ads on <span class="badge android">Android</span>.</p>
+    <p>Unreal Engine plugin for <strong>Yandex Mobile Ads</strong>, <strong>AppMetrica analytics</strong>, optional <strong>AppMetrica Push</strong>, and <strong>Yandex Mediation</strong> on <span class="badge android">Android</span>.</p>
     <div class="img-placeholder lg">[ Plugin Banner Image ]</div>
     <h2>What is AdBot?</h2>
-    <p>AdBot integrates <strong>Yandex Mobile Ads SDK 8</strong> into Unreal Engine. It provides a complete Blueprint and C++ API to show banner, interstitial, rewarded, and app-open ads — without writing any Java or Android-specific code yourself.</p>
-    <p>The plugin ships as a standard Unreal plugin (UPL + C++ module). Drop it into your project's <code>Plugins/</code> folder and configure ad unit IDs in <strong>Project Settings</strong>.</p>
+    <p>AdBot integrates <strong>Yandex Mobile Ads SDK 8.0</strong>, <strong>AppMetrica Analytics 8.2</strong>, and optional <strong>AppMetrica Push 4.3</strong> (FCM and HMS) into Unreal Engine. Blueprint and C++ cover ads, statistics, and push — no hand-written Java.</p>
+    <p>Five <strong>Yandex Mediation</strong> adapters (VK, Mintegral, BIGO, Liftoff, InMobi) are toggled in Project Settings. Drop the plugin into <code>Plugins/AdBot</code> and configure keys and unit IDs under <strong>Edit → Project Settings → Plugins → AdBot</strong>.</p>
     <div class="feature-grid">
       <div class="feature-card"><div class="icon">🎯</div><h4>4 Ad Formats</h4><p>Banner, Interstitial, Rewarded Video, App Open.</p></div>
       <div class="feature-card"><div class="icon">🔵</div><h4>Blueprint First</h4><p>Every feature exposed as BlueprintCallable or async node. No C++ required.</p></div>
       <div class="feature-card"><div class="icon">🔒</div><h4>Privacy Controls</h4><p>User consent, COPPA, location tracking, GDPR-style flags.</p></div>
-      <div class="feature-card"><div class="icon">📡</div><h4>VK Mediation</h4><p>VK Ads (ex. myTarget) via Yandex mediation adapter out of the box.</p></div>
-      <div class="feature-card"><div class="icon">📊</div><h4>AppMetrica 8</h4><p>Custom events, user profiles, sessions, device ID, crash reporting.</p></div>
-      <div class="feature-card"><div class="icon">🛠</div><h4>Debug Panel</h4><p>One Blueprint call opens Yandex Debug Panel to verify integration.</p></div>
+      <div class="feature-card"><div class="icon">📡</div><h4>5 Mediation Networks</h4><p>VK, Mintegral, BIGO, Liftoff, InMobi — enable in Project Settings and Yandex cabinet.</p></div>
+      <div class="feature-card"><div class="icon">📊</div><h4>AppMetrica 8</h4><p>Events, profiles, sessions, device ID, crash reporting.</p></div>
+      <div class="feature-card"><div class="icon">🔔</div><h4>AppMetrica Push</h4><p>FCM + HMS, payload delegate, notification permission (Android 13+).</p></div>
+      <div class="feature-card"><div class="icon">🛠</div><h4>Debug Panel</h4><p>Yandex in-app integration checker for development builds.</p></div>
     </div>
 
     <div class="callout warn" style="margin-top:16px;">
@@ -131,8 +137,10 @@
     <p>Optional per-request targeting via <code>AdTargeting</code>: age, gender, geo-location, context query, context tags. All configured through Blueprint before loading ads.</p>
     <h2>AppMetrica Analytics (mobile)</h2>
     <p>AdBot ships <strong>AppMetrica Android SDK 8.2.x</strong> — this is the mobile analytics product paired with Yandex Ads (not the web Yandex.Metrica counter). Report custom events, user profiles, sessions, and crashes from Blueprint (<em>AdBot|AppMetrica</em>).</p>
-    <h2>Mediation</h2>
-    <p>VK Ads (ex. myTarget) via <code>com.yandex.ads.mediation:mobileads-mytarget</code>. Enabled in the Yandex Advertising Network cabinet per block — no extra Blueprint code required.</p>
+    <h2>Yandex Mediation (5 networks)</h2>
+    <p>Optional adapters: <strong>VK Ads (myTarget)</strong>, <strong>Mintegral</strong>, <strong>BIGO Ads</strong>, <strong>Liftoff (Vungle)</strong>, <strong>InMobi</strong>. Each has a toggle under <em>Project Settings → Yandex Mediation (Android)</em>. Enable the network in the <a href="https://partner.yandex.ru/" target="_blank" rel="noopener">Yandex Advertising Network</a> partner cabinet, then rebuild the APK. No extra Blueprint code.</p>
+    <h2>AppMetrica Push (optional)</h2>
+    <p>When <em>Enable AppMetrica Push</em> is on, the APK includes FCM/HMS providers. See <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push: Setup</a>.</p>
     <div class="page-nav">
       <a href="#" onclick="show('home',document.querySelector('[onclick*=home]'))"><span class="label">Previous</span>Plugin Details</a>
       <a href="#" class="next" onclick="show('setup',document.querySelector('[onclick*=setup]'))"><span class="label">Next</span>Get Started</a>
@@ -241,6 +249,31 @@
         <tr><td>Location Tracking</td><td>Off</td><td>Only enable with user consent</td></tr>
         <tr><td>Crash Reporting</td><td>On</td><td>Send crashes to AppMetrica</td></tr>
         <tr><td>Statistics Enabled</td><td>On</td><td>Master switch for sending statistics to AppMetrica servers</td></tr>
+      </tbody>
+    </table>
+    <h2>Yandex Mediation (Android)</h2>
+    <p>Each adapter increases APK size. Disable unused networks before release.</p>
+    <table>
+      <thead><tr><th>Property</th><th>Default</th><th>Gradle adapter (when ON)</th></tr></thead>
+      <tbody>
+        <tr><td>Enable VK Ads (myTarget)</td><td>On</td><td><code>mobileads-mytarget:5.45.3.1</code></td></tr>
+        <tr><td>Enable Mintegral</td><td>On</td><td><code>mobileads-mintegral:17.0.41.0</code></td></tr>
+        <tr><td>Enable BIGO Ads</td><td>On</td><td><code>mobileads-bigoads:5.7.0.0</code></td></tr>
+        <tr><td>Enable Liftoff (Vungle)</td><td>On</td><td><code>mobileads-vungle:7.7.0.0</code></td></tr>
+        <tr><td>Enable InMobi</td><td>On</td><td><code>mobileads-inmobi:11.0.0.0</code></td></tr>
+      </tbody>
+    </table>
+    <h2>AppMetrica Push (Android)</h2>
+    <table>
+      <thead><tr><th>Property</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Enable AppMetrica Push</td><td>Off</td><td>Master switch — adds push SDK to Gradle; <strong>requires APK rebuild</strong></td></tr>
+        <tr><td>Init AppMetrica Push at Startup</td><td>Off</td><td><code>AppMetricaPush.activate</code> from onCreate</td></tr>
+        <tr><td>Use Firebase Transport (FCM)</td><td>On</td><td>FCM + <code>push-provider-firebase</code></td></tr>
+        <tr><td>Use HMS Transport</td><td>On</td><td>Huawei Push + <code>push-provider-hms</code></td></tr>
+        <tr><td>Prefer Google Services Json</td><td>Off</td><td>Use <code>google-services.json</code> instead of manual Firebase fields</td></tr>
+        <tr><td>Firebase App ID / Sender ID / API Key / Project ID</td><td>—</td><td>Only if not using JSON — see <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push setup</a></td></tr>
+        <tr><td>HMS App ID</td><td>—</td><td>From <code>agconnect-services.json</code> → <code>app_id</code></td></tr>
       </tbody>
     </table>
     <div class="callout warn">
@@ -497,7 +530,8 @@
 ② <span class="kw">Activate AppMetrica</span>            (AdBot|AppMetrica) — or enable Init AppMetrica at Startup
 ③ <span class="kw">Set Yandex Ad Targeting …</span>      (optional, AdBot|Yandex Targeting)
 ④ <span class="kw">Load Ad Data</span>                   ← Yandex Ads initialize (if not already at startup)
-⑤ <span class="kw">Load Banner</span> / <span class="kw">Load Interstitial</span> / etc.</code></pre>
+⑤ <span class="kw">Load Banner</span> / <span class="kw">Load Interstitial</span> / etc.
+⑥ <span class="kw">Activate AppMetrica Push</span> (optional, after analytics + permission)</code></pre>
     <div class="page-nav">
       <a href="#" onclick="show('rewarded',document.querySelector('[onclick*=rewarded]'))"><span class="label">Previous</span>Rewarded Video</a>
       <a href="#" class="next" onclick="show('bp-privacy',document.querySelector('[onclick*=bp-privacy]'))"><span class="label">Next</span>Blueprint: Privacy</a>
@@ -786,8 +820,9 @@ Manager-><span class="fn">ShowRewarded</span>();
     <p>Events and profiles appear in the <a href="https://appmetrica.yandex.com/" target="_blank">AppMetrica web cabinet</a> (reports, funnels, retention). Allow a few minutes delay for first events on a new install.</p>
     <div class="page-nav">
       <a href="#" onclick="show('cpp-rewarded',document.querySelector('[onclick*=cpp-rewarded]'))"><span class="label">Previous</span>C++: Rewarded</a>
-      <a href="#" class="next" onclick="show('bp-metrica',document.querySelector('[onclick*=bp-metrica]'))"><span class="label">Next</span>Blueprint: AppMetrica</a>
+      <a href="#" class="next" onclick="show('metrica-start',document.querySelector('[onclick*=metrica-start]'))"><span class="label">Next</span>Statistics: Getting Started</a>
     </div>
+    <p style="margin-top:20px;"><a href="#" onclick="show('metrica-start',document.querySelector('[onclick*=metrica-start]'));return false;">Step-by-step statistics guide →</a></p>
   </article>
 </section>
 
@@ -823,6 +858,67 @@ Manager-><span class="fn">ShowRewarded</span>();
     <pre><code><span class="kw">Send AppMetrica Events Buffer</span></code></pre>
     <div class="page-nav">
       <a href="#" onclick="show('appmetrica',document.querySelector('[onclick*=appmetrica]'))"><span class="label">Previous</span>AppMetrica</a>
+      <a href="#" class="next" onclick="show('metrica-start',document.querySelector('[onclick*=metrica-start]'))"><span class="label">Next</span>Statistics: Getting Started</a>
+    </div>
+  </article>
+</section>
+
+<!-- METRICA START -->
+<section id="metrica-start" class="page-section">
+  <div class="topbar"><h2>Statistics: Getting Started</h2></div>
+  <article>
+    <h1>Getting started with AppMetrica statistics</h1>
+    <p>See sidebar sections <em>Analytics</em> and <em>Blueprint: AppMetrica</em> for node reference. This page is the setup checklist.</p>
+    <ol>
+      <li>Create Android app in <a href="https://appmetrica.yandex.com/" target="_blank" rel="noopener">AppMetrica</a> → copy API key.</li>
+      <li>Paste into <strong>Project Settings → AdBot → AppMetrica API Key</strong>.</li>
+      <li><strong>Init AppMetrica at Startup</strong> or <strong>Activate AppMetrica</strong> before <strong>Load Ad Data</strong>.</li>
+      <li>Send events with <strong>Report AppMetrica Event</strong>; view reports in the cabinet.</li>
+    </ol>
+    <div class="page-nav">
+      <a href="#" onclick="show('appmetrica',document.querySelector('[onclick*=appmetrica]'))"><span class="label">Previous</span>Analytics</a>
+      <a href="#" class="next" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'))"><span class="label">Next</span>Push setup</a>
+    </div>
+  </article>
+</section>
+
+<!-- PUSH SETUP -->
+<section id="push-setup" class="page-section">
+  <div class="topbar"><h2>Push: Setup (FCM &amp; HMS)</h2></div>
+  <article>
+    <h1>AppMetrica Push configuration</h1>
+    <p>Based on <a href="https://appmetrica.yandex.ru/docs/ru/sdk/android/push/android-settings" target="_blank" rel="noopener">Yandex: App configuration</a> (EN: <a href="https://appmetrica.yandex.com/docs/en/sdk/android/push/android-settings" target="_blank" rel="noopener">link</a>).</p>
+    <h2>Firebase (Google)</h2>
+    <ol>
+      <li>Firebase Console → project → Android app (same package as UE build).</li>
+      <li><strong>Service accounts → Generate new private key</strong> (JSON).</li>
+      <li>Enable FCM API in Google Cloud.</li>
+      <li>AppMetrica → Settings → Push notifications → upload JSON under <strong>FCM service account key</strong>.</li>
+      <li>AdBot: <strong>Enable AppMetrica Push</strong>, <strong>Use Firebase Transport</strong>; use <code>google-services.json</code> or manual Firebase fields — see Project Settings table on <a href="#" onclick="show('settings',document.querySelector('[onclick*=settings]'));return false;">Project Settings</a> page.</li>
+    </ol>
+    <h2>Huawei HMS</h2>
+    <ol>
+      <li>Huawei AppGallery Connect + SHA-256 for all signatures.</li>
+      <li>AppMetrica → Push → Huawei → App ID + App secret.</li>
+      <li>AdBot: <strong>HMS App ID</strong> from <code>agconnect-services.json</code>.</li>
+    </ol>
+    <h2>Runtime</h2>
+    <p>Rebuild APK → <strong>Activate AppMetrica Push</strong> → <strong>Request Post Notifications Permission</strong> → <strong>Bind Push Payload Received</strong>. Logcat: <code>AdBotPush</code>.</p>
+    <div class="page-nav">
+      <a href="#" onclick="show('metrica-start',document.querySelector('[onclick*=metrica-start]'))"><span class="label">Previous</span>Statistics</a>
+      <a href="#" class="next" onclick="show('bp-push',document.querySelector('[onclick*=bp-push]'))"><span class="label">Next</span>Blueprint: Push</a>
+    </div>
+  </article>
+</section>
+
+<!-- BP PUSH -->
+<section id="bp-push" class="page-section">
+  <div class="topbar"><h2>Blueprint — Push</h2></div>
+  <article>
+    <h1>Blueprint: AppMetrica Push</h1>
+    <p>Category <strong>AdBot|AppMetrica Push</strong>: Activate (callable/async), Bind Payload, permission, channel, getters.</p>
+    <div class="page-nav">
+      <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'))"><span class="label">Previous</span>Push setup</a>
       <a href="#" class="next" onclick="show('sdk-build',document.querySelector('[onclick*=sdk-build]'))"><span class="label">Next</span>SDK &amp; Build</a>
     </div>
   </article>
@@ -830,7 +926,7 @@ Manager-><span class="fn">ShowRewarded</span>();
 
 <!-- SDK BUILD -->
 <section id="sdk-build" class="page-section">
-  <div class="topbar"><h2>SDK &amp; Android Build</h2></div>
+<div class="topbar"><h2>SDK &amp; Android Build</h2></div>
   <article>
     <h1>SDK versions &amp; packaging</h1>
     <p>AdBot injects Gradle dependencies via <code>AdBot_UPL.xml</code> at Android package time. You do not add these lines manually unless you fork the plugin.</p>
@@ -841,7 +937,12 @@ Manager-><span class="fn">ShowRewarded</span>();
         <tr><td>Yandex Mobile Ads</td><td><code>com.yandex.mobile:mobileads:8.0.0</code></td><td>Local AAR in <code>Plugins/AdBot/Platforms/Android/localrepo/</code></td></tr>
         <tr><td>AppMetrica</td><td><code>io.appmetrica.analytics:analytics:8.2.0</code></td><td>Required peer for Ads 8 ([8.0.0, 9.0.0))</td></tr>
         <tr><td>Kotlin Serialization</td><td><code>kotlinx-serialization-json:1.6.0</code></td><td>Required by Ads 8 (local POM has no transitives)</td></tr>
-        <tr><td>VK Ads mediation</td><td><code>com.yandex.ads.mediation:mobileads-mytarget:5.45.3.1</code></td><td>VK only — no AdMob adapter</td></tr>
+        <tr><td>VK Ads mediation</td><td><code>mobileads-mytarget:5.45.3.1</code></td><td>Toggle in Project Settings</td></tr>
+        <tr><td>Mintegral</td><td><code>mobileads-mintegral:17.0.41.0</code></td><td>Extra Maven repo auto-added</td></tr>
+        <tr><td>BIGO Ads</td><td><code>mobileads-bigoads:5.7.0.0</code></td><td></td></tr>
+        <tr><td>Liftoff (Vungle)</td><td><code>mobileads-vungle:7.7.0.0</code></td><td></td></tr>
+        <tr><td>InMobi</td><td><code>mobileads-inmobi:11.0.0.0</code></td><td></td></tr>
+        <tr><td>AppMetrica Push</td><td><code>push:4.3.0</code> + FCM/HMS providers</td><td>Only if <em>Enable AppMetrica Push</em> is ON</td></tr>
       </tbody>
     </table>
     <h2>Manifest &amp; init</h2>
@@ -863,13 +964,17 @@ Manager-><span class="fn">ShowRewarded</span>();
       <li>Do not enable HTTPS MITM (Charles) <code>networkSecurityConfig</code> with user certs in shipping — breaks WebView ads/VAST</li>
     </ul>
     <h2>Logcat filters (development)</h2>
-    <pre><code>adb logcat -s YaAdsBridge:D YandexAds:I AdBotMetrica:I</code></pre>
+    <pre><code>adb logcat -s YaAdsBridge:D YandexAds:I AdBotMetrica:I AdBotPush:D</code></pre>
     <div class="page-nav">
       <a href="#" onclick="show('bp-metrica',document.querySelector('[onclick*=bp-metrica]'))"><span class="label">Previous</span>Blueprint: AppMetrica</a>
       <a href="#" class="next" onclick="show('known-issues',document.querySelector('[onclick*=known-issues]'))"><span class="label">Next</span>Known Issues</a>
     </div>
   </article>
 </section>
+
+
+
+
 
 <!-- KNOWN ISSUES -->
 <section id="known-issues" class="page-section">
@@ -914,22 +1019,32 @@ Manager-><span class="fn">ShowRewarded</span>();
 
 <!-- MEDIATION -->
 <section id="mediation" class="page-section">
-  <div class="topbar"><h2>VK Ads Mediation</h2></div>
+  <div class="topbar"><h2>Yandex Mediation</h2></div>
   <article>
-    <h1>VK Ads (myTarget) Mediation</h1>
-    <p>AdBot ships with the Yandex mediation adapter for <strong>VK Ads (ex. myTarget)</strong>. No additional Blueprint or C++ code is required — mediation is controlled from the <a href="https://partner.yandex.ru/" target="_blank">Yandex Advertising Network cabinet</a>.</p>
+    <h1>Yandex Mediation — 5 demand sources</h1>
+    <p>Toggle adapters in <strong>Project Settings → Yandex Mediation (Android)</strong>, enable matching networks in the <a href="https://partner.yandex.ru/" target="_blank" rel="noopener">Yandex Advertising Network</a> cabinet, then rebuild the APK. No Blueprint code required.</p>
     <div class="callout">
-      <strong>AdMob not included</strong>
-      This plugin does not use or require Google Mobile Ads (AdMob). The only mediation adapter bundled is VK Ads.
+      <strong>No AdMob adapter</strong>
+      AdBot does not bundle Google AdMob. Monetization is Yandex plus the networks below.
     </div>
-    <h2>How It Works</h2>
+    <h2>Networks</h2>
+    <table>
+      <thead><tr><th>Network</th><th>Settings toggle</th><th>Gradle (when ON)</th></tr></thead>
+      <tbody>
+        <tr><td>VK Ads (myTarget)</td><td>Enable VK Ads (myTarget)</td><td><code>mobileads-mytarget:5.45.3.1</code></td></tr>
+        <tr><td>Mintegral</td><td>Enable Mintegral</td><td><code>mobileads-mintegral:17.0.41.0</code></td></tr>
+        <tr><td>BIGO Ads</td><td>Enable BIGO Ads</td><td><code>mobileads-bigoads:5.7.0.0</code></td></tr>
+        <tr><td>Liftoff (Vungle)</td><td>Enable Liftoff (Vungle)</td><td><code>mobileads-vungle:7.7.0.0</code></td></tr>
+        <tr><td>InMobi</td><td>Enable InMobi</td><td><code>mobileads-inmobi:11.0.0.0</code></td></tr>
+      </tbody>
+    </table>
+    <h2>Checklist</h2>
     <ol>
-      <li>In the Yandex Advertising Network cabinet, open the waterfall/mediation settings for your ad block.</li>
-      <li>Enable <strong>VK Ads</strong> as an additional demand source for the block.</li>
-      <li>Build the Android APK — the adapter <code>mobileads-mytarget</code> is already included by the plugin's UPL.</li>
+      <li>Link each network in the Yandex partner cabinet.</li>
+      <li>Add networks to the mediation waterfall per ad block.</li>
+      <li>Enable only needed toggles in UE (smaller APK).</li>
+      <li>Verify in <strong>Show Yandex Ads Debug Panel</strong> after install.</li>
     </ol>
-    <h2>Gradle Dependency (auto-added by UPL)</h2>
-    <pre><code>implementation(<span class="str">'com.yandex.ads.mediation:mobileads-mytarget:5.45.3.1'</span>)</code></pre>
     <div class="page-nav">
       <a href="#" onclick="show('cpp-rewarded',document.querySelector('[onclick*=cpp-rewarded]'))"><span class="label">Previous</span>C++: Rewarded</a>
       <a href="#" class="next" onclick="show('faq',document.querySelector('[onclick*=faq]'))"><span class="label">Next</span>FAQ</a>
@@ -959,6 +1074,8 @@ Manager-><span class="fn">ShowRewarded</span>();
     <p>AdBot uses <strong>AppMetrica</strong> (mobile SDK). Web site counters (Yandex.Metrica) are a different product — use AppMetrica cabinet for game events.</p>
     <h3>Wrong banner height (50 dp instead of 90 dp)</h3>
     <p>Use enum index <strong>7</strong> = <em>Inline max height 90 dp</em> (8th item in the list). Index 6 is 50&nbsp;dp. Set <em>Default Banner Size Preset</em> in Project Settings or pass the correct enum to <em>Load Banner</em>.</p>
+    <h3>Push notifications do not arrive</h3>
+    <p>Check: (1) <em>Enable AppMetrica Push</em> ON and APK rebuilt; (2) FCM service account JSON uploaded in <a href="https://appmetrica.yandex.com/" target="_blank" rel="noopener">AppMetrica</a> → Settings → Push notifications; (3) Firebase/HMS IDs in plugin settings or <code>google-services.json</code>; (4) Android 13+ notification permission granted; (5) Logcat <code>AdBotPush</code>. Full checklist: <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push setup</a>.</p>
     <div class="page-nav">
       <a href="#" onclick="show('mediation',document.querySelector('[onclick*=mediation]'))"><span class="label">Previous</span>VK Ads Mediation</a>
       <a href="#" class="next" onclick="show('debug',document.querySelector('[onclick*=debug]'))"><span class="label">Next</span>Debug Panel</a>

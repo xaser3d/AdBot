@@ -1,44 +1,44 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Документация плагинов — LingvoBot / Unreal</title>
+<title>Plugin documentation — LingvoBot / Unreal Engine</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="docs-hub">
 <div class="hub-inner">
   <div class="hub-hero">
-    <h1>Документация плагинов</h1>
-    <p>Руководства для пользователей Unreal Engine: реклама (Yandex), облачные сохранения (Google Drive, Mail.ru Cloud, Яндекс.Диск). Откройте нужный плагин — внутри та же структура «обзор → настройки → Blueprint».</p>
+    <h1>Plugin documentation</h1>
+    <p>Guides for Unreal Engine users: <strong>AdBot</strong> (Yandex ads, AppMetrica analytics &amp; push, mediation), plus cloud save plugins (Google Drive, Mail.ru Cloud, Yandex.Disk). Each plugin uses the same layout: overview → settings → Blueprint examples.</p>
   </div>
   <div class="plugin-cards">
     <a class="plugin-card" href="adbot/index.html">
       <div class="badge-row"><span class="badge android">Android</span> <span class="badge bp">Blueprint</span></div>
       <h2>AdBot</h2>
-      <p>Yandex Mobile Ads 8: баннер, межстраничная, app open. AppMetrica 8 (события, профили). Приватность, таргетинг, VK. Rewarded — см. Known Issues.</p>
-      <div class="go">Открыть документацию →</div>
+      <p>Yandex Mobile Ads 8, AppMetrica 8 analytics, optional AppMetrica Push (FCM/HMS). Mediation: VK, Mintegral, BIGO, Liftoff, InMobi. Banner, interstitial, app open. Full statistics &amp; push setup guides inside.</p>
+      <div class="go">Open documentation →</div>
     </a>
     <a class="plugin-card" href="gcloud/index.html">
       <div class="badge-row"><span class="badge bp">Blueprint</span></div>
       <h2>GCloud</h2>
-      <p>Сохранения в Google Drive (OAuth 2.0 PKCE, папка appData). Слоты байтами или через <code>USaveGame</code>.</p>
-      <div class="go">Открыть документацию →</div>
+      <p>Google Drive saves (OAuth 2.0 PKCE, appData folder). Byte slots or <code>USaveGame</code>.</p>
+      <div class="go">Open documentation →</div>
     </a>
     <a class="plugin-card" href="mcloud/index.html">
       <div class="badge-row"><span class="badge bp">Blueprint</span></div>
       <h2>MCloud</h2>
-      <p>Облако Mail.ru по WebDAV: пароль приложения и Basic auth. Слоты, список, загрузка/выгрузка <code>USaveGame</code>.</p>
-      <div class="go">Открыть документацию →</div>
+      <p>Mail.ru Cloud via WebDAV: app password, Basic auth, <code>USaveGame</code> upload/download.</p>
+      <div class="go">Open documentation →</div>
     </a>
     <a class="plugin-card" href="ycloud/index.html">
       <div class="badge-row"><span class="badge bp">Blueprint</span></div>
       <h2>YCloud</h2>
-      <p>Яндекс.Диск: OAuth Яндекс ID, REST API. Корневая папка на диске, слоты с префиксом имён файлов.</p>
-      <div class="go">Открыть документацию →</div>
+      <p>Yandex.Disk: Yandex ID OAuth, REST API, root folder and file prefix slots.</p>
+      <div class="go">Open documentation →</div>
     </a>
   </div>
-  <p style="margin-top:36px;font-size:13px;color:#6a7480;">Исходники плагинов: <code>Plugins/AdBot</code>, <code>Plugins/GCloud</code>, <code>Plugins/MCloud</code>, <code>Plugins/YCloud</code> в каталоге проекта.</p>
+  <p style="margin-top:36px;font-size:13px;color:#6a7480;">Plugin folders in your project: <code>Plugins/AdBot</code>, <code>Plugins/GCloud</code>, <code>Plugins/MCloud</code>, <code>Plugins/YCloud</code>.</p>
 </div>
 </body>
 </html>
