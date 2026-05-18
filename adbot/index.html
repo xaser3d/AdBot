@@ -268,6 +268,7 @@
       <thead><tr><th>Property</th><th>Default</th><th>Description</th></tr></thead>
       <tbody>
         <tr><td>Enable AppMetrica Push</td><td>Off</td><td>Master switch — adds push SDK to Gradle; <strong>requires APK rebuild</strong></td></tr>
+        <tr><td>POST_NOTIFICATIONS (manifest)</td><td>Auto when push ON</td><td>Runtime dialog on API 33+: <em>Request Post Notifications Permission</em></td></tr>
         <tr><td>Init AppMetrica Push at Startup</td><td>Off</td><td><code>AppMetricaPush.activate</code> from onCreate</td></tr>
         <tr><td>Use Firebase Transport (FCM)</td><td>On</td><td>FCM + <code>push-provider-firebase</code></td></tr>
         <tr><td>Use HMS Transport</td><td>On</td><td>Huawei Push + <code>push-provider-hms</code></td></tr>
@@ -902,8 +903,32 @@ Manager-><span class="fn">ShowRewarded</span>();
       <li>AppMetrica → Push → Huawei → App ID + App secret.</li>
       <li>AdBot: <strong>HMS App ID</strong> from <code>agconnect-services.json</code>.</li>
     </ol>
-    <h2>Runtime</h2>
-    <p>Rebuild APK → <strong>Activate AppMetrica Push</strong> → <strong>Request Post Notifications Permission</strong> → <strong>Bind Push Payload Received</strong>. Logcat: <code>AdBotPush</code>.</p>
+    <h2>Android notification permission (POST_NOTIFICATIONS)</h2>
+    <p>Starting with <strong>Android 13 (API level 33)</strong>, apps must explicitly request a <strong>runtime permission</strong> to post notifications. The manifest permission is:</p>
+    <pre><code>android.permission.POST_NOTIFICATIONS</code></pre>
+    <p>For devices running <strong>Android 12L (API 32) or lower</strong>, this permission is granted by default at install time. Users can still turn off notifications manually in system settings (<em>Settings &rarr; Apps &rarr; [your app] &rarr; Notifications</em>).</p>
+    <div class="callout">
+      <strong>What AdBot does automatically</strong>
+      When <em>Enable AppMetrica Push</em> is ON, <code>AdBot_UPL.xml</code> adds <code>POST_NOTIFICATIONS</code> to the packaged manifest. That only declares the permission &mdash; on Android 13+ you must still ask the user at runtime.
+    </div>
+    <table>
+      <thead><tr><th>Android version</th><th>Manifest</th><th>Runtime dialog</th></tr></thead>
+      <tbody>
+        <tr><td>API 33+ (Android 13+)</td><td>Added by AdBot when push is enabled</td><td><strong>Yes</strong> &mdash; <em>Request Post Notifications Permission</em></td></tr>
+        <tr><td>API 32 and below</td><td>Not required for posting</td><td><strong>No</strong> &mdash; node is a no-op unless user disabled notifications in settings</td></tr>
+      </tbody>
+    </table>
+    <p>Reference: <a href="https://developer.android.com/develop/ui/views/notifications/notification-permission" target="_blank" rel="noopener">Android &mdash; Notification runtime permission</a>.</p>
+
+    <h2>Runtime (Blueprint order)</h2>
+    <ol>
+      <li>Rebuild APK with <strong>Enable AppMetrica Push</strong> = ON.</li>
+      <li><strong>Activate AppMetrica</strong>.</li>
+      <li><strong>Request Post Notifications Permission</strong> (Android 13+; show after consent UI if needed).</li>
+      <li><strong>Activate AppMetrica Push</strong>.</li>
+      <li><strong>Bind Push Payload Received</strong> on Game Instance.</li>
+    </ol>
+    <p>Logcat: <code>AdBotPush</code>. If the user denies permission, notifications will not show until enabled in system settings.</p>
     <div class="page-nav">
       <a href="#" onclick="show('metrica-start',document.querySelector('[onclick*=metrica-start]'))"><span class="label">Previous</span>Statistics</a>
       <a href="#" class="next" onclick="show('bp-push',document.querySelector('[onclick*=bp-push]'))"><span class="label">Next</span>Blueprint: Push</a>
@@ -917,6 +942,18 @@ Manager-><span class="fn">ShowRewarded</span>();
   <article>
     <h1>Blueprint: AppMetrica Push</h1>
     <p>Category <strong>AdBot|AppMetrica Push</strong>: Activate (callable/async), Bind Payload, permission, channel, getters.</p>
+    <h2>Request Post Notifications Permission (Android 13+)</h2>
+    <p>Callable node <strong>Request Post Notifications Permission</strong> shows the system dialog for <code>android.permission.POST_NOTIFICATIONS</code> on API 33+. On Android 12L (API 32) and below it does nothing (notifications are allowed by default unless the user disabled them in settings).</p>
+    <div class="callout warn">
+      <strong>Ask before the first push</strong>
+      Call after <em>Activate AppMetrica</em> and before <em>Activate AppMetrica Push</em>, ideally after your consent UI.
+    </div>
+    <pre><code><span class="cm">// Game Instance - Event Init:</span>
+<span class="kw">Activate AppMetrica</span>
+<span class="kw">Request Post Notifications Permission</span>
+<span class="kw">Activate AppMetrica Push</span> (Async)
+  Push Activated -&gt; <span class="kw">Bind Push Payload Received</span> (Async)</code></pre>
+    <p>Details: <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push setup - POST_NOTIFICATIONS</a>.</p>
     <div class="page-nav">
       <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'))"><span class="label">Previous</span>Push setup</a>
       <a href="#" class="next" onclick="show('sdk-build',document.querySelector('[onclick*=sdk-build]'))"><span class="label">Next</span>SDK &amp; Build</a>
@@ -949,6 +986,7 @@ Manager-><span class="fn">ShowRewarded</span>();
     <ul>
       <li><code>com.yandex.mobile.ads.AUTOMATIC_SDK_INITIALIZATION=false</code> — plugin calls <code>AppMetrica.activate</code> then <code>YandexAds.initialize</code> in the correct order.</li>
       <li><code>android.useAndroidX=true</code> and Jetifier enabled in Gradle properties.</li>
+      <li>When push is enabled: <code>android.permission.POST_NOTIFICATIONS</code> in manifest (Android 13+ target); request at runtime via Blueprint.</li>
       <li>ProGuard/R8 rules for Yandex Ads, AppMetrica, Kotlin Serialization, and VK/myTarget are included in the UPL.</li>
     </ul>
     <h2>After changing AdBot_UPL.xml</h2>
@@ -1075,7 +1113,7 @@ Manager-><span class="fn">ShowRewarded</span>();
     <h3>Wrong banner height (50 dp instead of 90 dp)</h3>
     <p>Use enum index <strong>7</strong> = <em>Inline max height 90 dp</em> (8th item in the list). Index 6 is 50&nbsp;dp. Set <em>Default Banner Size Preset</em> in Project Settings or pass the correct enum to <em>Load Banner</em>.</p>
     <h3>Push notifications do not arrive</h3>
-    <p>Check: (1) <em>Enable AppMetrica Push</em> ON and APK rebuilt; (2) FCM service account JSON uploaded in <a href="https://appmetrica.yandex.com/" target="_blank" rel="noopener">AppMetrica</a> → Settings → Push notifications; (3) Firebase/HMS IDs in plugin settings or <code>google-services.json</code>; (4) Android 13+ notification permission granted; (5) Logcat <code>AdBotPush</code>. Full checklist: <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push setup</a>.</p>
+    <p>Check: (1) <em>Enable AppMetrica Push</em> ON and APK rebuilt; (2) FCM service account JSON uploaded in <a href="https://appmetrica.yandex.com/" target="_blank" rel="noopener">AppMetrica</a> → Settings → Push notifications; (3) Firebase/HMS IDs in plugin settings or <code>google-services.json</code>; (4) Android 13+ notification permission granted; (5) Logcat <code>AdBotPush</code>. Full checklist: <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push setup</a>.; (6) on Android 13+, call <em>Request Post Notifications Permission</em> and tap Allow. See <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">POST_NOTIFICATIONS</a>.</p>
     <div class="page-nav">
       <a href="#" onclick="show('mediation',document.querySelector('[onclick*=mediation]'))"><span class="label">Previous</span>VK Ads Mediation</a>
       <a href="#" class="next" onclick="show('debug',document.querySelector('[onclick*=debug]'))"><span class="label">Next</span>Debug Panel</a>
