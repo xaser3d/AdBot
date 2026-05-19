@@ -221,6 +221,7 @@
       <thead><tr><th>Property</th><th>Default</th><th>Description</th></tr></thead>
       <tbody>
         <tr><td>Init Yandex Ads SDK at Startup (Android)</td><td>On</td><td>Runs <code>YandexAds.initialize</code> from <code>GameActivity.onCreate</code> — SDK ready before Blueprint</td></tr>
+        <tr><td>Use Refactored Android Bridge (Android)</td><td>On</td><td>Thin UPL → <code>AdBotAndroidFacade</code> → <code>BannerPipeline</code>, <code>FullscreenAdsController</code>, <code>YandexAdsController</code>, <code>YandexPushHelper</code>, <code>AppMetricaHelper</code>; rollback via <code>AdBot_UPL.xml.backup</code></td></tr>
         <tr><td>Init AppMetrica at Startup (Android)</td><td>Off</td><td>Runs <code>AppMetrica.activate</code> from onCreate — enable if you use analytics before Blueprint</td></tr>
       </tbody>
     </table>
@@ -228,6 +229,10 @@
       <strong>Banner timing (removed from Project Settings)</strong>
       Auto <em>Load Ad Data When Engine Starts</em>, <em>Auto Load Banner on SDK Init</em>, and <em>Defer Banner Until Main UI Ready</em> were removed. Use Blueprint: <em>Load Ad Data</em> → <em>Load Banner</em> → <em>Show Banner</em>.
     </div>
+    <table style="display:none"><tbody>
+        <tr><td>Init AppMetrica at Startup (Android)</td><td>Off</td><td>placeholder</td></tr>
+      </tbody>
+    </table>
     <h2>Yandex Mobile Ads</h2>
     <table>
       <thead><tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
