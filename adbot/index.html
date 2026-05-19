@@ -193,9 +193,9 @@
       Yandex provides demo placement IDs that always return test ads:<br>
       <code>demo-banner-yandex</code> · <code>demo-interstitial-yandex</code> · <code>demo-rewarded-yandex</code> · <code>demo-appopenad-yandex</code>
     </div>
-    <h2>3. Initialize in Blueprint</h2>
-    <p>Recommended chain: privacy → <strong>Activate AppMetrica</strong> (or enable <em>Init AppMetrica at Startup</em>) → <strong>Load Ad Data</strong> once at game start (GameMode or persistent widget):</p>
-    <div class="img-placeholder sm">[ Load Ad Data Blueprint node ]</div>
+    <h2>3. Initialize ads and banner (Blueprint)</h2>
+    <p><strong>Init Yandex Ads SDK at Startup</strong> = ON (SDK in <code>onCreate</code>). Banner loads only from Blueprint — no auto-load toggles in Project Settings.</p>
+    <pre><code><span class="kw">Load Ad Data</span> (optional) → <span class="kw">Load Banner</span> (preset 7, bottom) → <span class="kw">Show Banner</span></code></pre>
     <div class="callout warn">
       <strong>Privacy first</strong>
       If you use a consent dialog, call <strong>Set Yandex Ads User Consent</strong> and other privacy nodes <em>before</em> Load Ad Data / Load Banner.
@@ -221,18 +221,19 @@
       <thead><tr><th>Property</th><th>Default</th><th>Description</th></tr></thead>
       <tbody>
         <tr><td>Init Yandex Ads SDK at Startup (Android)</td><td>On</td><td>Runs <code>YandexAds.initialize</code> from <code>GameActivity.onCreate</code> — SDK ready before Blueprint</td></tr>
-        <tr><td>Load Ad Data When Engine Starts</td><td><strong>Off</strong></td><td>Call <em>Load Ad Data</em> from Blueprint when you need <em>On Ad Data Loaded</em></td></tr>
-        <tr><td>Auto Load Banner on SDK Init (Android)</td><td><strong>Off</strong></td><td>If ON: auto <code>sdk_init_auto</code> with ~4.5s+ delay. If OFF: <em>Load Banner</em> from Blueprint only (~500ms defer)</td></tr>
-        <tr><td>Defer Banner Until Main UI Ready (Android)</td><td><strong>Off</strong></td><td>If ON: auto banner waits for <em>Notify Main UI Ready</em>. Does not block explicit <em>Load Banner</em> when OFF</td></tr>
         <tr><td>Init AppMetrica at Startup (Android)</td><td>Off</td><td>Runs <code>AppMetrica.activate</code> from onCreate — enable if you use analytics before Blueprint</td></tr>
       </tbody>
     </table>
+    <div class="callout">
+      <strong>Banner timing (removed from Project Settings)</strong>
+      Auto <em>Load Ad Data When Engine Starts</em>, <em>Auto Load Banner on SDK Init</em>, and <em>Defer Banner Until Main UI Ready</em> were removed. Use Blueprint: <em>Load Ad Data</em> → <em>Load Banner</em> → <em>Show Banner</em>.
+    </div>
     <h2>Yandex Mobile Ads</h2>
     <table>
       <thead><tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
       <tbody>
         <tr><td>Banner Ad Unit ID</td><td>String</td><td>—</td><td>Yandex banner placement ID</td></tr>
-        <tr><td>Default Banner Size Preset</td><td>Enum (0–7)</td><td>Inline 90&nbsp;dp (7)</td><td>Used by Android <code>sdk_init_auto</code> if Blueprint does not call <em>Load Banner</em> first</td></tr>
+        <tr><td>Default Banner Size Preset</td><td>Enum (0–7)</td><td>Inline 90&nbsp;dp (7)</td><td>Fallback when <em>Load Banner</em> omits size (prefer passing preset 7 in Blueprint)</td></tr>
         <tr><td>Interstitial Unit ID</td><td>String</td><td>—</td><td>Interstitial placement ID</td></tr>
         <tr><td>Rewarded Unit ID</td><td>String</td><td>—</td><td>Rewarded video placement ID</td></tr>
         <tr><td>App Open Ad Unit ID</td><td>String</td><td>—</td><td>App-open placement ID</td></tr>
