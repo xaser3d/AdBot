@@ -117,7 +117,7 @@
     <table>
       <thead><tr><th>Format</th><th>Blueprint</th><th>C++</th><th>Notes</th></tr></thead>
       <tbody>
-        <tr><td>Banner</td><td>✅</td><td>✅</td><td>8 size presets (0–7), auto-load at startup, Invalid SDK retries, no-fill retry</td></tr>
+        <tr><td>Banner</td><td>✅</td><td>✅</td><td>8 size presets (0–7); load from Blueprint (<em>Load Banner</em>), short delays on BP path</td></tr>
         <tr><td>Interstitial</td><td>✅</td><td>✅</td><td>Full-screen, load → show pattern</td></tr>
         <tr><td>Rewarded Video</td><td>✅ Async nodes</td><td>✅</td><td>⚠️ Known issues — see <a href="#" onclick="show('known-issues',document.querySelector('[onclick*=known-issues]'));return false;">Known Issues</a></td></tr>
         <tr><td>App Open</td><td>✅</td><td>✅</td><td>Vertical format, ideal for splash screens</td></tr>
@@ -198,7 +198,7 @@
     <div class="img-placeholder sm">[ Load Ad Data Blueprint node ]</div>
     <div class="callout warn">
       <strong>Privacy first</strong>
-      If you use a consent dialog, call <strong>Set Yandex Ads User Consent</strong> and other privacy nodes <em>before</em> Load Ad Data.
+      If you use a consent dialog, call <strong>Set Yandex Ads User Consent</strong> and other privacy nodes <em>before</em> Load Ad Data / Load Banner.
     </div>
     <h2>4. Package for Android</h2>
     <p>Build the project targeting Android. The plugin's UPL adds Yandex SDK and VK adapter Gradle dependencies automatically.</p>
@@ -220,8 +220,10 @@
     <table>
       <thead><tr><th>Property</th><th>Default</th><th>Description</th></tr></thead>
       <tbody>
-        <tr><td>Init Yandex Ads SDK at Startup (Android)</td><td>On</td><td>Runs <code>YandexAds.initialize</code> from <code>GameActivity.onCreate</code> using unit IDs below</td></tr>
-        <tr><td>Load Ad Data When Engine Starts</td><td>On</td><td>Module calls <em>Load Ad Data</em> once when the game world is ready</td></tr>
+        <tr><td>Init Yandex Ads SDK at Startup (Android)</td><td>On</td><td>Runs <code>YandexAds.initialize</code> from <code>GameActivity.onCreate</code> — SDK ready before Blueprint</td></tr>
+        <tr><td>Load Ad Data When Engine Starts</td><td><strong>Off</strong></td><td>Call <em>Load Ad Data</em> from Blueprint when you need <em>On Ad Data Loaded</em></td></tr>
+        <tr><td>Auto Load Banner on SDK Init (Android)</td><td><strong>Off</strong></td><td>If ON: auto <code>sdk_init_auto</code> with ~4.5s+ delay. If OFF: <em>Load Banner</em> from Blueprint only (~500ms defer)</td></tr>
+        <tr><td>Defer Banner Until Main UI Ready (Android)</td><td><strong>Off</strong></td><td>If ON: auto banner waits for <em>Notify Main UI Ready</em>. Does not block explicit <em>Load Banner</em> when OFF</td></tr>
         <tr><td>Init AppMetrica at Startup (Android)</td><td>Off</td><td>Runs <code>AppMetrica.activate</code> from onCreate — enable if you use analytics before Blueprint</td></tr>
       </tbody>
     </table>
@@ -1199,6 +1201,8 @@ Manager-><span class="fn">ShowRewarded</span>();
     <h3>How do I test ads without a real Yandex account?</h3>
     <p>Use the demo placement IDs:<br>
     <code>demo-banner-yandex</code>, <code>demo-interstitial-yandex</code>, <code>demo-rewarded-yandex</code>, <code>demo-appopenad-yandex</code></p>
+    <h3>Bottom banner loads slowly or never appears</h3>
+    <p>Turn OFF <em>Auto Load Banner on SDK Init</em> and <em>Defer Banner Until Main UI Ready</em>; call <em>Load Banner</em> from Blueprint after the main screen is visible. In Logcat (<code>YaAdsBridge</code>): avoid <code>sdk_init_auto</code> and <code>totalDelay=8000</code> — use <code>bpExplicit=true</code> and <code>totalDelay=500</code> (or 1500 with demo ID). Do not load App Open / interstitial in parallel with the first banner. Use production <code>R-M-…</code> banner ID instead of <code>demo-banner-yandex</code> for faster tests.</p>
     <h3>Rewarded video does not work / closes instantly</h3>
     <p>See the dedicated <a href="#" onclick="show('known-issues',document.querySelector('[onclick*=known-issues]'));return false;">Known Issues</a> page. Typical Logcat: <code>hadImpression=false</code>, duration under 300&nbsp;ms, or <code>no ads available</code> on production units.</p>
     <h3>AppMetrica vs Yandex.Metrica (web)</h3>
