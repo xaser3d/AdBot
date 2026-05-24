@@ -538,26 +538,42 @@
     <p>Set <strong>Rewarded Ad Unit ID</strong> (<code>demo-rewarded-yandex</code> for testing, or your <code>R-M-…</code> block for production). Rebuild the APK after changing unit IDs.</p>
     <h2>Async node flow</h2>
     <div class="img-grid">
-      <div class="img-placeholder md">[ Screenshot: Load Rewarded Video — Context Tags pin ]</div>
-      <div class="img-placeholder md">[ Screenshot: Show Rewarded Video — Reward Granted / Ad Dismissed pins ]</div>
+      <div class="img-placeholder md">[ Screenshot: Load Rewarded Video — Video + Error outputs ]</div>
+      <div class="img-placeholder md">[ Screenshot: Show Rewarded Video — Video, RewardType, RewardCount, Error ]</div>
     </div>
     <ol>
       <li>Add <strong>Load Rewarded Video</strong>. Optional <em>Context Tags</em> (targeting keywords for this request).</li>
-      <li>On <em>Ad Loaded</em> — call <strong>Show Rewarded Video</strong> (no object pin; the plugin keeps the loaded creative internally).</li>
-      <li>On <em>Reward Granted</em> — grant <code>RewardName</code> / <code>RewardAmount</code> to the player.</li>
+      <li>On <em>Ad Loaded</em> — pass the <strong>Video</strong> output into <strong>Show Rewarded Video</strong>.</li>
+      <li>On <em>Failed To Load</em> — read the <strong>Error</strong> structure (<code>Code</code>, <code>Message</code>, <code>Domain</code>).</li>
+      <li>On <em>Reward Granted</em> — grant <code>RewardType</code> / <code>RewardCount</code> to the player.</li>
       <li>On <em>Ad Dismissed</em> or <em>Failed To Show</em> — call <strong>Load Rewarded Video</strong> again before the next show (one creative = one show).</li>
     </ol>
-    <h2>Outputs of Show Rewarded Video</h2>
+    <h2>Outputs of Load Rewarded Video</h2>
+    <p>Both <em>Ad Loaded</em> and <em>Failed To Load</em> expose the same data pins: <strong>Video</strong> and <strong>Error</strong>. On success, <code>Error.bHasError</code> is false. On failure, <strong>Video</strong> is empty and <strong>Error</strong> contains the Yandex load error.</p>
     <table>
       <thead><tr><th>Pin</th><th>Description</th></tr></thead>
       <tbody>
-        <tr><td>Reward Granted</td><td>User earned the reward (<code>RewardName</code>, <code>RewardAmount</code>).</td></tr>
+        <tr><td>Video</td><td>Blueprint token for the loaded Yandex rewarded creative. Wire it into Show Rewarded Video.</td></tr>
+        <tr><td>Error</td><td><code>FAdBotAdError</code> from Yandex <code>AdRequestError</code> (description + code).</td></tr>
+      </tbody>
+    </table>
+    <h2>Outputs of Show Rewarded Video</h2>
+    <p>All exec outputs expose the same data pins: <strong>Video</strong>, <strong>RewardType</strong>, <strong>RewardCount</strong>, and <strong>Error</strong>. Reward fields are filled on <em>Reward Granted</em>; <strong>Error</strong> is filled on <em>Failed To Show</em>.</p>
+    <table>
+      <thead><tr><th>Pin</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Video</td><td>The rewarded video token used by this show request.</td></tr>
+        <tr><td>Reward Granted</td><td>User earned the reward (<code>RewardType</code>, <code>RewardCount</code>) from Yandex <code>Reward</code>.</td></tr>
         <tr><td>Ad Impression</td><td>Impression recorded by the SDK</td></tr>
         <tr><td>Ad Shown</td><td>Ad appeared on screen</td></tr>
         <tr><td>Ad Dismissed</td><td>User closed the ad — reload before next show</td></tr>
-        <tr><td>Failed To Show</td><td>Show could not start — offer a fallback (retry load, skip reward)</td></tr>
+        <tr><td>Failed To Show</td><td>Show could not start — read the structured <strong>Error</strong> pin and offer a fallback.</td></tr>
       </tbody>
     </table>
+    <div class="callout">
+      <strong>Where the data comes from</strong>
+      <code>Reward.getType()</code> → <code>RewardType</code>, <code>Reward.getAmount()</code> → <code>RewardCount</code>, and Yandex <code>AdRequestError</code>/<code>AdError</code> → <code>FAdBotAdError</code>.
+    </div>
     <div class="callout warn">
       <strong>Context tags</strong>
       Tags on <em>Load Rewarded Video</em> merge with the global targeting snapshot (<em>Set Yandex Ad Targeting Context Tags</em>). Snapshot tags come first; per-load tags are appended without duplicates.
@@ -723,14 +739,14 @@
 
 <span class="cm">// Player taps "Watch ad":</span>
 <span class="kw">Load Rewarded Video</span> (Context Tags: ["bonus", "coins"])
-  ↓ Ad Loaded
-<span class="kw">Show Rewarded Video</span>
-  ↓ Reward Granted (RewardName, RewardAmount)
+  ↓ Ad Loaded (Video)
+<span class="kw">Show Rewarded Video</span> (Rewarded Video: Video)
+  ↓ Reward Granted (RewardType, RewardCount)
       → Grant reward to player
   ↓ Ad Dismissed
       → <span class="kw">Load Rewarded Video</span>   <span class="cm">// preload next</span>
   ↓ Failed To Show
-      → Show message / retry load</code></pre>
+      → Read Error.Message / retry load</code></pre>
     <div class="callout">
       <strong>Single-use creative</strong>
       After <em>Reward Granted</em>, <em>Ad Dismissed</em>, or <em>Failed To Show</em>, always call <em>Load Rewarded Video</em> again before the next <em>Show Rewarded Video</em>.
@@ -847,8 +863,8 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
 <span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">ShowRewarded</span>();
 
 <span class="cm">// Reward callback:</span>
-<span class="kw">void</span> <span class="type">AMyActor</span>::<span class="fn">HandleReward</span>(<span class="type">FString</span> RewardName, <span class="type">int64</span> RewardAmount) {
-    <span class="cm">// Grant RewardAmount of RewardName to player</span>
+<span class="kw">void</span> <span class="type">AMyActor</span>::<span class="fn">HandleReward</span>(<span class="type">FString</span> RewardType, <span class="type">int64</span> RewardAmount) {
+    <span class="cm">// Grant RewardAmount of RewardType to player</span>
 }</code></pre>
     <div class="page-nav">
       <a href="#" onclick="show('cpp-interstitial',document.querySelector('[onclick*=cpp-interstitial]'))"><span class="label">Previous</span>C++: Interstitial</a>
