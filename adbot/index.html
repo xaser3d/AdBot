@@ -47,6 +47,7 @@
     <a href="#" onclick="show('bp-push',this)">Blueprint: Push Graphs</a>
 
     <div class="nav-section">Build &amp; SDK</div>
+    <a href="#" onclick="show('integration-changes',this)">What Changed (checklist)</a>
     <a href="#" onclick="show('sdk-build',this)">SDK Versions &amp; Android Build</a>
     <a href="#" onclick="show('known-issues',this)">Known Issues</a>
 
@@ -98,6 +99,9 @@
 
     <div class="callout warn" style="margin-top:16px;">
       <strong>Rewarded video</strong> — known issue in current build (may not display). See <a href="#" onclick="show('known-issues',document.querySelector('[onclick*=known-issues]'));return false;">Known Issues</a>.
+    </div>
+    <div class="callout" style="margin-top:12px;">
+      <strong>Android 13+ notifications</strong> — cannot be enabled by default; see <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">POST_NOTIFICATIONS</a> or <a href="#" onclick="show('integration-changes',document.querySelector('[onclick*=integration-changes]'));return false;">What changed</a>.
     </div>
     <div class="page-nav">
       <span></span>
@@ -179,7 +183,8 @@
         <tr><td>Interstitial Unit ID</td><td>Placement ID for interstitial ads</td></tr>
         <tr><td>Rewarded Unit ID</td><td>Placement ID for rewarded video</td></tr>
         <tr><td>App Open Ad Unit ID</td><td>Placement ID for app-open format</td></tr>
-        <tr><td>Default Banner Size Preset</td><td>Android auto-banner before Blueprint <em>Load Banner</em> (index 7 = Inline 90&nbsp;dp)</td></tr>
+        <tr><td>Default Banner Size Preset</td><td>Fallback only if <em>Auto Load Banner on SDK Init</em> is on (index 0 = Sticky 320&nbsp;dp classic banner)</td></tr>
+        <tr><td>Auto Load Banner on SDK Init</td><td>Off by default — use <em>Load Banner</em> from Blueprint for size</td></tr>
         <tr><td>Init Yandex Ads SDK at Startup</td><td>Initialize from <code>GameActivity.onCreate</code></td></tr>
         <tr><td>Load Ad Data When Engine Starts</td><td>Call <em>Load Ad Data</em> after world init</td></tr>
         <tr><td>AppMetrica API Key</td><td>AppMetrica cabinet key — strongly recommended for Ads 8</td></tr>
@@ -209,12 +214,48 @@
   </article>
 </section>
 
+<!-- INTEGRATION CHANGES -->
+<section id="integration-changes" class="page-section">
+  <div class="topbar"><h2>What Changed</h2></div>
+  <article>
+    <h1>Integration checklist — what changed</h1>
+    <p>If you upgraded AdBot or moved settings out of <code>DefaultGame.ini</code>, verify this table. <strong>Much of the Android behaviour is no longer “set once in Editor only”.</strong></p>
+    <table>
+      <thead><tr><th>Topic</th><th>Old assumption</th><th>Current behaviour</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Settings file</strong></td><td><code>[/Script/AdBot.AdBotSettings]</code> in <code>DefaultGame.ini</code></td><td><strong>Ignored.</strong> Use <code>Config/DefaultAdBot.ini</code> only (<code>config = AdBot</code>).</td></tr>
+        <tr><td><strong>Packaging</strong></td><td>Any copied ini path</td><td>UPL reads <strong>project root</strong> <code>Config/DefaultAdBot.ini</code>. In <code>DefaultGame.ini</code>, <code>AllowedConfigFiles</code> must be <code>Config/DefaultAdBot.ini</code> (not a wrong subfolder).</td></tr>
+        <tr><td><strong>Banner size</strong></td><td>One preset in Project Settings</td><td><strong>Load Banner → Banner Size</strong> wins. <em>Default Banner Size Preset</em> applies only if <em>Auto Load Banner on SDK Init</em> is on and Blueprint has not called <em>Load Banner</em>.</td></tr>
+        <tr><td><strong>AppMetrica statistics</strong></td><td>Same switch as push</td><td><strong>Independent.</strong> Analytics can work while push does not.</td></tr>
+        <tr><td><strong>Push activation</strong></td><td>Immediate at startup</td><td>With <em>Init AppMetrica Push at Startup</em>, activation waits for Yandex SDK init and <strong>first successful banner</strong> <code>onAdLoaded</code> (~90&nbsp;s fallback).</td></tr>
+        <tr><td><strong>HMS transport</strong></td><td>Often on by default</td><td><strong>Off by default</strong> — enable only for Huawei with HMS credentials.</td></tr>
+        <tr><td><strong>Notifications (Android 13+)</strong></td><td>Manifest permission = notifications on</td><td><strong>Not true.</strong> User must approve the runtime dialog — see <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push setup</a>.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout danger">
+      <strong>Notifications off after install (Android 13+)</strong>
+      You <strong>cannot</strong> enable notifications “by default” without a user dialog. Manifest <code>POST_NOTIFICATIONS</code> + <em>Request Post Notifications Permission</em> in Blueprint are both required.
+    </div>
+    <h2>Кратко (RU)</h2>
+    <ul>
+      <li>Настройки AdBot — только в <code>Config/DefaultAdBot.ini</code>, не в <code>DefaultGame.ini</code>.</li>
+      <li><strong>Статистика</strong> AppMetrica и <strong>push</strong> — разные цепочки; статистика может работать без доставки push.</li>
+      <li><strong>Android 13+:</strong> уведомления <strong>нельзя</strong> включить автоматически — нужен системный диалог и согласие пользователя.</li>
+      <li>После изменения push/Firebase — <strong>полная пересборка APK</strong>.</li>
+    </ul>
+    <div class="page-nav">
+      <a href="#" onclick="show('settings',document.querySelector('[onclick*=settings]'))"><span class="label">Previous</span>Project Settings</a>
+      <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'))"><span class="label">Next</span>Push setup</a>
+    </div>
+  </article>
+</section>
+
 <!-- PROJECT SETTINGS -->
 <section id="settings" class="page-section">
   <div class="topbar"><h2>Project Settings</h2></div>
   <article>
     <h1>Project Settings</h1>
-    <p>All AdBot settings live in <strong>Edit → Project Settings → Plugins → AdBot</strong> and are stored in <code>DefaultGame.ini</code>.</p>
+    <p>All AdBot settings live in <strong>Edit → Project Settings → Plugins → AdBot</strong> and are saved to <code>Config/DefaultAdBot.ini</code> in the <strong>project root</strong> (<code>config = AdBot</code>). Do <strong>not</strong> use <code>DefaultGame.ini</code> for <code>[/Script/AdBot.AdBotSettings]</code> — that section is ignored.</p>
     <div class="img-placeholder md">[ Project Settings AdBot panel screenshot ]</div>
     <h2>Startup</h2>
     <table>
@@ -222,6 +263,7 @@
       <tbody>
         <tr><td>Init Yandex Ads SDK at Startup (Android)</td><td>On</td><td>Runs <code>YandexAds.initialize</code> from <code>GameActivity.onCreate</code> using unit IDs below</td></tr>
         <tr><td>Load Ad Data When Engine Starts</td><td>On</td><td>Module calls <em>Load Ad Data</em> once when the game world is ready</td></tr>
+        <tr><td>Auto Load Banner on SDK Init</td><td>Off</td><td>When on, first banner uses <em>Default Banner Size Preset</em> without Blueprint <em>Load Banner</em></td></tr>
         <tr><td>Init AppMetrica at Startup (Android)</td><td>Off</td><td>Runs <code>AppMetrica.activate</code> from onCreate — enable if you use analytics before Blueprint</td></tr>
       </tbody>
     </table>
@@ -230,7 +272,7 @@
       <thead><tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
       <tbody>
         <tr><td>Banner Ad Unit ID</td><td>String</td><td>—</td><td>Yandex banner placement ID</td></tr>
-        <tr><td>Default Banner Size Preset</td><td>Enum (0–7)</td><td>Inline 90&nbsp;dp (7)</td><td>Used by Android <code>sdk_init_auto</code> if Blueprint does not call <em>Load Banner</em> first</td></tr>
+        <tr><td>Default Banner Size Preset</td><td>Enum (0–7)</td><td>Sticky 320&nbsp;dp (0)</td><td>Only when <em>Auto Load Banner on SDK Init</em> is on; otherwise use <em>Load Banner → Banner Size</em></td></tr>
         <tr><td>Interstitial Unit ID</td><td>String</td><td>—</td><td>Interstitial placement ID</td></tr>
         <tr><td>Rewarded Unit ID</td><td>String</td><td>—</td><td>Rewarded video placement ID</td></tr>
         <tr><td>App Open Ad Unit ID</td><td>String</td><td>—</td><td>App-open placement ID</td></tr>
@@ -267,11 +309,10 @@
     <table>
       <thead><tr><th>Property</th><th>Default</th><th>Description</th></tr></thead>
       <tbody>
-        <tr><td>Enable AppMetrica Push</td><td>Off</td><td>Master switch — adds push SDK to Gradle; <strong>requires APK rebuild</strong></td></tr>
-        <tr><td>POST_NOTIFICATIONS (manifest)</td><td>Auto when push ON</td><td>Runtime dialog on API 33+: <em>Request Post Notifications Permission</em></td></tr>
-        <tr><td>Init AppMetrica Push at Startup</td><td>Off</td><td><code>AppMetricaPush.activate</code> from onCreate</td></tr>
+        <tr><td>Enable AppMetrica Push</td><td>Off</td><td>Master switch — adds push SDK + <code>POST_NOTIFICATIONS</code> to manifest; <strong>requires APK rebuild</strong>. Does not enable the system Notifications toggle on Android 13+.</td></tr>
+        <tr><td>Init AppMetrica Push at Startup</td><td>Off</td><td>Defers <code>AppMetricaPush.activate</code> until SDK init + first banner <code>onAdLoaded</code></td></tr>
         <tr><td>Use Firebase Transport (FCM)</td><td>On</td><td>FCM + <code>push-provider-firebase</code></td></tr>
-        <tr><td>Use HMS Transport</td><td>On</td><td>Huawei Push + <code>push-provider-hms</code></td></tr>
+        <tr><td>Use HMS Transport</td><td>Off</td><td>Huawei Push + <code>push-provider-hms</code> — enable only on Huawei devices</td></tr>
         <tr><td>Prefer Google Services Json</td><td>Off</td><td>Use <code>google-services.json</code> instead of manual Firebase fields</td></tr>
         <tr><td>Firebase App ID / Sender ID / API Key / Project ID</td><td>—</td><td>Only if not using JSON — see <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push setup</a></td></tr>
         <tr><td>HMS App ID</td><td>—</td><td>From <code>agconnect-services.json</code> → <code>app_id</code></td></tr>
@@ -282,12 +323,16 @@
       Disable the marketplace <em>YandexAppMetrica</em> plugin (mobmetricalib 5.x) when using AdBot — only one AppMetrica integration per app.
     </div>
     <div class="callout">
-      <strong>DefaultGame.ini</strong>
-      Settings are saved under <code>[/Script/AdBot.AdBotSettings]</code>. You can also edit the .ini directly.
+      <strong>Config/DefaultAdBot.ini</strong>
+      Settings are saved under <code>[/Script/AdBot.AdBotSettings]</code> in the project root. Android UPL reads this file at package time. Also add <code>+ExtraPermissions=android.permission.POST_NOTIFICATIONS</code> under UE Android settings (<code>DefaultEngine.ini</code>).
+    </div>
+    <div class="callout warn">
+      <strong>Statistics ≠ push</strong>
+      AppMetrica events can work while push notifications do not (missing Firebase manifest meta, push not activated, or notification permission denied on Android 13+).
     </div>
     <div class="page-nav">
       <a href="#" onclick="show('setup',document.querySelector('[onclick*=setup]'))"><span class="label">Previous</span>Get Started</a>
-      <a href="#" class="next" onclick="show('privacy',document.querySelector('[onclick*=privacy]'))"><span class="label">Next</span>Privacy &amp; Consent</a>
+      <a href="#" class="next" onclick="show('integration-changes',document.querySelector('[onclick*=integration-changes]'))"><span class="label">Next</span>What Changed</a>
     </div>
   </article>
 </section>
@@ -903,13 +948,21 @@ Manager-><span class="fn">ShowRewarded</span>();
       <li>AppMetrica → Push → Huawei → App ID + App secret.</li>
       <li>AdBot: <strong>HMS App ID</strong> from <code>agconnect-services.json</code>.</li>
     </ol>
-    <h2>Android notification permission (POST_NOTIFICATIONS)</h2>
-    <p>Starting with <strong>Android 13 (API level 33)</strong>, apps must explicitly request a <strong>runtime permission</strong> to post notifications. The manifest permission is:</p>
+    <h2 id="post-notifications">Android notification permission (POST_NOTIFICATIONS)</h2>
+    <div class="callout danger">
+      <strong>Cannot enable notifications “by default” on Android 13+</strong>
+      After install, <em>Settings &rarr; Apps &rarr; [your app] &rarr; Notifications</em> stays <strong>off</strong> until the user taps <strong>Allow</strong> in the system dialog. Declaring <code>POST_NOTIFICATIONS</code> in the manifest is <strong>not enough</strong>. This is required by Google — not an AdBot bug.
+    </div>
+    <p>Starting with <strong>Android 13 (API level 33)</strong>, apps must explicitly request a <strong>runtime permission</strong> to post notifications:</p>
     <pre><code>android.permission.POST_NOTIFICATIONS</code></pre>
-    <p>For devices running <strong>Android 12L (API 32) or lower</strong>, this permission is granted by default at install time. Users can still turn off notifications manually in system settings (<em>Settings &rarr; Apps &rarr; [your app] &rarr; Notifications</em>).</p>
+    <p>For <strong>Android 12L (API 32) or lower</strong>, notifications are usually allowed at install unless the user disabled them manually.</p>
     <div class="callout">
       <strong>What AdBot does automatically</strong>
-      When <em>Enable AppMetrica Push</em> is ON, <code>AdBot_UPL.xml</code> adds <code>POST_NOTIFICATIONS</code> to the packaged manifest. That only declares the permission &mdash; on Android 13+ you must still ask the user at runtime.
+      When <em>Enable AppMetrica Push</em> is ON, <code>AdBot_UPL.xml</code> adds <code>POST_NOTIFICATIONS</code> to the packaged manifest. AdBot may also call <em>Request Post Notifications Permission</em> after push activates. You should still call it from Blueprint on the main screen (first launch).
+    </div>
+    <div class="callout warn">
+      <strong>UE project: Extra Permissions</strong>
+      Add <code>+ExtraPermissions=android.permission.POST_NOTIFICATIONS</code> in <strong>Project Settings &rarr; Android</strong> or <code>DefaultEngine.ini</code> in addition to AdBot manifest injection.
     </div>
     <table>
       <thead><tr><th>Android version</th><th>Manifest</th><th>Runtime dialog</th></tr></thead>
@@ -926,13 +979,14 @@ Manager-><span class="fn">ShowRewarded</span>();
     <p>Blueprint is required to register the device on first launch, request permission on Android 13+, and handle payload inside the game. See <a href="#" onclick="show('bp-push',document.querySelector('[onclick*=bp-push]'));return false;">Blueprint: Push</a> for three ready-made graphs (startup, cold start, foreground).</p>
     <h2>Runtime (Blueprint order)</h2>
     <ol>
-      <li>Rebuild APK with <strong>Enable AppMetrica Push</strong> = ON.</li>
-      <li><strong>Activate AppMetrica</strong>.</li>
-      <li><strong>Request Post Notifications Permission</strong> (Android 13+; show after consent UI if needed).</li>
-      <li><strong>Activate AppMetrica Push</strong>.</li>
+      <li>Rebuild APK with <strong>Enable AppMetrica Push</strong> = ON (Firebase fields baked into manifest at build time).</li>
+      <li><strong>Activate AppMetrica</strong> (or <em>Init AppMetrica at Startup</em>).</li>
+      <li><strong>Load Banner</strong> at least once successfully if using <em>Init AppMetrica Push at Startup</em> (push waits for banner <code>onAdLoaded</code>).</li>
+      <li><strong>Request Post Notifications Permission</strong> (Android 13+; on main screen after consent UI).</li>
+      <li><strong>Activate AppMetrica Push</strong> (or rely on deferred startup if <em>Init AppMetrica Push at Startup</em> is on).</li>
       <li><strong>Bind Push Payload Received</strong> on Game Instance.</li>
     </ol>
-    <p>Logcat: <code>AdBotPush</code>. If the user denies permission, notifications will not show until enabled in system settings.</p>
+    <p>Logcat: <code>adb logcat -s AdBotPush:I YaAdsBridge:I</code>. Look for <code>manifest_meta appIdLen=&gt;0</code>, <code>AppMetrica Push activated</code>. If the user denies permission, notifications stay off until enabled in system settings.</p>
     <div class="page-nav">
       <a href="#" onclick="show('metrica-start',document.querySelector('[onclick*=metrica-start]'))"><span class="label">Previous</span>Statistics</a>
       <a href="#" class="next" onclick="show('bp-push',document.querySelector('[onclick*=bp-push]'))"><span class="label">Next</span>Blueprint: Push Graphs</a>
@@ -947,10 +1001,14 @@ Manager-><span class="fn">ShowRewarded</span>();
     <h1>Blueprint: AppMetrica Push</h1>
     <p>Category <strong>AdBot|AppMetrica Push</strong>. Below: permission, three basic graphs (startup, cold start, foreground), node reference, and test checklist.</p>
     <h2>Request Post Notifications Permission (Android 13+)</h2>
-    <p>Callable node <strong>Request Post Notifications Permission</strong> shows the system dialog for <code>android.permission.POST_NOTIFICATIONS</code> on API 33+. On Android 12L (API 32) and below it does nothing (notifications are allowed by default unless the user disabled them in settings).</p>
+    <p>Callable node <strong>Request Post Notifications Permission</strong> shows the system dialog for <code>android.permission.POST_NOTIFICATIONS</code> on API 33+.</p>
+    <div class="callout danger">
+      <strong>Impossible to skip the dialog on Android 13+</strong>
+      There is no manifest flag or Project Settings toggle to turn notifications on by default. The user must tap <strong>Allow</strong>.
+    </div>
     <div class="callout warn">
-      <strong>Ask before the first push</strong>
-      Call after <em>Activate AppMetrica</em> and before <em>Activate AppMetrica Push</em>, ideally after your consent UI.
+      <strong>Ask on first main screen</strong>
+      Call after <em>Activate AppMetrica</em>, ideally after your consent UI and before or right after <em>Activate AppMetrica Push</em>. <code>bRecordPermissionAtStartupEnabled</code> in UE is for <strong>microphone</strong> only — not notifications.
     </div>
     <pre><code><span class="cm">// Game Instance - Event Init:</span>
 <span class="kw">Activate AppMetrica</span>
@@ -1205,8 +1263,10 @@ Manager-><span class="fn">ShowRewarded</span>();
     <p>AdBot uses <strong>AppMetrica</strong> (mobile SDK). Web site counters (Yandex.Metrica) are a different product — use AppMetrica cabinet for game events.</p>
     <h3>Wrong banner height (50 dp instead of 90 dp)</h3>
     <p>Use enum index <strong>7</strong> = <em>Inline max height 90 dp</em> (8th item in the list). Index 6 is 50&nbsp;dp. Set <em>Default Banner Size Preset</em> in Project Settings or pass the correct enum to <em>Load Banner</em>.</p>
-    <h3>Push notifications do not arrive</h3>
-    <p>Check: (1) <em>Enable AppMetrica Push</em> ON and APK rebuilt; (2) FCM service account JSON uploaded in <a href="https://appmetrica.yandex.com/" target="_blank" rel="noopener">AppMetrica</a> → Settings → Push notifications; (3) Firebase/HMS IDs in plugin settings or <code>google-services.json</code>; (4) Android 13+ notification permission granted; (5) Logcat <code>AdBotPush</code>. Full checklist: <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push setup</a>.; (6) on Android 13+, call <em>Request Post Notifications Permission</em> and tap Allow. See <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">POST_NOTIFICATIONS</a>.</p>
+    <h3>Notifications disabled after install (Android 13+)</h3>
+    <p><strong>Expected.</strong> Notifications cannot be on by default — call <em>Request Post Notifications Permission</em> and the user must tap Allow. Until then, system settings show notifications off. See <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">POST_NOTIFICATIONS</a> and <a href="#" onclick="show('integration-changes',document.querySelector('[onclick*=integration-changes]'));return false;">What changed</a>.</p>
+    <h3>Push notifications do not arrive (but statistics work)</h3>
+    <p>Statistics (AppMetrica) and push are <strong>separate</strong>. Check: (1) settings in <code>Config/DefaultAdBot.ini</code>, not <code>DefaultGame.ini</code>; (2) <em>Enable AppMetrica Push</em> ON and <strong>APK rebuilt</strong> after Firebase field changes; (3) FCM JSON in AppMetrica cabinet; (4) <code>manifest_meta appIdLen&gt;0</code> in logcat; (5) banner reached <code>onAdLoaded</code> if using <em>Init AppMetrica Push at Startup</em>; (6) Android 13+ permission granted; (7) <code>adb logcat -s AdBotPush:I</code>. Full checklist: <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push setup</a>.</p>
     <div class="page-nav">
       <a href="#" onclick="show('mediation',document.querySelector('[onclick*=mediation]'))"><span class="label">Previous</span>VK Ads Mediation</a>
       <a href="#" class="next" onclick="show('debug',document.querySelector('[onclick*=debug]'))"><span class="label">Next</span>Debug Panel</a>

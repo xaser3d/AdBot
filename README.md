@@ -9,8 +9,10 @@ Unreal Engine **Android** plugin: **Yandex Mobile Ads SDK 8**, **AppMetrica Anal
 | Topic | Page |
 |--------|------|
 | Overview, setup, Project Settings | [AdBot docs](https://xaser3d.github.io/AdBot/adbot/index.html) |
+| **What changed** (ini, push, notifications, banner) | [Integration checklist](https://xaser3d.github.io/AdBot/adbot/index.html#integration-changes) |
 | AppMetrica statistics (events, profiles, nodes) | Analytics + Blueprint: AppMetrica |
 | AppMetrica Push (Firebase + HMS setup) | Push Notifications + Blueprint: Push |
+| **Android 13+ notifications** (cannot enable by default) | [POST_NOTIFICATIONS](https://xaser3d.github.io/AdBot/adbot/index.html#push-setup) |
 | Yandex Mediation (5 networks) | Mediation |
 | SDK versions & APK rebuild | SDK & Android Build |
 
