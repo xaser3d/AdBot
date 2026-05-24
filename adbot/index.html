@@ -49,7 +49,7 @@
     <div class="nav-section">Build &amp; SDK</div>
     <a href="#" onclick="show('integration-changes',this)">What Changed (checklist)</a>
     <a href="#" onclick="show('sdk-build',this)">SDK Versions &amp; Android Build</a>
-    <a href="#" onclick="show('known-issues',this)">Known Issues</a>
+    <a href="#" onclick="show('tips',this)">Tips &amp; troubleshooting</a>
 
     <div class="nav-section">Blueprint Examples</div>
     <a href="#" onclick="show('bp-privacy',this)">Privacy</a>
@@ -97,8 +97,8 @@
       <div class="feature-card"><div class="icon">🛠</div><h4>Debug Panel</h4><p>Yandex in-app integration checker for development builds.</p></div>
     </div>
 
-    <div class="callout warn" style="margin-top:16px;">
-      <strong>Rewarded video</strong> — known issue in current build (may not display). See <a href="#" onclick="show('known-issues',document.querySelector('[onclick*=known-issues]'));return false;">Known Issues</a>.
+    <div class="callout" style="margin-top:16px;">
+      <strong>Rewarded video</strong> — use async nodes <em>Load Rewarded Video</em> → <em>Show Rewarded Video</em>. See <a href="#" onclick="show('rewarded',document.querySelector('[onclick*=rewarded]'));return false;">Rewarded Video</a> and <a href="#" onclick="show('bp-rewarded',document.querySelector('[onclick*=bp-rewarded]'));return false;">Blueprint example</a>.
     </div>
     <div class="callout" style="margin-top:12px;">
       <strong>Android 13+ notifications</strong> — cannot be enabled by default; see <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">POST_NOTIFICATIONS</a> or <a href="#" onclick="show('integration-changes',document.querySelector('[onclick*=integration-changes]'));return false;">What changed</a>.
@@ -123,10 +123,23 @@
       <tbody>
         <tr><td>Banner</td><td>✅</td><td>✅</td><td>8 size presets (0–7), auto-load at startup, Invalid SDK retries, no-fill retry</td></tr>
         <tr><td>Interstitial</td><td>✅</td><td>✅</td><td>Full-screen, load → show pattern</td></tr>
-        <tr><td>Rewarded Video</td><td>✅ Async nodes</td><td>✅</td><td>⚠️ Known issues — see <a href="#" onclick="show('known-issues',document.querySelector('[onclick*=known-issues]'));return false;">Known Issues</a></td></tr>
-        <tr><td>App Open</td><td>✅</td><td>✅</td><td>Vertical format, ideal for splash screens</td></tr>
+        <tr><td>Rewarded Video</td><td>✅ Async nodes</td><td>✅</td><td>Load → show → Reward Granted; reload after dismiss</td></tr>
+        <tr><td>App Open</td><td>✅ Async nodes</td><td>✅</td><td>Vertical format, ideal for splash screens</td></tr>
       </tbody>
     </table>
+    <h2>Blueprint async nodes</h2>
+    <p>Search the node menu under <strong>AdBot</strong>. Each load/show pair is an async action (execution pins + delegate outputs).</p>
+    <table>
+      <thead><tr><th>Node</th><th>Menu category</th></tr></thead>
+      <tbody>
+        <tr><td>Initialize Yandex Ads</td><td>AdBot</td></tr>
+        <tr><td>Load Banner / Show Banner</td><td>AdBot | Banner</td></tr>
+        <tr><td>Load Interstitial / Show Interstitial</td><td>AdBot | Interstitial</td></tr>
+        <tr><td>Load Rewarded Video / Show Rewarded Video</td><td>AdBot | Rewarded</td></tr>
+        <tr><td>Load App Open / Show App Open</td><td>AdBot | App Open</td></tr>
+      </tbody>
+    </table>
+    <div class="img-placeholder sm">[ Screenshot: Initialize Yandex Ads + Load Banner async nodes ]</div>
     <h2>Privacy &amp; Compliance</h2>
     <table>
       <thead><tr><th>Feature</th><th>Blueprint Node</th></tr></thead>
@@ -230,6 +243,7 @@
         <tr><td><strong>Push activation</strong></td><td>Immediate at startup</td><td>With <em>Init AppMetrica Push at Startup</em>, activation waits for Yandex SDK init and <strong>first successful banner</strong> <code>onAdLoaded</code> (~90&nbsp;s fallback).</td></tr>
         <tr><td><strong>HMS transport</strong></td><td>Often on by default</td><td><strong>Off by default</strong> — enable only for Huawei with HMS credentials.</td></tr>
         <tr><td><strong>Notifications (Android 13+)</strong></td><td>Manifest permission = notifications on</td><td><strong>Not true.</strong> User must approve the runtime dialog — see <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push setup</a>.</td></tr>
+        <tr><td><strong>Firebase / FCM</strong></td><td>Only manual fields or only json path</td><td><strong>Prefer Google Services Json</strong> toggle + <strong>Google Services Json Path</strong> (when On and file exists), or toggle Off + manual Firebase fields. Rebuild APK after change.</td></tr>
       </tbody>
     </table>
     <div class="callout danger">
@@ -242,6 +256,7 @@
       <li><strong>Статистика</strong> AppMetrica и <strong>push</strong> — разные цепочки; статистика может работать без доставки push.</li>
       <li><strong>Android 13+:</strong> уведомления <strong>нельзя</strong> включить автоматически — нужен системный диалог и согласие пользователя.</li>
       <li>После изменения push/Firebase — <strong>полная пересборка APK</strong>.</li>
+      <li><strong>Firebase:</strong> переключатель <em>Prefer Google Services Json</em> + путь к json <strong>или</strong> ручные поля Firebase (см. Project Settings).</li>
     </ul>
     <div class="page-nav">
       <a href="#" onclick="show('settings',document.querySelector('[onclick*=settings]'))"><span class="label">Previous</span>Project Settings</a>
@@ -313,8 +328,9 @@
         <tr><td>Init AppMetrica Push at Startup</td><td>Off</td><td>Defers <code>AppMetricaPush.activate</code> until SDK init + first banner <code>onAdLoaded</code></td></tr>
         <tr><td>Use Firebase Transport (FCM)</td><td>On</td><td>FCM + <code>push-provider-firebase</code></td></tr>
         <tr><td>Use HMS Transport</td><td>Off</td><td>Huawei Push + <code>push-provider-hms</code> — enable only on Huawei devices</td></tr>
-        <tr><td>Prefer Google Services Json</td><td>Off</td><td>Use <code>google-services.json</code> instead of manual Firebase fields</td></tr>
-        <tr><td>Firebase App ID / Sender ID / API Key / Project ID</td><td>—</td><td>Only if not using JSON — see <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push setup</a></td></tr>
+        <tr><td>Prefer Google Services Json</td><td>Off</td><td>When <strong>On</strong>, use <code>google-services.json</code> from the path below instead of manual Firebase fields</td></tr>
+        <tr><td>Google Services Json Path</td><td>—</td><td>Relative to project root, e.g. <code>Build/Android/google-services.json</code>. Shown when toggle is On; file must exist at APK build time</td></tr>
+        <tr><td>Firebase App ID / Sender ID / API Key / Project ID</td><td>—</td><td>When toggle is <strong>Off</strong> (or On but file missing) — see <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push setup</a></td></tr>
         <tr><td>HMS App ID</td><td>—</td><td>From <code>agconnect-services.json</code> → <code>app_id</code></td></tr>
       </tbody>
     </table>
@@ -400,27 +416,27 @@
   <article>
     <h1>App Open Ads</h1>
     <p>App open ads appear when users launch or return to the app. They can be closed at any time and are served from the vertical-only format in the Yandex network.</p>
-    <h2>How It Works</h2>
+    <h2>Async node flow</h2>
     <ol>
       <li>Configure <strong>App Open Ad Unit ID</strong> in Project Settings.</li>
-      <li>Call <strong>Load App Open</strong> early (e.g. on game start).</li>
-      <li>On <code>OnAppOpenLoaded</code> delegate — call <strong>Show App Open</strong>.</li>
-      <li>After dismiss, reload for next session.</li>
+      <li>After <strong>Initialize Yandex Ads</strong> (or startup init), call <strong>Load App Open</strong>.</li>
+      <li>On <em>Ad Loaded</em> — call <strong>Show App Open</strong>.</li>
+      <li>On <em>Ad Dismissed</em> — call <strong>Load App Open</strong> again before the next show.</li>
     </ol>
-    <h2>Delegates (AdBotManager)</h2>
+    <h2>Show App Open — outputs</h2>
     <table>
-      <thead><tr><th>Delegate</th><th>When it fires</th></tr></thead>
+      <thead><tr><th>Pin</th><th>When it fires</th></tr></thead>
       <tbody>
-        <tr><td>OnAppOpenLoaded</td><td>Ad is ready to show</td></tr>
-        <tr><td>OnAppOpenFailedToLoad</td><td>Load failed</td></tr>
-        <tr><td>OnAppOpenShown</td><td>Ad appeared on screen</td></tr>
-        <tr><td>OnAppOpenFailedToShow</td><td>Show call failed (message param)</td></tr>
-        <tr><td>OnAppOpenDismissed</td><td>User closed the ad</td></tr>
-        <tr><td>OnAppOpenImpression</td><td>Impression recorded</td></tr>
-        <tr><td>OnAppOpenClicked</td><td>User tapped the ad</td></tr>
+        <tr><td>Ad Loaded</td><td>Creative ready (Load App Open)</td></tr>
+        <tr><td>Ad Shown</td><td>Ad appeared on screen</td></tr>
+        <tr><td>Failed To Show</td><td>Show call failed</td></tr>
+        <tr><td>Ad Dismissed</td><td>User closed the ad</td></tr>
       </tbody>
     </table>
-    <div class="img-placeholder md">[ App Open Blueprint graph ]</div>
+    <div class="img-grid">
+      <div class="img-placeholder md">[ Screenshot: Load App Open async node ]</div>
+      <div class="img-placeholder md">[ Screenshot: Show App Open async node ]</div>
+    </div>
     <div class="page-nav">
       <a href="#" onclick="show('coppa',document.querySelector('[onclick*=coppa]'))"><span class="label">Previous</span>COPPA</a>
       <a href="#" class="next" onclick="show('banner',document.querySelector('[onclick*=banner]'))"><span class="label">Next</span>Banner</a>
@@ -477,31 +493,30 @@
   <article>
     <h1>Interstitial Ads</h1>
     <p>Full-screen ads displayed during natural breaks in the app, such as between game levels. Users can close them and return to the game.</p>
-    <h2>Flow</h2>
+    <h2>Async node flow</h2>
     <ol>
-      <li>Call <strong>Load Interstitial</strong>.</li>
-      <li>Wait for <code>OnInterstitialLoaded</code>.</li>
-      <li>Call <strong>Show Interstitial</strong> at a natural pause.</li>
-      <li>After <code>OnInterstitialDismissed</code>, call Load again for next time.</li>
+      <li>Call <strong>Load Interstitial</strong> (async).</li>
+      <li>On <em>Ad Loaded</em> — call <strong>Show Interstitial</strong> at a natural pause.</li>
+      <li>On <em>Ad Dismissed</em> — call <strong>Load Interstitial</strong> again before the next show.</li>
     </ol>
     <div class="callout">
       <strong>One ad at a time</strong>
       The plugin guards against double-show. Only one interstitial can be shown at a time.
     </div>
-    <h2>Delegates</h2>
+    <h2>Show Interstitial — outputs</h2>
     <table>
-      <thead><tr><th>Delegate</th><th>Description</th></tr></thead>
+      <thead><tr><th>Pin</th><th>Description</th></tr></thead>
       <tbody>
-        <tr><td>OnInterstitialLoaded</td><td>Ready to show</td></tr>
-        <tr><td>OnInterstitialFailed</td><td>Load failed</td></tr>
-        <tr><td>OnInterstitialShown</td><td>Appeared on screen</td></tr>
-        <tr><td>OnInterstitialFailedToShow</td><td>Show failed (message)</td></tr>
-        <tr><td>OnInterstitialDismissed</td><td>Closed by user</td></tr>
-        <tr><td>OnInterstitialImpression</td><td>Impression recorded</td></tr>
-        <tr><td>OnInterstitialClicked</td><td>Ad tapped</td></tr>
+        <tr><td>Ad Loaded</td><td>Ready to show (Load Interstitial)</td></tr>
+        <tr><td>Ad Shown</td><td>Appeared on screen</td></tr>
+        <tr><td>Failed To Show</td><td>Show failed</td></tr>
+        <tr><td>Ad Dismissed</td><td>Closed by user — reload before next show</td></tr>
       </tbody>
     </table>
-    <div class="img-placeholder md">[ Interstitial Blueprint graph ]</div>
+    <div class="img-grid">
+      <div class="img-placeholder md">[ Screenshot: Load Interstitial async node ]</div>
+      <div class="img-placeholder md">[ Screenshot: Show Interstitial async node ]</div>
+    </div>
     <div class="page-nav">
       <a href="#" onclick="show('banner',document.querySelector('[onclick*=banner]'))"><span class="label">Previous</span>Banner</a>
       <a href="#" class="next" onclick="show('rewarded',document.querySelector('[onclick*=rewarded]'))"><span class="label">Next</span>Rewarded Video</a>
@@ -514,34 +529,40 @@
   <div class="topbar"><h2>Rewarded Video</h2></div>
   <article>
     <h1>Rewarded Video</h1>
-    <div class="callout danger">
-      <strong>Current status — not fully working</strong>
-      In recent builds, rewarded ads often <strong>fail to display</strong> or <strong>dismiss in under ~300&nbsp;ms</strong> without an impression (<code>hadImpression=false</code> in Logcat). Load may succeed (<em>Rewarded ad loaded successfully</em>) but the user sees no video. Banner, interstitial, and app open are OK. See <a href="#" onclick="show('known-issues',document.querySelector('[onclick*=known-issues]'));return false;">Known Issues</a> before shipping rewarded monetization.
+    <p>Users voluntarily watch a rewarded video to earn in-game currency, extra lives, or other bonuses. AdBot exposes <strong>Load Rewarded Video</strong> and <strong>Show Rewarded Video</strong> async nodes (category <em>AdBot | Rewarded</em>).</p>
+    <div class="callout">
+      <strong>Recommended order on Android</strong>
+      Initialize SDK → <strong>Load Banner</strong> → <strong>Show Banner</strong> (wait for banner impression) → <strong>Load Rewarded Video</strong> → on <em>Ad Loaded</em>, <strong>Show Rewarded Video</strong>. This primes the WebView pipeline used by Unreal <code>GameActivity</code>.
     </div>
-    <p>Users voluntarily watch a rewarded video to earn in-game currency, extra lives, or other bonuses. AdBot uses async Blueprint nodes for a clean load → show → reward flow.</p>
-    <h2>Async Node Flow</h2>
-    <div class="img-placeholder md">[ Load Ad Rewarded Video async node ]</div>
+    <h2>Project Settings</h2>
+    <p>Set <strong>Rewarded Ad Unit ID</strong> (<code>demo-rewarded-yandex</code> for testing, or your <code>R-M-…</code> block for production). Rebuild the APK after changing unit IDs.</p>
+    <h2>Async node flow</h2>
+    <div class="img-grid">
+      <div class="img-placeholder md">[ Screenshot: Load Rewarded Video — Context Tags pin ]</div>
+      <div class="img-placeholder md">[ Screenshot: Show Rewarded Video — Reward Granted / Ad Dismissed pins ]</div>
+    </div>
     <ol>
-      <li>Add <strong>Load Ad Rewarded Video</strong> async node. Pass optional <em>Keywords</em> (context tags).</li>
-      <li>On <em>Ad Loaded</em> — save the <code>RewardedVideo</code> object.</li>
-      <li>Add <strong>Show Rewarded Video</strong> async node, pass the saved object.</li>
-      <li>Handle <em>Reward Granted</em> (with <code>RewardName</code> + <code>RewardAmount</code>), <em>Ad Dismissed</em>, <em>Failed To Show</em>.</li>
+      <li>Add <strong>Load Rewarded Video</strong>. Optional <em>Context Tags</em> (targeting keywords for this request).</li>
+      <li>On <em>Ad Loaded</em> — call <strong>Show Rewarded Video</strong> (no object pin; the plugin keeps the loaded creative internally).</li>
+      <li>On <em>Reward Granted</em> — grant <code>RewardName</code> / <code>RewardAmount</code> to the player.</li>
+      <li>On <em>Ad Dismissed</em> or <em>Failed To Show</em> — call <strong>Load Rewarded Video</strong> again before the next show (one creative = one show).</li>
     </ol>
     <h2>Outputs of Show Rewarded Video</h2>
     <table>
       <thead><tr><th>Pin</th><th>Description</th></tr></thead>
       <tbody>
-        <tr><td>Reward Granted</td><td>User earned the reward. RewardName + RewardAmount from Yandex SDK.</td></tr>
+        <tr><td>Reward Granted</td><td>User earned the reward (<code>RewardName</code>, <code>RewardAmount</code>).</td></tr>
+        <tr><td>Ad Impression</td><td>Impression recorded by the SDK</td></tr>
         <tr><td>Ad Shown</td><td>Ad appeared on screen</td></tr>
-        <tr><td>Ad Dismissed</td><td>User closed the ad</td></tr>
-        <tr><td>Failed To Show</td><td>Show failed. Use <em>Get Last Rewarded Show Error</em> for message.</td></tr>
-        <tr><td>Ad Impression</td><td>Impression recorded</td></tr>
+        <tr><td>Ad Dismissed</td><td>User closed the ad — reload before next show</td></tr>
+        <tr><td>Failed To Show</td><td>Show could not start — offer a fallback (retry load, skip reward)</td></tr>
       </tbody>
     </table>
     <div class="callout warn">
-      <strong>Context tags &amp; keywords</strong>
-      Keywords passed to <em>Load Ad Rewarded Video</em> are merged with the global targeting snapshot (Set Yandex Ad Targeting Context Tags). Snapshot tags appear first; per-load keywords are appended without duplicates.
+      <strong>Context tags</strong>
+      Tags on <em>Load Rewarded Video</em> merge with the global targeting snapshot (<em>Set Yandex Ad Targeting Context Tags</em>). Snapshot tags come first; per-load tags are appended without duplicates.
     </div>
+    <div class="img-placeholder lg">[ Screenshot: full rewarded flow — banner → load → show → grant reward ]</div>
     <div class="page-nav">
       <a href="#" onclick="show('interstitial',document.querySelector('[onclick*=interstitial]'))"><span class="label">Previous</span>Interstitial</a>
       <a href="#" class="next" onclick="show('targeting',document.querySelector('[onclick*=targeting]'))"><span class="label">Next</span>Ad Targeting</a>
@@ -668,14 +689,15 @@
   <div class="topbar"><h2>Blueprint Examples — Interstitial</h2></div>
   <article>
     <h1>Blueprint: Interstitial</h1>
-    <div class="img-placeholder lg">[ Blueprint graph: Load Interstitial → OnInterstitialLoaded → Show Interstitial ]</div>
-    <h2>Between-Level Flow</h2>
+    <div class="img-placeholder lg">[ Screenshot: Load Interstitial → Ad Loaded → Show Interstitial graph ]</div>
+    <h2>Between-level flow</h2>
     <pre><code><span class="cm">// Pre-load before level ends:</span>
 <span class="kw">Load Interstitial</span>
+  ↓ Ad Loaded
 
 <span class="cm">// On level end:</span>
-<span class="kw">Is Interstitial Loaded</span> → <span class="kw">Show Interstitial</span>
-  ↓ OnInterstitialDismissed
+<span class="kw">Show Interstitial</span>
+  ↓ Ad Dismissed
 <span class="kw">Load Interstitial</span>   <span class="cm">// pre-load for next</span></code></pre>
     <div class="page-nav">
       <a href="#" onclick="show('bp-banner',document.querySelector('[onclick*=bp-banner]'))"><span class="label">Previous</span>Blueprint: Banner</a>
@@ -689,22 +711,29 @@
   <div class="topbar"><h2>Blueprint Examples — Rewarded Video</h2></div>
   <article>
     <h1>Blueprint: Rewarded Video</h1>
-    <div class="img-placeholder lg">[ Blueprint graph: Load Ad Rewarded Video async → Show Rewarded Video async ]</div>
-    <h2>Full Async Flow</h2>
-    <pre><code><span class="cm">// Player taps "Watch ad" button:</span>
+    <div class="img-grid">
+      <div class="img-placeholder md">[ Screenshot: Load Rewarded Video node in graph ]</div>
+      <div class="img-placeholder md">[ Screenshot: Show Rewarded Video wired from Ad Loaded ]</div>
+    </div>
+    <div class="img-placeholder lg">[ Screenshot: complete "Watch ad" button graph ]</div>
+    <h2>Full async flow</h2>
+    <pre><code><span class="cm">// Once per session (e.g. GameMode BeginPlay):</span>
+<span class="kw">Initialize Yandex Ads</span>   <span class="cm">// or startup init + Load Ad Data</span>
+<span class="kw">Load Banner</span> → <span class="kw">Show Banner</span>   <span class="cm">// wait for banner impression</span>
 
-<span class="kw">Load Ad Rewarded Video</span> (Keywords: ["bonus", "coins"])
-  ↓ Ad Loaded (RewardedVideo object)
-<span class="kw">Show Rewarded Video</span> (Rewarded Video: &lt;from Ad Loaded&gt;)
+<span class="cm">// Player taps "Watch ad":</span>
+<span class="kw">Load Rewarded Video</span> (Context Tags: ["bonus", "coins"])
+  ↓ Ad Loaded
+<span class="kw">Show Rewarded Video</span>
   ↓ Reward Granted (RewardName, RewardAmount)
-      → Grant coins to player
+      → Grant reward to player
   ↓ Ad Dismissed
-      → Resume game
+      → <span class="kw">Load Rewarded Video</span>   <span class="cm">// preload next</span>
   ↓ Failed To Show
-      → Read <span class="kw">Get Last Rewarded Show Error</span></code></pre>
-    <div class="callout warn">
-      <strong>RewardedVideo object</strong>
-      Do not cache the <code>RewardedVideo</code> output across frames. It is consumed by <em>Show Rewarded Video</em>. Always use the freshest object from <em>Ad Loaded</em>.
+      → Show message / retry load</code></pre>
+    <div class="callout">
+      <strong>Single-use creative</strong>
+      After <em>Reward Granted</em>, <em>Ad Dismissed</em>, or <em>Failed To Show</em>, always call <em>Load Rewarded Video</em> again before the next <em>Show Rewarded Video</em>.
     </div>
     <div class="page-nav">
       <a href="#" onclick="show('bp-interstitial',document.querySelector('[onclick*=bp-interstitial]'))"><span class="label">Previous</span>Blueprint: Interstitial</a>
@@ -718,13 +747,13 @@
   <div class="topbar"><h2>C++ Setup</h2></div>
   <article>
     <h1>C++ Setup</h1>
-    <p>You can call all AdBot functions directly from C++ using <code>UAdBotBlueprintLibrary</code> and <code>UAdBotManager</code>.</p>
+    <p>You can call AdBot from C++ via <code>UAdBotBlueprintLibrary</code> and <code>UAdBotSubsystem</code> (<code>GetAdBotSubsystem</code>).</p>
     <h2>Add Module Dependency</h2>
     <p>In your project's <code>Build.cs</code>:</p>
     <pre><code><span class="type">PublicDependencyModuleNames</span>.AddRange(<span class="kw">new</span> <span class="type">string</span>[] { <span class="str">"AdBot"</span> });</code></pre>
     <h2>Include Headers</h2>
     <pre><code><span class="kw">#include</span> <span class="str">"AdBotBlueprintLibrary.h"</span>
-<span class="kw">#include</span> <span class="str">"AdBotManager.h"</span>
+<span class="kw">#include</span> <span class="str">"AdBotSubsystem.h"</span>
 <span class="kw">#include</span> <span class="str">"AdBotBannerTypes.h"</span>
 <span class="kw">#include</span> <span class="str">"AdBotYandexTypes.h"</span></code></pre>
     <h2>Initialize</h2>
@@ -746,15 +775,15 @@
   <article>
     <h1>C++: Banner</h1>
     <pre><code><span class="kw">#include</span> <span class="str">"AdBotBlueprintLibrary.h"</span>
-<span class="kw">#include</span> <span class="str">"AdBotManager.h"</span>
+<span class="kw">#include</span> <span class="str">"AdBotSubsystem.h"</span>
 <span class="kw">#include</span> <span class="str">"AdBotBannerTypes.h"</span>
 
 <span class="cm">// Load banner with sticky full-width preset:</span>
 <span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">LoadBanner</span>(<span class="kw">nullptr</span>, <span class="type">EAdBotBannerSizePreset</span>::StickyFullWidth);
 
-<span class="cm">// Listen for events via AdBotManager:</span>
-<span class="type">UAdBotManager</span>* Manager = <span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">GetAdBotManager</span>(<span class="kw">this</span>);
-Manager-><span class="fn">OnBannerLoaded</span>.AddDynamic(<span class="kw">this</span>, &amp;<span class="type">AMyActor</span>::OnBannerReady);
+<span class="cm">// Listen for events via subsystem:</span>
+<span class="type">UAdBotSubsystem</span>* Ads = <span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">GetAdBotSubsystem</span>(<span class="kw">this</span>);
+Ads-><span class="fn">OnBannerLoaded</span>.AddDynamic(<span class="kw">this</span>, &amp;<span class="type">AMyActor</span>::OnBannerReady);
 
 <span class="cm">// Show / Hide:</span>
 <span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">ShowBanner</span>();
@@ -772,11 +801,11 @@ Manager-><span class="fn">OnBannerLoaded</span>.AddDynamic(<span class="kw">this
   <article>
     <h1>C++: Interstitial</h1>
     <pre><code><span class="kw">#include</span> <span class="str">"AdBotBlueprintLibrary.h"</span>
-<span class="kw">#include</span> <span class="str">"AdBotManager.h"</span>
+<span class="kw">#include</span> <span class="str">"AdBotSubsystem.h"</span>
 
-<span class="type">UAdBotManager</span>* Manager = <span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">GetAdBotManager</span>(<span class="kw">this</span>);
-Manager-><span class="fn">OnInterstitialLoaded</span>.AddDynamic(<span class="kw">this</span>, &amp;<span class="type">AMyActor</span>::OnInterstitialReady);
-Manager-><span class="fn">OnInterstitialDismissed</span>.AddDynamic(<span class="kw">this</span>, &amp;<span class="type">AMyActor</span>::OnInterstitialDone);
+<span class="type">UAdBotSubsystem</span>* Ads = <span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">GetAdBotSubsystem</span>(<span class="kw">this</span>);
+Ads-><span class="fn">OnInterstitialLoaded</span>.AddDynamic(<span class="kw">this</span>, &amp;<span class="type">AMyActor</span>::OnInterstitialReady);
+Ads-><span class="fn">OnInterstitialDismissed</span>.AddDynamic(<span class="kw">this</span>, &amp;<span class="type">AMyActor</span>::OnInterstitialDone);
 
 <span class="cm">// Pre-load:</span>
 <span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">LoadInterstitial</span>();
@@ -802,20 +831,20 @@ Manager-><span class="fn">OnInterstitialDismissed</span>.AddDynamic(<span class=
   <div class="topbar"><h2>C++ — Rewarded Video</h2></div>
   <article>
     <h1>C++: Rewarded Video</h1>
-    <pre><code><span class="kw">#include</span> <span class="str">"AdBotManager.h"</span>
+    <pre><code><span class="kw">#include</span> <span class="str">"AdBotSubsystem.h"</span>
 <span class="kw">#include</span> <span class="str">"AdBotBlueprintLibrary.h"</span>
 
-<span class="type">UAdBotManager</span>* Manager = <span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">GetAdBotManager</span>(<span class="kw">this</span>);
+<span class="type">UAdBotSubsystem</span>* Ads = <span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">GetAdBotSubsystem</span>(<span class="kw">this</span>);
 
-Manager-><span class="fn">OnRewardGranted</span>.AddDynamic(<span class="kw">this</span>, &amp;<span class="type">AMyActor</span>::HandleReward);
-Manager-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">this</span>, &amp;<span class="type">AMyActor</span>::HandleDismissed);
+Ads-><span class="fn">OnRewardGranted</span>.AddDynamic(<span class="kw">this</span>, &amp;<span class="type">AMyActor</span>::HandleReward);
+Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">this</span>, &amp;<span class="type">AMyActor</span>::HandleDismissed);
 
-<span class="cm">// Load with optional keywords:</span>
-<span class="type">TArray</span>&lt;<span class="type">FString</span>&gt; Keywords = { <span class="str">"bonus"</span>, <span class="str">"coins"</span> };
-Manager-><span class="fn">LoadRewarded</span>(Keywords);
+<span class="cm">// Load with optional context tags:</span>
+<span class="type">TArray</span>&lt;<span class="type">FString</span>&gt; Tags = { <span class="str">"bonus"</span>, <span class="str">"coins"</span> };
+<span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">LoadRewarded</span>(Tags);
 
-<span class="cm">// Show:</span>
-Manager-><span class="fn">ShowRewarded</span>();
+<span class="cm">// Show (after OnRewardedLoaded):</span>
+<span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">ShowRewarded</span>();
 
 <span class="cm">// Reward callback:</span>
 <span class="kw">void</span> <span class="type">AMyActor</span>::<span class="fn">HandleReward</span>(<span class="type">FString</span> RewardName, <span class="type">int64</span> RewardAmount) {
@@ -940,7 +969,7 @@ Manager-><span class="fn">ShowRewarded</span>();
       <li><strong>Service accounts → Generate new private key</strong> (JSON).</li>
       <li>Enable FCM API in Google Cloud.</li>
       <li>AppMetrica → Settings → Push notifications → upload JSON under <strong>FCM service account key</strong>.</li>
-      <li>AdBot: <strong>Enable AppMetrica Push</strong>, <strong>Use Firebase Transport</strong>; use <code>google-services.json</code> or manual Firebase fields — see Project Settings table on <a href="#" onclick="show('settings',document.querySelector('[onclick*=settings]'));return false;">Project Settings</a> page.</li>
+      <li>AdBot: <strong>Enable AppMetrica Push</strong>, <strong>Use Firebase Transport</strong>; either <strong>Prefer Google Services Json</strong> + path to <code>google-services.json</code>, or toggle off + manual Firebase fields — see <a href="#" onclick="show('settings',document.querySelector('[onclick*=settings]'));return false;">Project Settings</a>.</li>
     </ol>
     <h2>Huawei HMS</h2>
     <ol>
@@ -1156,7 +1185,7 @@ Manager-><span class="fn">ShowRewarded</span>();
     <pre><code>adb logcat -s YaAdsBridge:D YandexAds:I AdBotMetrica:I AdBotPush:D</code></pre>
     <div class="page-nav">
       <a href="#" onclick="show('bp-metrica',document.querySelector('[onclick*=bp-metrica]'))"><span class="label">Previous</span>Blueprint: AppMetrica</a>
-      <a href="#" class="next" onclick="show('known-issues',document.querySelector('[onclick*=known-issues]'))"><span class="label">Next</span>Known Issues</a>
+      <a href="#" class="next" onclick="show('tips',document.querySelector('[onclick*=tips]'))"><span class="label">Next</span>Tips &amp; troubleshooting</a>
     </div>
   </article>
 </section>
@@ -1165,33 +1194,20 @@ Manager-><span class="fn">ShowRewarded</span>();
 
 
 
-<!-- KNOWN ISSUES -->
-<section id="known-issues" class="page-section">
-  <div class="topbar"><h2>Known Issues</h2></div>
+<!-- TIPS -->
+<section id="tips" class="page-section">
+  <div class="topbar"><h2>Tips &amp; troubleshooting</h2></div>
   <article>
-    <h1>Known issues (current build)</h1>
-    <p>Status as of plugin integration with Yandex Mobile Ads <strong>8.0.0</strong> on Unreal <strong>GameActivity</strong> + Android.</p>
+    <h1>Tips &amp; troubleshooting</h1>
+    <p>Practical notes for Yandex Mobile Ads <strong>8.0.0</strong> on Unreal <strong>GameActivity</strong> (Android).</p>
 
-    <h2>Rewarded video — not reliable</h2>
-    <div class="callout danger">
-      <strong>Do not rely on rewarded for production yet</strong>
-      API and Blueprint nodes exist, but display is unstable in the current build.
-    </div>
-    <h3>Symptoms</h3>
+    <h2>Rewarded video — best results</h2>
     <ul>
-      <li><code>Rewarded ad loaded successfully</code> then <code>Rewarded ad dismissed (durationMs=100–300, hadImpression=false)</code> — user sees no video.</li>
-      <li><code>Failed to load rewarded ad: Ad request completed successfully, but there are no ads available.</code> on production <code>R-M-…</code> blocks (inventory / moderation).</li>
-      <li>Demo unit <code>demo-rewarded-yandex</code> may work once or twice; not stable with HTTPS proxy or heavy fullscreen sequencing.</li>
+      <li>Show a <strong>banner</strong> first in the session, then load/show rewarded (see <a href="#" onclick="show('rewarded',document.querySelector('[onclick*=rewarded]'));return false;">Rewarded Video</a>).</li>
+      <li>Use <code>demo-rewarded-yandex</code> while developing; switch to your <code>R-M-…</code> block for release and rebuild the APK.</li>
+      <li>If load returns <em>no ads available</em>, check block moderation and inventory in the Yandex partner cabinet.</li>
+      <li>Avoid HTTPS MITM (Charles/Fiddler) on device builds that play video ads — it can break VAST.</li>
     </ul>
-    <h3>Likely causes</h3>
-    <ul>
-      <li><strong>UE SurfaceView</strong> — fullscreen game surface stacking over the ad layer (plugin lowers z-order on show; still fragile on some devices/MIUI).</li>
-      <li><strong>Parallel loaders</strong> — loading rewarded while banner/interstitial/app-open pipelines run (plugin defers loads; avoid manual spam).</li>
-      <li><strong>HTTPS MITM</strong> — Charles/Fiddler without proper <code>networkSecurityConfig</code> breaks VAST/video.</li>
-      <li><strong>Empty inventory</strong> — real rewarded block not approved or no fill in your region.</li>
-    </ul>
-    <h3>What works instead</h3>
-    <p>Banner (with <em>Default Banner Size Preset</em> 90&nbsp;dp), interstitial, and app open are verified in testing. Use those formats until rewarded is fixed in a future AdBot release.</p>
 
     <h2>Banner — Invalid SDK state (mitigated)</h2>
     <p>On cold start with <code>demo-banner-yandex</code>, <code>BannerAdView.loadAd</code> could return <em>Invalid SDK state</em>. Mitigations in plugin: WebView warmup, deferred first load, AppMetrica activate, preset 90&nbsp;dp (index 7), retries. Prefer production <code>R-M-…</code> banner ID for release.</p>
@@ -1257,8 +1273,8 @@ Manager-><span class="fn">ShowRewarded</span>();
     <h3>How do I test ads without a real Yandex account?</h3>
     <p>Use the demo placement IDs:<br>
     <code>demo-banner-yandex</code>, <code>demo-interstitial-yandex</code>, <code>demo-rewarded-yandex</code>, <code>demo-appopenad-yandex</code></p>
-    <h3>Rewarded video does not work / closes instantly</h3>
-    <p>See the dedicated <a href="#" onclick="show('known-issues',document.querySelector('[onclick*=known-issues]'));return false;">Known Issues</a> page. Typical Logcat: <code>hadImpression=false</code>, duration under 300&nbsp;ms, or <code>no ads available</code> on production units.</p>
+    <h3>How do I show rewarded video?</h3>
+    <p>Use <strong>Load Rewarded Video</strong> → <em>Ad Loaded</em> → <strong>Show Rewarded Video</strong>. Set <strong>Rewarded Ad Unit ID</strong> in Project Settings. On Android, show a banner earlier in the same session before the first rewarded load. Full flow: <a href="#" onclick="show('bp-rewarded',document.querySelector('[onclick*=bp-rewarded]'));return false;">Blueprint: Rewarded Video</a>.</p>
     <h3>AppMetrica vs Yandex.Metrica (web)</h3>
     <p>AdBot uses <strong>AppMetrica</strong> (mobile SDK). Web site counters (Yandex.Metrica) are a different product — use AppMetrica cabinet for game events.</p>
     <h3>Wrong banner height (50 dp instead of 90 dp)</h3>

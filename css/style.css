@@ -176,6 +176,16 @@ tbody tr:hover { background: #f8f9fc; }
 .img-placeholder.md { height: 220px; }
 .img-placeholder.lg { height: 320px; }
 
+.img-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+}
+@media (max-width: 900px) {
+    .img-grid { grid-template-columns: 1fr; }
+}
+
 /* ===== FEATURE CARDS ===== */
 .feature-grid {
     display: grid;

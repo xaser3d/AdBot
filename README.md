@@ -1,6 +1,6 @@
 # AdBot — documentation (GitHub Pages)
 
-Unreal Engine **Android** plugin: **Yandex Mobile Ads SDK 8**, **AppMetrica Analytics 8.2**, optional **AppMetrica Push 4.3** (FCM/HMS), and **Yandex Mediation** adapters (VK, Mintegral, BIGO, Liftoff, InMobi). Ad formats: banner, interstitial, app open; rewarded — see Known Issues.
+Unreal Engine **Android** plugin: **Yandex Mobile Ads SDK 8**, **AppMetrica Analytics 8.2**, optional **AppMetrica Push 4.3** (FCM/HMS), and **Yandex Mediation** adapters (VK, Mintegral, BIGO, Liftoff, InMobi). Ad formats: banner, interstitial, **rewarded video**, and app open — Blueprint async nodes for load/show.
 
 **Live site:** [https://xaser3d.github.io/AdBot/](https://xaser3d.github.io/AdBot/)
 
