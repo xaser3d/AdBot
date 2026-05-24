@@ -139,6 +139,7 @@
         <tr><td>Load App Open / Show App Open</td><td>AdBot | App Open</td></tr>
       </tbody>
     </table>
+    <p>Load/show nodes expose object tokens and structured errors: <strong>Banner View</strong>, <strong>Interstitial Ad</strong>, <strong>Video</strong>, <strong>App Open Ad</strong>, plus <code>FAdBotAdError</code>. Fullscreen tokens are single-use Blueprint proxies; the native Yandex ad object stays on Android.</p>
     <div class="img-placeholder sm">[ Screenshot: Initialize Yandex Ads + Load Banner async nodes ]</div>
     <h2>Privacy &amp; Compliance</h2>
     <table>
@@ -420,10 +421,11 @@
     <ol>
       <li>Configure <strong>App Open Ad Unit ID</strong> in Project Settings.</li>
       <li>After <strong>Initialize Yandex Ads</strong> (or startup init), call <strong>Load App Open</strong>.</li>
-      <li>On <em>Ad Loaded</em> — call <strong>Show App Open</strong>.</li>
+      <li>On <em>Ad Loaded</em> — pass <strong>App Open Ad</strong> into <strong>Show App Open</strong>.</li>
       <li>On <em>Ad Dismissed</em> — call <strong>Load App Open</strong> again before the next show.</li>
     </ol>
-    <h2>Show App Open — outputs</h2>
+    <h2>App Open outputs</h2>
+    <p><strong>Load App Open</strong> and <strong>Show App Open</strong> expose <strong>App Open Ad</strong> and <strong>Error</strong>. The ad token is single-use; reload after dismiss or failed show.</p>
     <table>
       <thead><tr><th>Pin</th><th>When it fires</th></tr></thead>
       <tbody>
@@ -469,6 +471,8 @@
     <p>If <em>Init Yandex Ads SDK at Startup</em> is enabled and a banner unit ID is set, Android schedules the first banner load automatically (<code>sdk_init_auto</code>) using <strong>Default Banner Size Preset</strong>. You can still call <em>Load Banner</em> from Blueprint with another size — the plugin recycles <code>BannerAdView</code> when the preset changes.</p>
     <h2>No-Fill Auto-Retry</h2>
     <p>When Yandex returns empty inventory, the plugin automatically retries. Configure retries and delay in Project Settings (<em>Banner No-Fill Max Retries</em> / <em>Banner No-Fill Retry Delay Seconds</em>).</p>
+    <h2>Blueprint outputs</h2>
+    <p><strong>Load Banner</strong> outputs <strong>Banner View</strong> and <strong>Error</strong>. Save <strong>Banner View</strong> in a Blueprint variable and pass it into <strong>Show Banner</strong>. <strong>Show Banner</strong> returns the same <strong>Banner View</strong> plus <strong>Error</strong> on validation failures.</p>
     <h2>Delegates</h2>
     <table>
       <thead><tr><th>Delegate</th><th>Description</th></tr></thead>
@@ -496,14 +500,15 @@
     <h2>Async node flow</h2>
     <ol>
       <li>Call <strong>Load Interstitial</strong> (async).</li>
-      <li>On <em>Ad Loaded</em> — call <strong>Show Interstitial</strong> at a natural pause.</li>
+      <li>On <em>Ad Loaded</em> — pass <strong>Interstitial Ad</strong> into <strong>Show Interstitial</strong> at a natural pause.</li>
       <li>On <em>Ad Dismissed</em> — call <strong>Load Interstitial</strong> again before the next show.</li>
     </ol>
     <div class="callout">
       <strong>One ad at a time</strong>
       The plugin guards against double-show. Only one interstitial can be shown at a time.
     </div>
-    <h2>Show Interstitial — outputs</h2>
+    <h2>Interstitial outputs</h2>
+    <p><strong>Load Interstitial</strong> and <strong>Show Interstitial</strong> expose <strong>Interstitial Ad</strong> and <strong>Error</strong>. The ad token is single-use; reload after dismiss or failed show.</p>
     <table>
       <thead><tr><th>Pin</th><th>Description</th></tr></thead>
       <tbody>
