@@ -89,7 +89,7 @@
     <p>Five <strong>Yandex Mediation</strong> adapters (VK, Mintegral, BIGO, Liftoff, InMobi) are toggled in Project Settings. Drop the plugin into <code>Plugins/AdBot</code> and configure keys and unit IDs under <strong>Edit → Project Settings → Plugins → AdBot</strong>.</p>
     <div class="feature-grid">
       <div class="feature-card"><div class="icon">🎯</div><h4>4 Ad Formats</h4><p>Banner, Interstitial, Rewarded Video, App Open.</p></div>
-      <div class="feature-card"><div class="icon">🔵</div><h4>Blueprint First</h4><p>Every feature exposed as BlueprintCallable or async node. No C++ required.</p></div>
+      <div class="feature-card"><div class="icon">🔵</div><h4>Blueprint First</h4><p>Ads use async nodes (Initialize Yandex Ads, Load/Show Banner, …). Privacy, hide banner, and AppMetrica are callable. No C++ required.</p></div>
       <div class="feature-card"><div class="icon">🔒</div><h4>Privacy Controls</h4><p>User consent, COPPA, location tracking, GDPR-style flags.</p></div>
       <div class="feature-card"><div class="icon">📡</div><h4>5 Mediation Networks</h4><p>VK, Mintegral, BIGO, Liftoff, InMobi — enable in Project Settings and Yandex cabinet.</p></div>
       <div class="feature-card"><div class="icon">📊</div><h4>AppMetrica 8</h4><p>Events, profiles, sessions, device ID, crash reporting.</p></div>
@@ -203,8 +203,7 @@
         <tr><td>App Open Ad Unit ID</td><td>Placement ID for app-open format</td></tr>
         <tr><td>Default Banner Size Preset</td><td>Fallback only if <em>Auto Load Banner on SDK Init</em> is on (index 0 = Sticky 320&nbsp;dp classic banner)</td></tr>
         <tr><td>Auto Load Banner on SDK Init</td><td>Off by default — use <em>Load Banner</em> from Blueprint for size</td></tr>
-        <tr><td>Init Yandex Ads SDK at Startup</td><td>Initialize from <code>GameActivity.onCreate</code></td></tr>
-        <tr><td>Load Ad Data When Engine Starts</td><td>Call <em>Load Ad Data</em> after world init</td></tr>
+        <tr><td>Init Yandex Ads SDK at Startup</td><td>Initialize from <code>GameActivity.onCreate</code> — or call async <em>Initialize Yandex Ads</em> from Blueprint</td></tr>
         <tr><td>AppMetrica API Key</td><td>AppMetrica cabinet key — strongly recommended for Ads 8</td></tr>
         <tr><td>Init AppMetrica at Startup</td><td><code>AppMetrica.activate</code> from onCreate</td></tr>
         <tr><td>Banner No-Fill Max Retries</td><td>Auto-retry count on empty inventory (0 = disabled)</td></tr>
@@ -217,13 +216,13 @@
       <code>demo-banner-yandex</code> · <code>demo-interstitial-yandex</code> · <code>demo-rewarded-yandex</code> · <code>demo-appopenad-yandex</code>
     </div>
     <h2>3. Initialize in Blueprint</h2>
-    <p>Recommended chain: privacy → <strong>Activate AppMetrica</strong> (or enable <em>Init AppMetrica at Startup</em>) → <strong>Load Ad Data</strong> once at game start (GameMode or persistent widget):</p>
+    <p>Recommended chain: privacy → <strong>Activate AppMetrica</strong> (or <em>Init AppMetrica at Startup</em>) → <strong>Initialize Yandex Ads</strong> once per session (Game Instance <em>Event Init</em>), unless <em>Init Yandex Ads SDK at Startup</em> already ran on Android:</p>
     <div class="img-placeholder md has-img">
       <img src="images/bp-load-ad-async-nodes.png" alt="AdBot async load nodes: Load Banner, Load Interstitial, Load Rewarded Video, Load App Open" loading="lazy">
     </div>
     <div class="callout warn">
       <strong>Privacy first</strong>
-      If you use a consent dialog, call <strong>Set Yandex Ads User Consent</strong> and other privacy nodes <em>before</em> Load Ad Data.
+      If you use a consent dialog, call <strong>Set Yandex Ads User Consent</strong> and other privacy nodes <em>before</em> <strong>Initialize Yandex Ads</strong> (or before the first ad load if using startup init).
     </div>
     <h2>4. Package for Android</h2>
     <p>Build the project targeting Android. The plugin's UPL adds Yandex SDK and VK adapter Gradle dependencies automatically.</p>
@@ -251,6 +250,7 @@
         <tr><td><strong>HMS transport</strong></td><td>Often on by default</td><td><strong>Off by default</strong> — enable only for Huawei with HMS credentials.</td></tr>
         <tr><td><strong>Notifications (Android 13+)</strong></td><td>Manifest permission = notifications on</td><td><strong>Not true.</strong> User must approve the runtime dialog — see <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push setup</a>.</td></tr>
         <tr><td><strong>Firebase / FCM</strong></td><td>Only manual fields or only json path</td><td><strong>Prefer Google Services Json</strong> toggle + <strong>Google Services Json Path</strong> (when On and file exists), or toggle Off + manual Firebase fields. Rebuild APK after change.</td></tr>
+        <tr><td><strong>SDK init (Blueprint)</strong></td><td>Callable <em>Load Ad Data</em></td><td>Async <strong>Initialize Yandex Ads</strong> → exec <em>Ad Data Loaded</em>. Pure <strong>Is Ad Data Loaded</strong> to gate loads.</td></tr>
       </tbody>
     </table>
     <div class="callout danger">
@@ -285,8 +285,7 @@
     <table>
       <thead><tr><th>Property</th><th>Default</th><th>Description</th></tr></thead>
       <tbody>
-        <tr><td>Init Yandex Ads SDK at Startup (Android)</td><td>On</td><td>Runs <code>YandexAds.initialize</code> from <code>GameActivity.onCreate</code> using unit IDs below</td></tr>
-        <tr><td>Load Ad Data When Engine Starts</td><td>On</td><td>Module calls <em>Load Ad Data</em> once when the game world is ready</td></tr>
+        <tr><td>Init Yandex Ads SDK at Startup (Android)</td><td>On</td><td>Runs <code>YandexAds.initialize</code> from <code>GameActivity.onCreate</code> using unit IDs below. If off, call async <em>Initialize Yandex Ads</em> from Blueprint.</td></tr>
         <tr><td>Auto Load Banner on SDK Init</td><td>Off</td><td>When on, first banner uses <em>Default Banner Size Preset</em> without Blueprint <em>Load Banner</em></td></tr>
         <tr><td>Init AppMetrica at Startup (Android)</td><td>Off</td><td>Runs <code>AppMetrica.activate</code> from onCreate — enable if you use analytics before Blueprint</td></tr>
       </tbody>
@@ -322,11 +321,11 @@
     <table>
       <thead><tr><th>Property</th><th>Default</th><th>Gradle adapter (when ON)</th></tr></thead>
       <tbody>
-        <tr><td>Enable VK Ads (myTarget)</td><td>On</td><td><code>mobileads-mytarget:5.45.3.1</code></td></tr>
-        <tr><td>Enable Mintegral</td><td>On</td><td><code>mobileads-mintegral:17.0.41.0</code></td></tr>
-        <tr><td>Enable BIGO Ads</td><td>On</td><td><code>mobileads-bigoads:5.7.0.0</code></td></tr>
-        <tr><td>Enable Liftoff (Vungle)</td><td>On</td><td><code>mobileads-vungle:7.7.0.0</code></td></tr>
-        <tr><td>Enable InMobi</td><td>On</td><td><code>mobileads-inmobi:11.0.0.0</code></td></tr>
+        <tr><td>Enable VK Ads (myTarget)</td><td>Off</td><td><code>mobileads-mytarget:5.45.3.1</code></td></tr>
+        <tr><td>Enable Mintegral</td><td>Off</td><td><code>mobileads-mintegral:17.0.41.0</code></td></tr>
+        <tr><td>Enable BIGO Ads</td><td>Off</td><td><code>mobileads-bigoads:5.7.0.0</code></td></tr>
+        <tr><td>Enable Liftoff (Vungle)</td><td>Off</td><td><code>mobileads-vungle:7.7.0.0</code></td></tr>
+        <tr><td>Enable InMobi</td><td>Off</td><td><code>mobileads-inmobi:11.0.0.0</code></td></tr>
       </tbody>
     </table>
     <h2>AppMetrica Push (Android)</h2>
@@ -369,8 +368,8 @@
     <h1>Privacy &amp; Consent</h1>
     <p>AdBot exposes all Yandex SDK privacy controls as Blueprint nodes in the <strong>AdBot | Yandex Privacy</strong> category.</p>
     <div class="callout warn">
-      <strong>Call privacy nodes before Load Ad Data</strong>
-      Privacy flags are applied to Yandex SDK before <code>YandexAds.initialize</code>. Calling them after initialization is supported but preferred before.
+      <strong>Call privacy nodes before Initialize Yandex Ads</strong>
+      Privacy flags are applied to Yandex SDK before <code>YandexAds.initialize</code>. Calling them after initialization is supported but preferred before the async <em>Initialize Yandex Ads</em> node (or before startup init runs).
     </div>
     <h2>Available Nodes</h2>
     <table>
@@ -407,7 +406,7 @@
     <div class="img-placeholder md has-img">
       <img src="images/bp-yandex-privacy-targeting-nodes.png" alt="AdBot privacy and targeting nodes (Set Yandex Ads Age Restricted User, consent, targeting)" loading="lazy">
     </div>
-    <pre><code><span class="cm">// Call before Load Ad Data</span>
+    <pre><code><span class="cm">// Call before Initialize Yandex Ads (or before first ad if using startup init)</span>
 <span class="kw">Set Yandex Ads Age Restricted User</span> (Age Restricted: <span class="kw">true</span>)</code></pre>
     <h2>C++</h2>
     <pre><code><span class="kw">#include</span> <span class="str">"AdBotBlueprintLibrary.h"</span>
@@ -477,21 +476,22 @@
       </tbody>
     </table>
     <h2>Auto-load at startup</h2>
-    <p>If <em>Init Yandex Ads SDK at Startup</em> is enabled and a banner unit ID is set, Android schedules the first banner load automatically (<code>sdk_init_auto</code>) using <strong>Default Banner Size Preset</strong>. You can still call <em>Load Banner</em> from Blueprint with another size — the plugin recycles <code>BannerAdView</code> when the preset changes.</p>
+    <p>Only when <em>Auto Load Banner on SDK Init</em> is <strong>on</strong> (and a banner unit ID is set), Android loads the first banner using <strong>Default Banner Size Preset</strong> without Blueprint <em>Load Banner</em>. With the toggle off (default), call <em>Load Banner</em> after SDK init — <em>Load Banner → Banner Size</em> always overrides the preset.</p>
     <h2>No-Fill Auto-Retry</h2>
     <p>When Yandex returns empty inventory, the plugin automatically retries. Configure retries and delay in Project Settings (<em>Banner No-Fill Max Retries</em> / <em>Banner No-Fill Retry Delay Seconds</em>).</p>
     <h2>Blueprint outputs</h2>
     <p><strong>Load Banner</strong> outputs <strong>Banner View</strong> and <strong>Error</strong>. Save <strong>Banner View</strong> in a Blueprint variable and pass it into <strong>Show Banner</strong>. <strong>Show Banner</strong> returns the same <strong>Banner View</strong> plus <strong>Error</strong> on validation failures.</p>
-    <h2>Delegates</h2>
+    <h2>Async exec pins (Blueprint)</h2>
     <table>
-      <thead><tr><th>Delegate</th><th>Description</th></tr></thead>
+      <thead><tr><th>Node</th><th>Pin</th><th>When it fires</th></tr></thead>
       <tbody>
-        <tr><td>OnBannerLoaded</td><td>Banner ready and visible</td></tr>
-        <tr><td>OnBannerFailed</td><td>Load failed after all retries</td></tr>
-        <tr><td>OnBannerClicked</td><td>User tapped banner</td></tr>
-        <tr><td>OnBannerImpression</td><td>Impression recorded</td></tr>
+        <tr><td>Load Banner</td><td>Ad Loaded</td><td>Creative ready — wire <strong>Banner View</strong> into Show Banner</td></tr>
+        <tr><td>Load Banner</td><td>Failed To Load</td><td>Load error — read <strong>Error</strong></td></tr>
+        <tr><td>Show Banner</td><td>Then</td><td>Show request sent to native layer</td></tr>
+        <tr><td>Show Banner</td><td>Failed To Show</td><td>Validation failed — read <strong>Error</strong></td></tr>
       </tbody>
     </table>
+    <p class="callout" style="margin-top:12px;">C++ integrations can still bind <code>UAdBotSubsystem::OnBannerLoaded</code> and related multicast delegates; Blueprint graphs should use the async nodes above.</p>
     <div class="img-placeholder lg has-img">
       <img src="images/bp-banner-load-show.png" alt="Load Banner → Show Banner (Inline 90 dp, bottom anchor)" loading="lazy">
     </div>
@@ -625,7 +625,7 @@
     <pre><code>① <span class="kw">Set Yandex Ads User Consent</span>     (AdBot|Yandex Privacy)
 ② <span class="kw">Activate AppMetrica</span>            (AdBot|AppMetrica) — or enable Init AppMetrica at Startup
 ③ <span class="kw">Set Yandex Ad Targeting …</span>      (optional, AdBot|Yandex Targeting)
-④ <span class="kw">Load Ad Data</span>                   ← Yandex Ads initialize (if not already at startup)
+④ <span class="kw">Initialize Yandex Ads</span>        ← or enable Init Yandex Ads SDK at Startup (Android)
 ⑤ <span class="kw">Load Banner</span> / <span class="kw">Load Interstitial</span> / etc.
 ⑥ <span class="kw">Activate AppMetrica Push</span> (optional, after analytics + permission)</code></pre>
     <div class="page-nav">
@@ -640,17 +640,20 @@
   <div class="topbar"><h2>Blueprint Examples — Privacy</h2></div>
   <article>
     <h1>Blueprint: Privacy Setup</h1>
-    <p>Place this in your <strong>GameMode BeginPlay</strong> or a persistent widget — before any ad loads.</p>
-    <div class="img-placeholder lg">[ Blueprint graph: privacy nodes before Load Ad Data ]</div>
+    <p>Place this in your <strong>Game Instance Event Init</strong> (or before <em>Initialize Yandex Ads</em>) — before any ad loads.</p>
+    <div class="img-placeholder lg">[ Blueprint graph: privacy nodes before Initialize Yandex Ads ]</div>
     <h2>Minimal Consent Setup</h2>
     <pre><code><span class="cm">// If user accepted your consent dialog:</span>
 <span class="kw">Set Yandex Ads User Consent</span> (Consent: <span class="kw">true</span>)
-<span class="kw">Load Ad Data</span></code></pre>
+<span class="kw">Initialize Yandex Ads</span>
+  ↓ Ad Data Loaded
+<span class="cm">// then Load Banner, etc.</span></code></pre>
     <h2>With Logging (Development)</h2>
     <pre><code><span class="kw">Set Yandex Ads SDK Logging Enabled</span> (Enabled: <span class="kw">true</span>)
 <span class="kw">Set Yandex Ads Debug Error Indicator Enabled</span> (Enabled: <span class="kw">true</span>)
 <span class="kw">Set Yandex Ads User Consent</span> (Consent: <span class="kw">true</span>)
-<span class="kw">Load Ad Data</span></code></pre>
+<span class="kw">Initialize Yandex Ads</span>
+  ↓ Ad Data Loaded</code></pre>
     <div class="callout">
       <strong>Shipping builds</strong>
       Keep <em>SDK Logging</em> and <em>Debug Error Indicator</em> disabled (default) for release. Only enable for debug/development builds.
@@ -671,14 +674,14 @@
       <img src="images/bp-app-open-load-show.png" alt="Load App Open → Ad Loaded → Show App Open" loading="lazy">
     </div>
     <h2>Step-by-Step</h2>
-    <pre><code><span class="cm">// BeginPlay:</span>
-<span class="kw">Load Ad Data</span>
-  ↓ OnAdDataLoaded
+    <pre><code><span class="cm">// Game Instance Event Init (or after consent):</span>
+<span class="kw">Initialize Yandex Ads</span>
+  ↓ Ad Data Loaded
 <span class="kw">Load App Open</span>
-  ↓ OnAppOpenLoaded
+  ↓ Ad Loaded (App Open Ad)
 <span class="kw">Show App Open</span>
-  ↓ OnAppOpenDismissed
-<span class="kw">Load App Open</span>   <span class="cm">// reload for next session</span></code></pre>
+  ↓ Ad Dismissed
+<span class="kw">Load App Open</span>   <span class="cm">// reload before next show</span></code></pre>
     <div class="page-nav">
       <a href="#" onclick="show('bp-privacy',document.querySelector('[onclick*=bp-privacy]'))"><span class="label">Previous</span>Blueprint: Privacy</a>
       <a href="#" class="next" onclick="show('bp-banner',document.querySelector('[onclick*=bp-banner]'))"><span class="label">Next</span>Blueprint: Banner</a>
@@ -695,11 +698,11 @@
       <img src="images/bp-banner-load-show.png" alt="Load Banner → Show Banner" loading="lazy">
     </div>
     <h2>Basic Example</h2>
-    <pre><code><span class="kw">Load Ad Data</span>
-  ↓ OnAdDataLoaded
-<span class="kw">Load Banner</span> (Banner Size: Sticky Full Width)
-  ↓ OnBannerLoaded
-<span class="kw">Show Banner</span></code></pre>
+    <pre><code><span class="kw">Initialize Yandex Ads</span>
+  ↓ Ad Data Loaded
+<span class="kw">Load Banner</span> (Banner Size: Inline max height 90 dp, Anchor: Bottom)
+  ↓ Ad Loaded (Banner View)
+<span class="kw">Show Banner</span> (Banner View from Ad Loaded)</code></pre>
     <h2>Hide on Pause / Show on Resume</h2>
     <pre><code><span class="cm">// On pause:</span>
 <span class="kw">Hide Banner</span>
@@ -707,8 +710,8 @@
 <span class="cm">// On resume:</span>
 <span class="kw">Show Banner</span></code></pre>
     <div class="callout">
-      <strong>Is Banner Loaded?</strong>
-      Use the <em>Is Banner Loaded</em> pure node to gate <em>Show Banner</em> if needed.
+      <strong>Prefer async wiring</strong>
+      Connect <em>Load Banner → Ad Loaded</em> directly to <em>Show Banner</em> and pass the <strong>Banner View</strong> pin. Optional pure nodes: <em>Is Ad Data Loaded</em>, <em>Is Banner Loaded</em> (C++ / legacy checks only).
     </div>
     <div class="page-nav">
       <a href="#" onclick="show('bp-appopen',document.querySelector('[onclick*=bp-appopen]'))"><span class="label">Previous</span>Blueprint: App Open</a>
@@ -752,7 +755,7 @@
     <div class="img-placeholder lg">[ Screenshot: complete "Watch ad" button graph ]</div>
     <h2>Full async flow</h2>
     <pre><code><span class="cm">// Once per session (e.g. GameMode BeginPlay):</span>
-<span class="kw">Initialize Yandex Ads</span>   <span class="cm">// or startup init + Load Ad Data</span>
+<span class="kw">Initialize Yandex Ads</span>   <span class="cm">// skip if Init Yandex Ads SDK at Startup is on</span>
 <span class="kw">Load Banner</span> → <span class="kw">Show Banner</span>   <span class="cm">// wait for banner impression</span>
 
 <span class="cm">// Player taps "Watch ad":</span>
@@ -877,7 +880,7 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
 <span class="type">TArray</span>&lt;<span class="type">FString</span>&gt; Tags = { <span class="str">"bonus"</span>, <span class="str">"coins"</span> };
 <span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">LoadRewarded</span>(Tags);
 
-<span class="cm">// Show (after OnRewardedLoaded):</span>
+<span class="cm">// Show after subsystem OnRewardedLoaded (C++); Blueprint: use Show Rewarded Video async node</span>
 <span class="type">UAdBotBlueprintLibrary</span>::<span class="fn">ShowRewarded</span>();
 
 <span class="cm">// Reward callback:</span>
@@ -923,7 +926,7 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
     <h2>Startup vs Blueprint activate</h2>
     <ul>
       <li><strong>Init AppMetrica at Startup</strong> — <code>AppMetrica.activate</code> from <code>GameActivity.onCreate</code> (Project Settings).</li>
-      <li><strong>Activate AppMetrica</strong> node — call from Blueprint before <em>Load Ad Data</em> if startup init is off.</li>
+      <li><strong>Activate AppMetrica</strong> node — call from Blueprint before <em>Initialize Yandex Ads</em> if startup init is off.</li>
     </ul>
     <h2>Viewing data</h2>
     <p>Events and profiles appear in the <a href="https://appmetrica.yandex.com/" target="_blank">AppMetrica web cabinet</a> (reports, funnels, retention). Allow a few minutes delay for first events on a new install.</p>
@@ -941,10 +944,11 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
   <article>
     <h1>Blueprint: AppMetrica examples</h1>
     <h2>Minimal (with ads)</h2>
-    <pre><code><span class="cm">// GameMode BeginPlay — before Load Ad Data:</span>
+    <pre><code><span class="cm">// Game Instance Init — before Initialize Yandex Ads:</span>
 <span class="kw">Set Yandex Ads User Consent</span> (Consent: <span class="kw">true</span>)
 <span class="kw">Activate AppMetrica</span>
-<span class="kw">Load Ad Data</span></code></pre>
+<span class="kw">Initialize Yandex Ads</span>
+  ↓ Ad Data Loaded</code></pre>
     <h2>Level completed event</h2>
     <pre><code><span class="kw">Report AppMetrica Event</span>
   Event Name: <span class="str">"level_complete"</span>
@@ -981,7 +985,7 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
     <ol>
       <li>Create Android app in <a href="https://appmetrica.yandex.com/" target="_blank" rel="noopener">AppMetrica</a> → copy API key.</li>
       <li>Paste into <strong>Project Settings → AdBot → AppMetrica API Key</strong>.</li>
-      <li><strong>Init AppMetrica at Startup</strong> or <strong>Activate AppMetrica</strong> before <strong>Load Ad Data</strong>.</li>
+      <li><strong>Init AppMetrica at Startup</strong> or <strong>Activate AppMetrica</strong> before <strong>Initialize Yandex Ads</strong> (or before ads if SDK init runs at startup).</li>
       <li>Send events with <strong>Report AppMetrica Event</strong>; view reports in the cabinet.</li>
     </ol>
     <div class="page-nav">
@@ -1297,7 +1301,7 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
   <article>
     <h1>Frequently Asked Questions</h1>
     <h3>Ads don't show on device — "Invalid SDK state" in Logcat</h3>
-    <p>Enable SDK logging (<em>Set Yandex Ads SDK Logging Enabled</em> before <em>Load Ad Data</em>), open Logcat and search for <code>YandexAds</code>. Common causes: AppMetrica key not set, BannerAdView not yet in the view hierarchy, or calling load before initialization completes.</p>
+    <p>Enable SDK logging (<em>Set Yandex Ads SDK Logging Enabled</em> before <em>Initialize Yandex Ads</em>), open Logcat and search for <code>YandexAds</code> / <code>LogAdBot</code>. Common causes: AppMetrica key not set, calling <em>Load Banner</em> before <em>Ad Data Loaded</em>, or parallel fullscreen loads right after init.</p>
     <h3>Can I use this plugin without the AppMetrica key?</h3>
     <p>Yes. Ads may work without a key, but Yandex Mobile Ads SDK 8 requires AppMetrica SDK to be present. Leave the key empty and monitor Logcat for any warnings. For production, provide a real AppMetrica API key.</p>
     <h3>Does this plugin support iOS?</h3>
