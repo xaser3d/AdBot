@@ -203,6 +203,37 @@ tbody tr:hover { background: #f8f9fc; }
     .img-grid { grid-template-columns: 1fr; }
 }
 
+.issue-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 20px 0 28px;
+}
+.issue-btn {
+    display: inline-block;
+    padding: 11px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid #d5e0ff;
+    color: #3a6fff;
+    background: #fff;
+    transition: background 0.15s, box-shadow 0.15s;
+}
+.issue-btn:hover {
+    background: #f0f4ff;
+    box-shadow: 0 2px 8px rgba(58, 111, 255, 0.12);
+}
+.issue-btn.primary {
+    background: #3a6fff;
+    border-color: #3a6fff;
+    color: #fff;
+}
+.issue-btn.primary:hover {
+    background: #2d5ce6;
+}
+
 /* ===== FEATURE CARDS ===== */
 .feature-grid {
     display: grid;
