@@ -445,13 +445,8 @@
         <tr><td>Ad Dismissed</td><td>User closed the ad</td></tr>
       </tbody>
     </table>
-    <div class="img-grid">
-      <div class="img-placeholder md has-img">
-      <img src="images/bp-load-app-open-async.png" alt="Load App Open async node (AdBot | App Open)" loading="lazy">
-    </div>
-      <div class="img-placeholder md has-img">
-      <img src="images/bp-show-app-open-async.png" alt="Show App Open async node (AdBot | App Open)" loading="lazy">
-    </div>
+    <div class="img-placeholder lg has-img">
+      <img src="images/bp-app-open-load-show.png" alt="Load App Open → Ad Loaded → Show App Open (AdBot | App Open)" loading="lazy">
     </div>
     <div class="page-nav">
       <a href="#" onclick="show('coppa',document.querySelector('[onclick*=coppa]'))"><span class="label">Previous</span>COPPA</a>
@@ -673,7 +668,9 @@
   <div class="topbar"><h2>Blueprint Examples — App Open</h2></div>
   <article>
     <h1>Blueprint: App Open</h1>
-    <div class="img-placeholder lg">[ Blueprint graph: Load App Open → OnAppOpenLoaded → Show App Open ]</div>
+    <div class="img-placeholder lg has-img">
+      <img src="images/bp-app-open-load-show.png" alt="Load App Open → Ad Loaded → Show App Open" loading="lazy">
+    </div>
     <h2>Step-by-Step</h2>
     <pre><code><span class="cm">// BeginPlay:</span>
 <span class="kw">Load Ad Data</span>
