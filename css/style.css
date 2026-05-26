@@ -176,6 +176,7 @@ tbody tr:hover { background: #f8f9fc; }
 .img-placeholder.md { height: 220px; }
 .img-placeholder.lg { height: 320px; }
 
+<<<<<<< Updated upstream
 .img-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -184,6 +185,25 @@ tbody tr:hover { background: #f8f9fc; }
 }
 @media (max-width: 900px) {
     .img-grid { grid-template-columns: 1fr; }
+=======
+.doc-figure {
+    margin: 18px 0;
+    max-width: 720px;
+}
+.doc-figure img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border: 1px solid #d8e0ef;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(26, 31, 46, 0.08);
+}
+.doc-figure figcaption {
+    margin-top: 8px;
+    font-size: 12.5px;
+    color: #6a7480;
+    text-align: center;
+>>>>>>> Stashed changes
 }
 
 /* ===== FEATURE CARDS ===== */

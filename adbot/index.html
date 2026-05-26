@@ -189,7 +189,10 @@
     <p>Restart the editor. In <strong>Edit → Plugins</strong>, find <em>AdBot</em> under the Advertising category and enable it.</p>
     <h2>2. Configure Ad Unit IDs</h2>
     <p>Open <strong>Edit → Project Settings → Plugins → AdBot</strong> and enter your Yandex Advertising Network placement IDs:</p>
-    <div class="img-placeholder md">[ Project Settings screenshot ]</div>
+    <figure class="doc-figure">
+      <img src="images/project-settings-adbot.png" alt="Edit → Project Settings → Plugins → AdBot" width="720" loading="lazy">
+      <figcaption>Project Settings → Plugins → AdBot (Startup, Yandex Mobile Ads, Mediation, AppMetrica, Push)</figcaption>
+    </figure>
     <table>
       <thead><tr><th>Setting</th><th>Description</th></tr></thead>
       <tbody>
@@ -271,8 +274,16 @@
   <div class="topbar"><h2>Project Settings</h2></div>
   <article>
     <h1>Project Settings</h1>
+<<<<<<< Updated upstream
     <p>All AdBot settings live in <strong>Edit → Project Settings → Plugins → AdBot</strong> and are saved to <code>Config/DefaultAdBot.ini</code> in the <strong>project root</strong> (<code>config = AdBot</code>). Do <strong>not</strong> use <code>DefaultGame.ini</code> for <code>[/Script/AdBot.AdBotSettings]</code> — that section is ignored.</p>
     <div class="img-placeholder md">[ Project Settings AdBot panel screenshot ]</div>
+=======
+    <p>All AdBot settings live in <strong>Edit → Project Settings → Plugins → AdBot</strong> and are stored in <code>DefaultGame.ini</code>.</p>
+    <figure class="doc-figure">
+      <img src="images/project-settings-adbot.png" alt="AdBot plugin settings in Unreal Engine Project Settings" width="720" loading="lazy">
+      <figcaption>All AdBot categories in Project Settings</figcaption>
+    </figure>
+>>>>>>> Stashed changes
     <h2>Startup</h2>
     <table>
       <thead><tr><th>Property</th><th>Default</th><th>Description</th></tr></thead>
