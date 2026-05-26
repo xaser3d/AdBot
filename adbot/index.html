@@ -218,7 +218,9 @@
     </div>
     <h2>3. Initialize in Blueprint</h2>
     <p>Recommended chain: privacy → <strong>Activate AppMetrica</strong> (or enable <em>Init AppMetrica at Startup</em>) → <strong>Load Ad Data</strong> once at game start (GameMode or persistent widget):</p>
-    <div class="img-placeholder sm">[ Load Ad Data Blueprint node ]</div>
+    <div class="img-placeholder md has-img">
+      <img src="images/bp-load-ad-async-nodes.png" alt="AdBot async load nodes: Load Banner, Load Interstitial, Load Rewarded Video, Load App Open" loading="lazy">
+    </div>
     <div class="callout warn">
       <strong>Privacy first</strong>
       If you use a consent dialog, call <strong>Set Yandex Ads User Consent</strong> and other privacy nodes <em>before</em> Load Ad Data.
