@@ -1355,6 +1355,40 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
     </ul>
     <div class="page-nav">
       <a href="#" onclick="show('faq',document.querySelector('[onclick*=faq]'))"><span class="label">Previous</span>FAQ</a>
+      <a href="#" class="next" onclick="show('issues',document.querySelector('[onclick*=issues]'))"><span class="label">Next</span>Issues &amp; requests</a>
+    </div>
+  </article>
+</section>
+
+<!-- ISSUES -->
+<section id="issues" class="page-section">
+  <div class="topbar"><h2>Issues &amp; requests</h2></div>
+  <article>
+    <h1>GitHub Issues</h1>
+    <p>Bug reports, integration help, and feature requests are tracked in the public issue tracker:</p>
+    <p><a href="https://github.com/xaser3d/AdBot/issues" target="_blank" rel="noopener">github.com/xaser3d/AdBot/issues</a></p>
+    <div class="issue-actions">
+      <a class="issue-btn primary" href="https://github.com/xaser3d/AdBot/issues/new" target="_blank" rel="noopener">Open new issue</a>
+      <a class="issue-btn" href="https://github.com/xaser3d/AdBot/issues" target="_blank" rel="noopener">Browse issues</a>
+      <a class="issue-btn" href="https://github.com/xaser3d/AdBot" target="_blank" rel="noopener">Repository</a>
+    </div>
+    <h2>What to include</h2>
+    <table>
+      <thead><tr><th>Type</th><th>Please add</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Bug</strong></td><td>UE version, AdBot version, Android device/OS, steps to reproduce, Logcat (<code>YandexAds</code>, <code>LogAdBot</code>, <code>YaAdsBridge</code>), Debug Panel screenshot</td></tr>
+        <tr><td><strong>Integration</strong></td><td>Whether settings are in <code>Config/DefaultAdBot.ini</code>, Blueprint graph (Initialize Yandex Ads → load/show), demo vs production unit IDs</td></tr>
+        <tr><td><strong>Feature request</strong></td><td>Use case, expected behaviour, link to Yandex SDK docs if relevant</td></tr>
+      </tbody>
+    </table>
+    <div class="callout warn">
+      <strong>Before opening an issue</strong>
+      Try demo ad units (<code>demo-banner-yandex</code>, etc.), read <a href="#" onclick="show('faq',document.querySelector('[onclick*=faq]'));return false;">FAQ</a> and <a href="#" onclick="show('integration-changes',document.querySelector('[onclick*=integration-changes]'));return false;">What changed</a>. For ads not showing, capture output from <a href="#" onclick="show('debug',document.querySelector('[onclick*=debug]'));return false;">Debug Panel</a>.
+    </div>
+    <h2>Not a GitHub issue?</h2>
+    <p>Marketplace / Fab purchase support may go through Epic’s channel for the product listing. Technical AdBot questions still benefit from a public issue (others can search answers later).</p>
+    <div class="page-nav">
+      <a href="#" onclick="show('debug',document.querySelector('[onclick*=debug]'))"><span class="label">Previous</span>Debug Panel</a>
       <a href="#" class="next" onclick="show('contact',document.querySelector('[onclick*=contact]'))"><span class="label">Next</span>Contact</a>
     </div>
   </article>
@@ -1365,9 +1399,9 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
   <div class="topbar"><h2>Contact</h2></div>
   <article>
     <h1>Contact &amp; Support</h1>
-    <p>If you have questions or found a bug, open an issue on GitHub or reach out directly.</p>
+    <p>For bugs and feature requests, use <a href="#" onclick="show('issues',document.querySelector('[onclick*=issues]'));return false;">GitHub Issues</a> (<a href="https://github.com/xaser3d/AdBot/issues/new" target="_blank" rel="noopener">open new issue</a>).</p>
     <h2>GitHub Repository</h2>
-    <p><a href="https://github.com/xaser3d/AdBot" target="_blank">github.com/xaser3d/AdBot</a></p>
+    <p><a href="https://github.com/xaser3d/AdBot" target="_blank" rel="noopener">github.com/xaser3d/AdBot</a> · <a href="https://github.com/xaser3d/AdBot/issues" target="_blank" rel="noopener">Issues</a></p>
     <h2>Before Contacting Support</h2>
     <ol>
       <li>Enable SDK Logging and capture a Logcat output filtered by <code>YandexAds</code> and <code>AdBot</code>.</li>
@@ -1377,6 +1411,10 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
     <div class="callout">
       <strong>Demo ad units</strong>
       Always test with demo placement IDs first to confirm the plugin is wired correctly before filing a bug.
+    </div>
+    <div class="page-nav">
+      <a href="#" onclick="show('issues',document.querySelector('[onclick*=issues]'))"><span class="label">Previous</span>Issues &amp; requests</a>
+      <span></span>
     </div>
   </article>
 </section>
