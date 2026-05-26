@@ -15,6 +15,7 @@ Unreal Engine **Android** plugin: **Yandex Mobile Ads SDK 8**, **AppMetrica Anal
 | **Android 13+ notifications** (cannot enable by default) | [POST_NOTIFICATIONS](https://xaser3d.github.io/AdBot/adbot/index.html#push-setup) |
 | Yandex Mediation (5 networks) | Mediation |
 | SDK versions & APK rebuild | SDK & Android Build |
+| Bugs & feature requests | [GitHub Issues](https://github.com/xaser3d/AdBot/issues) · [Open new issue](https://github.com/xaser3d/AdBot/issues/new) |
 
 ## Local preview (Windows)
 
