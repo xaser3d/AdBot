@@ -1,6 +1,6 @@
 # AdBot — documentation (GitHub Pages)
 
-Unreal Engine **Android** plugin: **Yandex Mobile Ads SDK 8**, **AppMetrica Analytics 8.2**, optional **AppMetrica Push 4.3** (FCM/HMS), and **Yandex Mediation** adapters (VK, Mintegral, BIGO, Liftoff, InMobi). Ad formats: banner, interstitial, **rewarded video**, and app open — Blueprint async nodes for load/show. Rewarded nodes expose Video tokens, reward type/count, and structured Yandex error data.
+Unreal Engine **Android** plugin: **Yandex Mobile Ads SDK 8**, **AppMetrica Analytics 8.2**, optional **AppMetrica Push 4.3** (FCM/HMS) with **Push Startup Policy** (Ads First / Push First / Manual), and **Yandex Mediation** adapters (VK, Mintegral, BIGO, Liftoff, InMobi). Ad formats: banner, interstitial, **rewarded video**, and app open — Blueprint async nodes for load/show. Rewarded nodes expose Video tokens, reward type/count, and structured Yandex error data.
 
 **Live site:** [https://xaser3d.github.io/AdBot/](https://xaser3d.github.io/AdBot/)
 
@@ -9,7 +9,7 @@ Unreal Engine **Android** plugin: **Yandex Mobile Ads SDK 8**, **AppMetrica Anal
 | Topic | Page |
 |--------|------|
 | Overview, setup, Project Settings | [AdBot docs](https://xaser3d.github.io/AdBot/adbot/index.html) |
-| **What changed** (ini, push, notifications, banner) | [Integration checklist](https://xaser3d.github.io/AdBot/adbot/index.html#integration-changes) |
+| **What changed** (ini, push policy, notifications, banner) | [Integration checklist](https://xaser3d.github.io/AdBot/adbot/index.html#integration-changes) |
 | AppMetrica statistics (events, profiles, nodes) | Analytics + Blueprint: AppMetrica |
 | AppMetrica Push (Firebase + HMS setup) | Push Notifications + Blueprint: Push |
 | **Android 13+ notifications** (cannot enable by default) | [POST_NOTIFICATIONS](https://xaser3d.github.io/AdBot/adbot/index.html#push-setup) |

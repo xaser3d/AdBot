@@ -96,7 +96,7 @@
       <div class="feature-card"><div class="icon">🔒</div><h4>Privacy Controls</h4><p>User consent, COPPA, location tracking, GDPR-style flags.</p></div>
       <div class="feature-card"><div class="icon">📡</div><h4>5 Mediation Networks</h4><p>VK, Mintegral, BIGO, Liftoff, InMobi — enable in Project Settings and Yandex cabinet.</p></div>
       <div class="feature-card"><div class="icon">📊</div><h4>AppMetrica 8</h4><p>Events, profiles, sessions, device ID, crash reporting.</p></div>
-      <div class="feature-card"><div class="icon">🔔</div><h4>AppMetrica Push</h4><p>FCM + HMS, payload delegate, notification permission (Android 13+).</p></div>
+      <div class="feature-card"><div class="icon">🔔</div><h4>AppMetrica Push</h4><p>FCM + HMS, configurable startup policy (Ads First / Push First / Manual), payload delegate, Android 13+ permission.</p></div>
       <div class="feature-card"><div class="icon">🛠</div><h4>Debug Panel</h4><p>Yandex in-app integration checker for development builds.</p></div>
     </div>
 
@@ -163,7 +163,7 @@
     <h2>Yandex Mediation (5 networks)</h2>
     <p>Optional adapters: <strong>VK Ads (myTarget)</strong>, <strong>Mintegral</strong>, <strong>BIGO Ads</strong>, <strong>Liftoff (Vungle)</strong>, <strong>InMobi</strong>. Each has a toggle under <em>Project Settings → Yandex Mediation (Android)</em>. Enable the network in the <a href="https://partner.yandex.ru/" target="_blank" rel="noopener">Yandex Advertising Network</a> partner cabinet, then rebuild the APK. No extra Blueprint code.</p>
     <h2>AppMetrica Push (optional)</h2>
-    <p>When <em>Enable AppMetrica Push</em> is on, the APK includes FCM/HMS providers. See <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push: Setup</a>.</p>
+    <p>When <em>Enable AppMetrica Push</em> is on, the APK includes FCM/HMS providers. Startup timing is controlled by <strong>Push Startup Policy</strong> (<em>Ads First</em>, <em>Push First</em>, or <em>Manual</em>). See <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push: Setup</a>.</p>
     <div class="page-nav">
       <a href="#" onclick="show('home',document.querySelector('[onclick*=home]'))"><span class="label">Previous</span>Plugin Details</a>
       <a href="#" class="next" onclick="show('setup',document.querySelector('[onclick*=setup]'))"><span class="label">Next</span>Get Started</a>
@@ -249,10 +249,10 @@
         <tr><td><strong>Packaging</strong></td><td>Any copied ini path</td><td>UPL reads <strong>project root</strong> <code>Config/DefaultAdBot.ini</code>. In <code>DefaultGame.ini</code>, <code>AllowedConfigFiles</code> must be <code>Config/DefaultAdBot.ini</code> (not a wrong subfolder).</td></tr>
         <tr><td><strong>Banner size</strong></td><td>One preset in Project Settings</td><td><strong>Load Banner → Banner Size</strong> wins. <em>Default Banner Size Preset</em> applies only if <em>Auto Load Banner on SDK Init</em> is on and Blueprint has not called <em>Load Banner</em>.</td></tr>
         <tr><td><strong>AppMetrica statistics</strong></td><td>Same switch as push</td><td><strong>Independent.</strong> Analytics can work while push does not.</td></tr>
-        <tr><td><strong>Push activation</strong></td><td>Immediate at startup</td><td>With <em>Init AppMetrica Push at Startup</em>, activation waits for Yandex SDK init and <strong>first successful banner</strong> <code>onAdLoaded</code> (~90&nbsp;s fallback).</td></tr>
+        <tr><td><strong>Push activation</strong></td><td>Immediate at startup</td><td>Controlled by <strong>Push Startup Policy</strong> when <em>Init AppMetrica Push at Startup</em> is on: <strong>Ads First</strong> (default — waits for Yandex init + first successful banner <code>onAdLoaded</code>, ~90&nbsp;s fallback), <strong>Push First</strong> (push before ads + <em>Push First Ads Cooldown</em>), <strong>Manual</strong> (Blueprint only).</td></tr>
         <tr><td><strong>HMS transport</strong></td><td>Often on by default</td><td><strong>Off by default</strong> — enable only for Huawei with HMS credentials.</td></tr>
         <tr><td><strong>Notifications (Android 13+)</strong></td><td>Manifest permission = notifications on</td><td><strong>Not true.</strong> User must approve the runtime dialog — see <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push setup</a>.</td></tr>
-        <tr><td><strong>Firebase / FCM</strong></td><td>Only manual fields or only json path</td><td><strong>Prefer Google Services Json</strong> toggle + <strong>Google Services Json Path</strong> (when On and file exists), or toggle Off + manual Firebase fields. Rebuild APK after change.</td></tr>
+        <tr><td><strong>Firebase / FCM</strong></td><td>Only manual fields or only json path</td><td><strong>Import google-services.json…</strong>, or <strong>Prefer Google Services Json</strong> + path, or manual Firebase fields. When JSON mode is ON, <code>PushFirebase*</code> is <strong>auto-synced</strong> into <code>DefaultAdBot.ini</code> for <code>ymp_*</code> manifest meta (fields hidden in UI). Rebuild APK after change.</td></tr>
         <tr><td><strong>SDK init (Blueprint)</strong></td><td>Callable <em>Load Ad Data</em></td><td>Async <strong>Initialize Yandex Ads</strong> → exec <em>Ad Data Loaded</em>. Pure <strong>Is Ad Data Loaded</strong> to gate loads.</td></tr>
       </tbody>
     </table>
@@ -263,10 +263,11 @@
     <h2>Кратко (RU)</h2>
     <ul>
       <li>Настройки AdBot — только в <code>Config/DefaultAdBot.ini</code>, не в <code>DefaultGame.ini</code>.</li>
-      <li><strong>Статистика</strong> AppMetrica и <strong>push</strong> — разные цепочки; статистика может работать без доставки push.</li>
+      <li><strong>Статистика</strong> AppMetrica и <strong>push</strong> — разные цепочки; push требует <code>AppMetrica.activate()</code>, но не обязательно отправку статистики.</li>
+      <li><strong>Push Startup Policy:</strong> <em>Ads First</em> (по умолчанию), <em>Push First</em> (push раньше рекламы + cooldown), <em>Manual</em> (только Blueprint).</li>
       <li><strong>Android 13+:</strong> уведомления <strong>нельзя</strong> включить автоматически — нужен системный диалог и согласие пользователя.</li>
       <li>После изменения push/Firebase — <strong>полная пересборка APK</strong>.</li>
-      <li><strong>Firebase:</strong> переключатель <em>Prefer Google Services Json</em> + путь к json <strong>или</strong> ручные поля Firebase (см. Project Settings).</li>
+      <li><strong>Firebase:</strong> кнопка <em>Import google-services.json…</em>, переключатель <em>Prefer Google Services Json</em> + путь, <strong>или</strong> ручные поля. В JSON-режиме поля <code>PushFirebase*</code> синхронизируются в ini автоматически.</li>
     </ul>
     <div class="page-nav">
       <a href="#" onclick="show('settings',document.querySelector('[onclick*=settings]'))"><span class="label">Previous</span>Project Settings</a>
@@ -336,13 +337,16 @@
       <thead><tr><th>Property</th><th>Default</th><th>Description</th></tr></thead>
       <tbody>
         <tr><td>Enable AppMetrica Push</td><td>Off</td><td>Master switch — adds push SDK + <code>POST_NOTIFICATIONS</code> to manifest; <strong>requires APK rebuild</strong>. Does not enable the system Notifications toggle on Android 13+.</td></tr>
-        <tr><td>Init AppMetrica Push at Startup</td><td>Off</td><td>Defers <code>AppMetricaPush.activate</code> until SDK init + first banner <code>onAdLoaded</code></td></tr>
+        <tr><td>Init AppMetrica Push at Startup</td><td>Off</td><td>Auto <code>AppMetricaPush.activate</code> from onCreate — behaviour follows <strong>Push Startup Policy</strong></td></tr>
+        <tr><td>Push Startup Policy</td><td>Ads First</td><td><strong>Ads First:</strong> wait for Yandex init + first successful banner <code>onAdLoaded</code>. <strong>Push First:</strong> activate push first, delay ads by cooldown. <strong>Manual:</strong> no auto activate — call <em>Activate AppMetrica Push</em> from Blueprint. Shown when both push master switch and startup init are on.</td></tr>
+        <tr><td>Push First Ads Cooldown (ms)</td><td>2500</td><td><strong>Push First</strong> only: minimum delay before <code>YandexAds.initialize</code> and first ad loads after push activate (500–10000)</td></tr>
         <tr><td>Use Firebase Transport (FCM)</td><td>On</td><td>FCM + <code>push-provider-firebase</code></td></tr>
         <tr><td>Use HMS Transport</td><td>Off</td><td>Huawei Push + <code>push-provider-hms</code> — enable only on Huawei devices</td></tr>
-        <tr><td>Prefer Google Services Json</td><td>Off</td><td>When <strong>On</strong>, use <code>google-services.json</code> from the path below instead of manual Firebase fields</td></tr>
-        <tr><td>Google Services Json Path</td><td>—</td><td>Relative to project root, e.g. <code>Build/Android/google-services.json</code>. Shown when toggle is On; file must exist at APK build time</td></tr>
-        <tr><td>Firebase App ID / Sender ID / API Key / Project ID</td><td>—</td><td>When toggle is <strong>Off</strong> (or On but file missing) — see <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push setup</a></td></tr>
+        <tr><td>Prefer Google Services Json</td><td>Off</td><td>When <strong>On</strong>, copies <code>google-services.json</code> into the APK and <strong>auto-syncs</strong> <code>PushFirebase*</code> into <code>DefaultAdBot.ini</code> for <code>ymp_*</code> manifest meta</td></tr>
+        <tr><td>Google Services Json Path</td><td>—</td><td>Relative to project root, e.g. <code>Build/Android/google-services.json</code>. Shown when toggle is On; file must exist at APK build time. Or use <strong>Import google-services.json…</strong> in Project Settings.</td></tr>
+        <tr><td>Firebase App ID / Sender ID / API Key / Project ID</td><td>—</td><td>When toggle is <strong>Off</strong> — edit manually. When toggle is <strong>On</strong>, auto-synced from JSON (hidden in UI but written to ini). See <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push setup</a></td></tr>
         <tr><td>HMS App ID</td><td>—</td><td>From <code>agconnect-services.json</code> → <code>app_id</code></td></tr>
+        <tr><td>Default Notification Icon Name</td><td>—</td><td>Drawable resource name (without <code>@drawable/</code>) for the small push icon in the Android notification tray</td></tr>
       </tbody>
     </table>
     <div class="callout warn">
@@ -356,6 +360,10 @@
     <div class="callout warn">
       <strong>Statistics ≠ push</strong>
       AppMetrica events can work while push notifications do not (missing Firebase manifest meta, push not activated, or notification permission denied on Android 13+).
+    </div>
+    <div class="callout">
+      <strong>AppMetrica core vs statistics</strong>
+      Push requires <code>AppMetrica.activate()</code> (core SDK) but not statistics sending. <em>Statistics Enabled = false</em> still allows push; AdBot activates AppMetrica core with data sending off when needed.
     </div>
     <div class="page-nav">
       <a href="#" onclick="show('setup',document.querySelector('[onclick*=setup]'))"><span class="label">Previous</span>Get Started</a>
@@ -630,7 +638,7 @@
 ③ <span class="kw">Set Yandex Ad Targeting …</span>      (optional, AdBot|Yandex Targeting)
 ④ <span class="kw">Initialize Yandex Ads</span>        ← or enable Init Yandex Ads SDK at Startup (Android)
 ⑤ <span class="kw">Load Banner</span> / <span class="kw">Load Interstitial</span> / etc.
-⑥ <span class="kw">Activate AppMetrica Push</span> (optional, after analytics + permission)</code></pre>
+⑥ <span class="kw">Activate AppMetrica Push</span> (optional — required if policy is <em>Manual</em>; otherwise follows <em>Push Startup Policy</em>)</code></pre>
     <div class="page-nav">
       <a href="#" onclick="show('rewarded',document.querySelector('[onclick*=rewarded]'))"><span class="label">Previous</span>Rewarded Video</a>
       <a href="#" class="next" onclick="show('bp-privacy',document.querySelector('[onclick*=bp-privacy]'))"><span class="label">Next</span>Blueprint: Privacy</a>
@@ -912,6 +920,10 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
       <strong>One AppMetrica per app</strong>
       Do not enable the old marketplace <em>YandexAppMetrica</em> plugin (mobmetricalib 5.x) together with AdBot.
     </div>
+    <div class="callout">
+      <strong>Statistics vs push</strong>
+      <em>Statistics Enabled</em> controls event sending only. AppMetrica Push needs <code>AppMetrica.activate()</code> (core SDK), which AdBot can run even when statistics sending is off.
+    </div>
     <h2>Blueprint nodes</h2>
     <table>
       <thead><tr><th>Node</th><th>Description</th></tr></thead>
@@ -1011,8 +1023,22 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
       <li><strong>Service accounts → Generate new private key</strong> (JSON).</li>
       <li>Enable FCM API in Google Cloud.</li>
       <li>AppMetrica → Settings → Push notifications → upload JSON under <strong>FCM service account key</strong>.</li>
-      <li>AdBot: <strong>Enable AppMetrica Push</strong>, <strong>Use Firebase Transport</strong>; either <strong>Prefer Google Services Json</strong> + path to <code>google-services.json</code>, or toggle off + manual Firebase fields — see <a href="#" onclick="show('settings',document.querySelector('[onclick*=settings]'));return false;">Project Settings</a>.</li>
+      <li>AdBot: <strong>Enable AppMetrica Push</strong>, <strong>Use Firebase Transport</strong>; use <strong>Import google-services.json…</strong>, or <strong>Prefer Google Services Json</strong> + path to <code>google-services.json</code>, or toggle off + manual Firebase fields — see <a href="#" onclick="show('settings',document.querySelector('[onclick*=settings]'));return false;">Project Settings</a>.</li>
     </ol>
+    <h2>Push Startup Policy</h2>
+    <p>When <em>Init AppMetrica Push at Startup</em> is enabled, <strong>Push Startup Policy</strong> controls when <code>AppMetricaPush.activate</code> runs relative to Yandex Ads:</p>
+    <table>
+      <thead><tr><th>Policy</th><th>When push activates</th><th>Ads behaviour</th><th>Use when</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Ads First</strong> (default)</td><td>After Yandex SDK init + first <strong>successful</strong> banner <code>onAdLoaded</code> (~90&nbsp;s fallback)</td><td>Normal startup</td><td>Safe default — avoids <em>Invalid SDK state</em> from overlapping push and banner WebView</td></tr>
+        <tr><td><strong>Push First</strong></td><td>Early in <code>GameActivity.onCreate</code>, before Yandex Ads init</td><td>Yandex init and first ad loads delayed by <em>Push First Ads Cooldown (ms)</em> (default 2500)</td><td>Need FCM token / push registration immediately without waiting for a banner</td></tr>
+        <tr><td><strong>Manual</strong></td><td>Never automatically — call <em>Activate AppMetrica Push</em> from Blueprint</td><td>Normal startup</td><td>Full control over timing in game code</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <strong>AppMetrica core vs statistics</strong>
+      Push requires <code>AppMetrica.activate()</code> but not statistics sending. <em>Statistics Enabled = false</em> is OK — AdBot activates AppMetrica core with data sending off when push needs it.
+    </div>
     <h2>Huawei HMS</h2>
     <ol>
       <li>Huawei AppGallery Connect + SHA-256 for all signatures.</li>
@@ -1049,15 +1075,31 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
     <p><strong>Yes</strong> &mdash; notifications can appear in the Android tray while Unreal is closed. FCM/HMS and AppMetrica Push deliver them natively; Blueprint is not involved in showing the icon.</p>
     <p>Blueprint is required to register the device on first launch, request permission on Android 13+, and handle payload inside the game. See <a href="#" onclick="show('bp-push',document.querySelector('[onclick*=bp-push]'));return false;">Blueprint: Push</a> for three ready-made graphs (startup, cold start, foreground).</p>
     <h2>Runtime (Blueprint order)</h2>
+    <p>Exact order depends on <strong>Push Startup Policy</strong>. Common steps for all policies:</p>
     <ol>
       <li>Rebuild APK with <strong>Enable AppMetrica Push</strong> = ON (Firebase fields baked into manifest at build time).</li>
-      <li><strong>Activate AppMetrica</strong> (or <em>Init AppMetrica at Startup</em>).</li>
-      <li><strong>Load Banner</strong> at least once successfully if using <em>Init AppMetrica Push at Startup</em> (push waits for banner <code>onAdLoaded</code>).</li>
       <li><strong>Request Post Notifications Permission</strong> (Android 13+; on main screen after consent UI).</li>
-      <li><strong>Activate AppMetrica Push</strong> (or rely on deferred startup if <em>Init AppMetrica Push at Startup</em> is on).</li>
       <li><strong>Bind Push Payload Received</strong> on Game Instance.</li>
     </ol>
-    <p>Logcat: <code>adb logcat -s AdBotPush:I YaAdsBridge:I</code>. Look for <code>manifest_meta appIdLen=&gt;0</code>, <code>AppMetrica Push activated</code>. If the user denies permission, notifications stay off until enabled in system settings.</p>
+    <h3>Ads First (default)</h3>
+    <ol>
+      <li><strong>Activate AppMetrica</strong> (or <em>Init AppMetrica at Startup</em>).</li>
+      <li><strong>Initialize Yandex Ads</strong> (or startup init) → <strong>Load Banner</strong> → wait for successful <code>onAdLoaded</code>.</li>
+      <li>Push activates automatically if <em>Init AppMetrica Push at Startup</em> is on — or call <strong>Activate AppMetrica Push</strong> manually after the banner.</li>
+    </ol>
+    <h3>Push First</h3>
+    <ol>
+      <li>Push activates from <code>onCreate</code> — no banner wait.</li>
+      <li>Yandex Ads and first ad loads start after the cooldown (logcat: <code>PushFirst: delaying YandexAds.initialize … ms</code>).</li>
+      <li>Still call <strong>Request Post Notifications Permission</strong> from Blueprint on first main screen.</li>
+    </ol>
+    <h3>Manual</h3>
+    <ol>
+      <li><strong>Activate AppMetrica</strong> (or startup init).</li>
+      <li>Initialize ads and load banners as usual.</li>
+      <li>Call <strong>Activate AppMetrica Push</strong> when your game is ready.</li>
+    </ol>
+    <p>Logcat: <code>adb logcat -s AdBotPush:I YaAdsBridge:I FirebaseMessaging:I</code>. Look for <code>policy=AdsFirst</code> or <code>policy=PushFirst</code>, <code>manifest_meta appIdLen=&gt;0</code>, <code>AppMetrica Push activated</code>. If <code>appIdLen=0</code>, Firebase meta is missing — check JSON import / ini sync and rebuild. If the user denies permission, notifications stay off until enabled in system settings.</p>
     <div class="page-nav">
       <a href="#" onclick="show('metrica-start',document.querySelector('[onclick*=metrica-start]'))"><span class="label">Previous</span>Statistics</a>
       <a href="#" class="next" onclick="show('bp-push',document.querySelector('[onclick*=bp-push]'))"><span class="label">Next</span>Blueprint: Push Graphs</a>
@@ -1108,6 +1150,9 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
         <tr><td>Is AppMetrica Push Enabled</td><td>Pure</td><td>Branch if push was compiled into the APK (Project Settings)</td></tr>
         <tr><td>Activate AppMetrica Push</td><td>Callable / Async</td><td>Register FCM/HMS token (once per install/session)</td></tr>
         <tr><td>Is AppMetrica Push Activated</td><td>Pure</td><td>Check after async activation</td></tr>
+        <tr><td>Is Post Notifications Permission Granted</td><td>Pure</td><td>Android 13+ runtime permission state</td></tr>
+        <tr><td>Are Notifications Enabled</td><td>Pure</td><td>System notifications toggle for the app</td></tr>
+        <tr><td>Are Post Notifications Allowed</td><td>Pure</td><td>Combined check — use for Branch before requesting permission</td></tr>
         <tr><td>Request Post Notifications Permission</td><td>Callable</td><td>Android 13+ system dialog</td></tr>
         <tr><td>Bind Push Payload Received</td><td>Async</td><td>While UE runs; fires on each push with payload</td></tr>
         <tr><td>Was App Launched From Push</td><td>Pure</td><td>Cold start after user tapped notification</td></tr>
@@ -1137,7 +1182,7 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
   +-- <span class="kw">Handle Cold Start From Push</span>              <span class="cm">// Graph 2 - same Init</span></code></pre>
     <div class="callout">
       <strong>Startup without Blueprint</strong>
-      Enable <em>Init AppMetrica Push at Startup</em> in Project Settings to call <code>AppMetricaPush.activate</code> from <code>GameActivity.onCreate</code>. You still should call <em>Request Post Notifications Permission</em> and <em>Bind Push Payload Received</em> from Blueprint after the engine starts.
+      Enable <em>Init AppMetrica Push at Startup</em> and choose <strong>Push Startup Policy</strong> in Project Settings. <strong>Ads First</strong> defers push until the first successful banner; <strong>Push First</strong> activates push from <code>onCreate</code>; <strong>Manual</strong> requires <em>Activate AppMetrica Push</em> in Blueprint. You should still call <em>Request Post Notifications Permission</em> and <em>Bind Push Payload Received</em> from Blueprint after the engine starts.
     </div>
 
     <h2>Graph 2 &mdash; Cold start (app was killed, user tapped notification)</h2>
@@ -1161,16 +1206,18 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
 
     <h2>Recommended Project Settings</h2>
     <ul>
-      <li><strong>Enable AppMetrica Push</strong> = ON &rarr; rebuild APK</li>
+      <li><strong>Enable AppMetrica Push</strong> = ON → rebuild APK</li>
       <li><strong>AppMetrica API Key</strong> filled</li>
-      <li>FCM: <code>google-services.json</code> in <code>Build/Android/</code> or manual Firebase fields + JSON in AppMetrica cabinet</li>
+      <li>FCM: <code>google-services.json</code> via <strong>Import google-services.json…</strong>, or path + <em>Prefer Google Services Json</em>, or manual Firebase fields + JSON in AppMetrica cabinet</li>
+      <li><strong>Push Startup Policy</strong>: <em>Ads First</em> (default) unless you need early push registration — then <em>Push First</em></li>
       <li>Optional: <strong>Init AppMetrica at Startup</strong> + <strong>Init AppMetrica Push at Startup</strong> to reduce Blueprint calls</li>
     </ul>
 
     <h2>Test checklist</h2>
     <ol>
       <li>Package APK with push enabled; install on device.</li>
-      <li>Launch game once; wait for <code>AdBotPush: AppMetrica Push activated</code> in logcat.</li>
+      <li>Launch game once; in logcat check <code>policy=AdsFirst</code> or <code>policy=PushFirst</code> and <code>AdBotPush: AppMetrica Push activated</code>.</li>
+      <li>Verify <code>manifest_meta appIdLen&gt;0</code> — if zero, rebuild after fixing Firebase / JSON sync.</li>
       <li>Grant notification permission on Android 13+.</li>
       <li>Force-stop the app; send a test push from AppMetrica &rarr; notification should appear in the tray.</li>
       <li>Tap the notification &rarr; game opens; Graph 2 should read the payload.</li>
@@ -1254,6 +1301,9 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
     <h2>Banner — Invalid SDK state (mitigated)</h2>
     <p>On cold start with <code>demo-banner-yandex</code>, <code>BannerAdView.loadAd</code> could return <em>Invalid SDK state</em>. Mitigations in plugin: WebView warmup, deferred first load, AppMetrica activate, preset 90&nbsp;dp (index 7), retries. Prefer production <code>R-M-…</code> banner ID for release.</p>
 
+    <h2>Push vs banner WebView</h2>
+    <p>In <strong>Ads First</strong> policy, push waits for the first <strong>successful</strong> banner <code>onAdLoaded</code> because activating push during banner WebView load caused <em>Invalid SDK state</em>. If you need push registration immediately without a banner, switch to <strong>Push First</strong> — ads start after <em>Push First Ads Cooldown (ms)</em>.</p>
+
     <h2>Interstitial — slow first show</h2>
     <p>First interstitial may appear ~20–35&nbsp;s after launch while the banner priming pipeline runs (by design to avoid parallel WebView loaders). Subsequent interstitials load faster.</p>
 
@@ -1324,7 +1374,7 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
     <h3>Notifications disabled after install (Android 13+)</h3>
     <p><strong>Expected.</strong> Notifications cannot be on by default — call <em>Request Post Notifications Permission</em> and the user must tap Allow. Until then, system settings show notifications off. See <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">POST_NOTIFICATIONS</a> and <a href="#" onclick="show('integration-changes',document.querySelector('[onclick*=integration-changes]'));return false;">What changed</a>.</p>
     <h3>Push notifications do not arrive (but statistics work)</h3>
-    <p>Statistics (AppMetrica) and push are <strong>separate</strong>. Check: (1) settings in <code>Config/DefaultAdBot.ini</code>, not <code>DefaultGame.ini</code>; (2) <em>Enable AppMetrica Push</em> ON and <strong>APK rebuilt</strong> after Firebase field changes; (3) FCM JSON in AppMetrica cabinet; (4) <code>manifest_meta appIdLen&gt;0</code> in logcat; (5) banner reached <code>onAdLoaded</code> if using <em>Init AppMetrica Push at Startup</em>; (6) Android 13+ permission granted; (7) <code>adb logcat -s AdBotPush:I</code>. Full checklist: <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push setup</a>.</p>
+    <p>Statistics (AppMetrica) and push are <strong>separate</strong>. Check: (1) settings in <code>Config/DefaultAdBot.ini</code>, not <code>DefaultGame.ini</code>; (2) <em>Enable AppMetrica Push</em> ON and <strong>APK rebuilt</strong> after Firebase field changes; (3) FCM JSON in AppMetrica cabinet; (4) <code>manifest_meta appIdLen&gt;0</code> in logcat (if zero — re-import JSON or fill Firebase fields and save); (5) with <strong>Ads First</strong> policy, banner must reach successful <code>onAdLoaded</code> before auto push (use <strong>Push First</strong> to skip this); (6) Android 13+ permission granted; (7) <code>adb logcat -s AdBotPush:I</code>. Full checklist: <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push setup</a>.</p>
     <div class="page-nav">
       <a href="#" onclick="show('mediation',document.querySelector('[onclick*=mediation]'))"><span class="label">Previous</span>VK Ads Mediation</a>
       <a href="#" class="next" onclick="show('debug',document.querySelector('[onclick*=debug]'))"><span class="label">Next</span>Debug Panel</a>
