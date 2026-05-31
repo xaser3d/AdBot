@@ -68,6 +68,7 @@
     <a href="#" onclick="show('mediation',this)">Yandex Mediation (5 networks)</a>
 
     <div class="nav-section">Support</div>
+    <a href="#" onclick="show('legal',this)">License &amp; Legal</a>
     <a href="#" onclick="show('faq',this)">FAQ</a>
     <a href="#" onclick="show('debug',this)">Debug Panel</a>
     <a href="#" onclick="show('issues',this)">Issues &amp; requests</a>
@@ -1309,7 +1310,7 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
 
     <div class="page-nav">
       <a href="#" onclick="show('sdk-build',document.querySelector('[onclick*=sdk-build]'))"><span class="label">Previous</span>SDK &amp; Build</a>
-      <a href="#" class="next" onclick="show('mediation',document.querySelector('[onclick*=mediation]'))"><span class="label">Next</span>VK Ads Mediation</a>
+      <a href="#" class="next" onclick="show('legal',document.querySelector('[onclick*=legal]'))"><span class="label">Next</span>License &amp; Legal</a>
     </div>
   </article>
 </section>
@@ -1349,6 +1350,53 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
   </article>
 </section>
 
+<!-- LEGAL -->
+<section id="legal" class="page-section">
+  <div class="topbar"><h2>License &amp; Legal</h2></div>
+  <article>
+    <h1>License, EULA &amp; third-party SDKs</h1>
+    <p>AdBot is published by <strong>Sync3D</strong> on <a href="https://www.fab.com/" target="_blank" rel="noopener">Fab</a>. Legal files ship with the plugin in <code>Plugins/AdBot/</code> and are mirrored on this site.</p>
+    <table>
+      <thead><tr><th>File (in plugin folder)</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>LICENSE.txt</code></td><td>AdBot plugin EULA — use, restrictions, disclaimer</td></tr>
+        <tr><td><code>THIRD_PARTY_NOTICES.md</code></td><td>Gradle/Maven SDK list (Yandex, AppMetrica, Firebase, mediation) and buyer obligations</td></tr>
+        <tr><td><code>CHANGELOG.md</code></td><td>Version history</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <strong>Full legal page</strong>
+      EULA summary, third-party tables, and compliance checklist: <a href="../legal/index.html">License &amp; Legal (standalone)</a>.
+    </div>
+    <h2>EULA (summary)</h2>
+    <ul>
+      <li>License to use and modify AdBot source in your Unreal Engine projects (Fab/Epic terms also apply).</li>
+      <li>No redistribution or resale as a standalone marketplace plugin.</li>
+      <li>Third-party Android SDKs are resolved at APK build time — separate vendor licenses apply.</li>
+      <li>Provided &ldquo;AS IS&rdquo; without warranty. Sync3D: <a href="https://sync3d.com" target="_blank" rel="noopener">sync3d.com</a>.</li>
+    </ul>
+    <h2>Third-party SDKs (summary)</h2>
+    <p>SDK binaries are <strong>not</strong> bundled in the plugin ZIP. When you package Android, Gradle downloads for example:</p>
+    <ul>
+      <li><code>com.yandex.android:mobileads:8.0.0</code></li>
+      <li><code>io.appmetrica.analytics:analytics:8.2.0</code></li>
+      <li>Optional: mediation adapters, AppMetrica Push, Firebase/HMS (when enabled in Project Settings)</li>
+    </ul>
+    <p>You need your own Yandex / AppMetrica accounts; for push also Firebase and/or Huawei setup. See <a href="../legal/THIRD_PARTY_NOTICES.md">THIRD_PARTY_NOTICES.md</a>.</p>
+    <h2>Privacy &amp; compliance (your game)</h2>
+    <p>AdBot exposes technical privacy controls — it does <strong>not</strong> provide legal text or a CMP. You are responsible for GDPR, COPPA, ad consent, and Android 13+ notification permission.</p>
+    <ul>
+      <li><a href="#" onclick="show('privacy',document.querySelector('[onclick*=privacy]'));return false;">Privacy &amp; Consent</a></li>
+      <li><a href="#" onclick="show('coppa',document.querySelector('[onclick*=coppa]'));return false;">COPPA / Age Restricted</a></li>
+      <li><a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push — POST_NOTIFICATIONS</a></li>
+    </ul>
+    <div class="page-nav">
+      <a href="#" onclick="show('tips',document.querySelector('[onclick*=tips]'))"><span class="label">Previous</span>Tips &amp; troubleshooting</a>
+      <a href="#" class="next" onclick="show('faq',document.querySelector('[onclick*=faq]'))"><span class="label">Next</span>FAQ</a>
+    </div>
+  </article>
+</section>
+
 <!-- FAQ -->
 <section id="faq" class="page-section">
   <div class="topbar"><h2>FAQ</h2></div>
@@ -1361,7 +1409,7 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
     <h3>Does this plugin support iOS?</h3>
     <p>No. The plugin targets <strong>Android</strong> only via the Yandex Mobile Ads Android SDK. All JNI/UPL code is Android-specific. Blueprint nodes are safe to call on non-Android platforms (they do nothing).</p>
     <h3>Which Yandex SDK version is included?</h3>
-    <p>The plugin bundles <code>mobileads 8.0.0</code> (local Maven AAR) and the VK adapter <code>mobileads-mytarget 5.45.3.1</code>.</p>
+    <p>Gradle resolves <code>com.yandex.android:mobileads:8.0.0</code> and <code>io.appmetrica.analytics:analytics:8.2.0</code> from Maven at Android package time (not bundled in the plugin ZIP). Optional VK mediation adapter: <code>mobileads-mytarget:5.45.3.1</code> when enabled.</p>
     <h3>How do I test ads without a real Yandex account?</h3>
     <p>Use the demo placement IDs:<br>
     <code>demo-banner-yandex</code>, <code>demo-interstitial-yandex</code>, <code>demo-rewarded-yandex</code>, <code>demo-appopenad-yandex</code></p>
@@ -1376,7 +1424,7 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
     <h3>Push notifications do not arrive (but statistics work)</h3>
     <p>Statistics (AppMetrica) and push are <strong>separate</strong>. Check: (1) settings in <code>Config/DefaultAdBot.ini</code>, not <code>DefaultGame.ini</code>; (2) <em>Enable AppMetrica Push</em> ON and <strong>APK rebuilt</strong> after Firebase field changes; (3) FCM JSON in AppMetrica cabinet; (4) <code>manifest_meta appIdLen&gt;0</code> in logcat (if zero — re-import JSON or fill Firebase fields and save); (5) with <strong>Ads First</strong> policy, banner must reach successful <code>onAdLoaded</code> before auto push (use <strong>Push First</strong> to skip this); (6) Android 13+ permission granted; (7) <code>adb logcat -s AdBotPush:I</code>. Full checklist: <a href="#" onclick="show('push-setup',document.querySelector('[onclick*=push-setup]'));return false;">Push setup</a>.</p>
     <div class="page-nav">
-      <a href="#" onclick="show('mediation',document.querySelector('[onclick*=mediation]'))"><span class="label">Previous</span>VK Ads Mediation</a>
+      <a href="#" onclick="show('legal',document.querySelector('[onclick*=legal]'))"><span class="label">Previous</span>License &amp; Legal</a>
       <a href="#" class="next" onclick="show('debug',document.querySelector('[onclick*=debug]'))"><span class="label">Next</span>Debug Panel</a>
     </div>
   </article>

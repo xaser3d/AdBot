@@ -1,0 +1,26 @@
+AdBot Plugin — End User License Agreement (EULA)
+
+Copyright (c) Sync3D. All rights reserved.
+
+This plugin is sold and distributed via Fab (Epic Games). By installing or using AdBot, you agree to the following terms in addition to Fab/Epic marketplace terms.
+
+1. LICENSE GRANT
+   Epic Games grants you a license to use AdBot according to Fab marketplace rules. Sync3D grants you a non-exclusive license to use, modify, and compile the plugin source code included with AdBot solely as part of your Unreal Engine projects.
+
+2. RESTRICTIONS
+   You may not redistribute, resell, or sublicense AdBot (or substantial portions of its source) as a standalone plugin or competing marketplace product. You may not remove copyright or attribution notices from shipped documentation.
+
+3. THIRD-PARTY SOFTWARE
+   AdBot integrates with third-party Android SDKs (Yandex, Google, Huawei, mediation networks) resolved at build time via Gradle. Those SDKs are not part of this EULA. See THIRD_PARTY_NOTICES.md for coordinates and buyer obligations.
+
+4. ACCOUNTS & COMPLIANCE
+   You are responsible for obtaining ad network and analytics accounts, configuring unit IDs and keys, and complying with applicable privacy, advertising, and platform policies (including GDPR, COPPA, and Android notification permissions).
+
+5. DISCLAIMER
+   AdBot is provided "AS IS" without warranty of any kind. Sync3D and Epic Games disclaim liability for ad fill rates, revenue, SDK changes by third parties, store policy rejections, or damages arising from use of the plugin or integrated SDKs.
+
+6. SUPPORT
+   Support: https://github.com/xaser3d/AdBot/issues
+   Documentation: https://xaser3d.github.io/AdBot/adbot/index.html
+
+For questions about this EULA, contact Sync3D via https://sync3d.com

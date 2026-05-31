@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AdBot — License &amp; Legal</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="docs-hub">
+<div class="hub-inner" style="max-width:820px;">
+  <p style="margin-bottom:24px;font-size:13px;"><a href="../index.html">← All plugins</a> · <a href="../adbot/index.html">AdBot docs</a> · <a href="../adbot/index.html#legal">Legal (in docs)</a></p>
+
+  <div class="hub-hero">
+    <h1>AdBot — License &amp; Legal</h1>
+    <p>Plugin EULA, third-party SDK disclosure, and developer compliance notes. The same files ship inside the Fab plugin package as <code>LICENSE.txt</code> and <code>THIRD_PARTY_NOTICES.md</code> in <code>Plugins/AdBot/</code>.</p>
+  </div>
+
+  <article style="margin-top:32px;">
+    <h2 id="eula">End User License Agreement (EULA)</h2>
+    <p><strong>Copyright (c) Sync3D.</strong> AdBot is distributed via <a href="https://www.fab.com/" target="_blank" rel="noopener">Fab</a> (Epic Games). By installing or using the plugin you agree to Fab/Epic marketplace terms and the AdBot EULA below.</p>
+    <div class="callout" style="margin:20px 0;padding:16px 20px;background:#f4f6fa;border-left:4px solid #5b8cff;border-radius:4px;">
+      <strong>Summary</strong>
+      <ul style="margin:12px 0 0 20px;">
+        <li>Non-exclusive license to use and modify AdBot source in your Unreal Engine projects.</li>
+        <li>No redistribution or resale as a competing plugin product.</li>
+        <li>Third-party SDKs (Yandex, Google, Huawei, mediation) have separate vendor terms.</li>
+        <li>You are responsible for ad/analytics accounts, privacy compliance, and store policies.</li>
+        <li>Provided &ldquo;AS IS&rdquo; without warranty.</li>
+      </ul>
+    </div>
+    <p>Full text: <a href="LICENSE.txt">LICENSE.txt</a> (plain text)</p>
+    <pre style="background:#1a1f2e;color:#cdd6e8;padding:20px;border-radius:8px;font-size:12px;line-height:1.6;overflow-x:auto;white-space:pre-wrap;margin-top:16px;">AdBot Plugin — End User License Agreement (EULA)
+
+Copyright (c) Sync3D. All rights reserved.
+
+This plugin is sold and distributed via Fab (Epic Games). By installing or using AdBot, you agree to the following terms in addition to Fab/Epic marketplace terms.
+
+1. LICENSE GRANT
+   Epic Games grants you a license to use AdBot according to Fab marketplace rules. Sync3D grants you a non-exclusive license to use, modify, and compile the plugin source code included with AdBot solely as part of your Unreal Engine projects.
+
+2. RESTRICTIONS
+   You may not redistribute, resell, or sublicense AdBot (or substantial portions of its source) as a standalone plugin or competing marketplace product. You may not remove copyright or attribution notices from shipped documentation.
+
+3. THIRD-PARTY SOFTWARE
+   AdBot integrates with third-party Android SDKs (Yandex, Google, Huawei, mediation networks) resolved at build time via Gradle. Those SDKs are not part of this EULA. See THIRD_PARTY_NOTICES.md for coordinates and buyer obligations.
+
+4. ACCOUNTS &amp; COMPLIANCE
+   You are responsible for obtaining ad network and analytics accounts, configuring unit IDs and keys, and complying with applicable privacy, advertising, and platform policies (including GDPR, COPPA, and Android notification permissions).
+
+5. DISCLAIMER
+   AdBot is provided "AS IS" without warranty of any kind. Sync3D and Epic Games disclaim liability for ad fill rates, revenue, SDK changes by third parties, store policy rejections, or damages arising from use of the plugin or integrated SDKs.
+
+6. SUPPORT
+   Support: https://github.com/xaser3d/AdBot/issues
+   Documentation: https://xaser3d.github.io/AdBot/adbot/index.html
+
+For questions about this EULA, contact Sync3D via https://sync3d.com</pre>
+
+    <h2 id="third-party" style="margin-top:48px;">Third-Party Notices</h2>
+    <p>AdBot is an integration layer. <strong>SDK binaries are not included in the plugin ZIP.</strong> Gradle resolves them when you package Android. Full file: <a href="THIRD_PARTY_NOTICES.md">THIRD_PARTY_NOTICES.md</a>.</p>
+
+    <h3>Always included (Android package)</h3>
+    <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;">
+      <thead><tr style="background:#f4f6fa;"><th style="text-align:left;padding:10px;border:1px solid #e0e4ec;">Component</th><th style="text-align:left;padding:10px;border:1px solid #e0e4ec;">Maven coordinate</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:10px;border:1px solid #e0e4ec;">Yandex Mobile Ads</td><td style="padding:10px;border:1px solid #e0e4ec;"><code>com.yandex.android:mobileads:8.0.0</code></td></tr>
+        <tr><td style="padding:10px;border:1px solid #e0e4ec;">AppMetrica Analytics</td><td style="padding:10px;border:1px solid #e0e4ec;"><code>io.appmetrica.analytics:analytics:8.2.0</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Optional — mediation (Project Settings toggles)</h3>
+    <p>VK (myTarget), Mintegral, BIGO, Liftoff (Vungle), InMobi — see <a href="THIRD_PARTY_NOTICES.md">THIRD_PARTY_NOTICES.md</a> for coordinates.</p>
+
+    <h3>Optional — AppMetrica Push</h3>
+    <p>Push 4.3, Firebase/HMS providers, FCM, Play Services — enabled only when push is on in Project Settings. Requires Firebase/HMS project setup and AppMetrica cabinet configuration.</p>
+
+    <h3>Your responsibilities as a game developer</h3>
+    <ul style="margin:12px 0 0 20px;">
+      <li>Yandex Advertising Network and AppMetrica accounts; production ad unit IDs and API keys.</li>
+      <li>Compliance with GDPR, COPPA, personalized ads consent, and location policies — use AdBot privacy Blueprint nodes and your own legal UI.</li>
+      <li>Android 13+ <code>POST_NOTIFICATIONS</code> runtime permission for push (see <a href="../adbot/index.html#push-setup">Push setup</a>).</li>
+      <li>Review vendor terms: <a href="https://ads.yandex.com/helpcenter/en/" target="_blank" rel="noopener">Yandex Ads</a>, <a href="https://appmetrica.yandex.com/" target="_blank" rel="noopener">AppMetrica</a>, <a href="https://firebase.google.com/terms" target="_blank" rel="noopener">Firebase</a>, <a href="https://developer.huawei.com/" target="_blank" rel="noopener">Huawei HMS</a>.</li>
+    </ul>
+
+    <h2 id="privacy" style="margin-top:48px;">Privacy integration (not legal advice)</h2>
+    <p>AdBot does not replace a lawyer or a certified CMP. Technical guides:</p>
+    <ul style="margin:12px 0 0 20px;">
+      <li><a href="../adbot/index.html#privacy">Privacy &amp; Consent</a> — GDPR-style consent, location, IAB TCF</li>
+      <li><a href="../adbot/index.html#coppa">COPPA / Age Restricted</a></li>
+      <li><a href="../adbot/index.html#push-setup">Push setup</a> — POST_NOTIFICATIONS on Android 13+</li>
+    </ul>
+
+    <h2 id="publisher" style="margin-top:48px;">Publisher</h2>
+    <p><strong>Sync3D</strong> · <a href="https://sync3d.com" target="_blank" rel="noopener">sync3d.com</a> · Support: <a href="https://github.com/xaser3d/AdBot/issues" target="_blank" rel="noopener">GitHub Issues</a></p>
+  </article>
+</div>
+</body>
+</html>
