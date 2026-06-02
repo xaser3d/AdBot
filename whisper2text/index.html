@@ -109,7 +109,7 @@
       <li><strong>Windows Editor (Win64)</strong> for plugin UI and Blueprint authoring</li>
       <li>Packaged targets: <strong>Win64</strong> or <strong>Android (ARM64)</strong></li>
       <li>Microphone permission on Android (<code>RECORD_AUDIO</code> added by plugin UPL)</li>
-      <li>Disk space for models: Tiny ~75 MB, Base ~150 MB, Small ~500 MB</li>
+      <li>Disk space for models: Tiny ~39 MB, Base ~74 MB, Small ~244 MB (<code>ggml-*.bin</code> from Hugging Face)</li>
     </ul>
     <div class="page-nav">
       <a href="#" onclick="show('features',document.querySelector('[onclick*=features]'))"><span class="label">Back</span>Features</a>
@@ -150,9 +150,9 @@
     <table>
       <thead><tr><th>Size</th><th>Approx. download</th><th>Use case</th></tr></thead>
       <tbody>
-        <tr><td>Tiny</td><td>~75 MB</td><td>Fastest — first test on mobile and desktop</td></tr>
-        <tr><td>Base</td><td>~150 MB</td><td>Better accuracy, still reasonable on mid-range phones</td></tr>
-        <tr><td>Small</td><td>~500 MB</td><td>Higher quality; 5–15+ s per phrase on weak devices</td></tr>
+        <tr><td>Tiny</td><td>~39 MB</td><td>Fastest — first test on mobile and desktop</td></tr>
+        <tr><td>Base</td><td>~74 MB</td><td>Better accuracy, still reasonable on mid-range phones</td></tr>
+        <tr><td>Small</td><td>~244 MB</td><td>Higher quality; slower on weak devices</td></tr>
       </tbody>
     </table>
     <h2>Storage paths</h2>
