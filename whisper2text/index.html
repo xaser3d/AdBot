@@ -96,7 +96,7 @@
     <ol>
       <li>Copy <code>Plugins/Whisper2Text</code> into your UE 5.7 project.</li>
       <li><strong>Edit → Plugins</strong> — enable <em>Whisper2Text</em> (Win64 Editor + target platform).</li>
-      <li>On first run: <strong>Download Model</strong> → choose <em>Tiny</em> (fastest test).</li>
+      <li>On first run: <strong>Download Model</strong> → <em>Tiny</em> (see <em>Models &amp; Download</em> for URLs and manual install).</li>
       <li><strong>Initialize Whisper</strong> (async).</li>
       <li><strong>List Input Devices</strong> → <strong>Set Active Input Device</strong> (index 0).</li>
       <li><strong>Start Voice Capture</strong> → speak → <strong>Stop Recording</strong> → PCM buffer.</li>
@@ -133,7 +133,7 @@
         <tr><td>Max Capture Duration Seconds</td><td>30</td><td>Upper limit for voice capture</td></tr>
         <tr><td>Prefer Tiny On Low Memory Android</td><td>On</td><td>When RAM &lt; threshold, Auto mode prefers Tiny</td></tr>
         <tr><td>Android Low Memory Threshold Mb</td><td>4096</td><td>RAM threshold for prefer-tiny logic</td></tr>
-        <tr><td>Model Download URLs</td><td>Hugging Face</td><td><code>ggml-tiny.bin</code>, <code>ggml-base.bin</code>, <code>ggml-small.bin</code> — override if needed</td></tr>
+        <tr><td>Model Download URL Tiny / Base / Small</td><td>Hugging Face (defaults)</td><td>Direct HTTPS links to <code>ggml-*.bin</code> — not a web page. Used by <strong>Download Model</strong>. Details in sidebar <strong>Models &amp; Download</strong>.</td></tr>
       </tbody>
     </table>
     <div class="page-nav">
@@ -147,20 +147,54 @@
   <div class="topbar"><h2>Models &amp; Download</h2></div>
   <article>
     <h1>Whisper models</h1>
+    <p>Models are <strong>not</strong> shipped inside the plugin ZIP. You download them once at runtime (Blueprint) or manually from Hugging Face.</p>
     <table>
-      <thead><tr><th>Size</th><th>Approx. download</th><th>Use case</th></tr></thead>
+      <thead><tr><th>Size</th><th>File</th><th>Approx. size</th><th>Use case</th></tr></thead>
       <tbody>
-        <tr><td>Tiny</td><td>~39 MB</td><td>Fastest — first test on mobile and desktop</td></tr>
-        <tr><td>Base</td><td>~74 MB</td><td>Better accuracy, still reasonable on mid-range phones</td></tr>
-        <tr><td>Small</td><td>~244 MB</td><td>Higher quality; slower on weak devices</td></tr>
+        <tr><td>Tiny</td><td><code>ggml-tiny.bin</code></td><td>~39 MB</td><td>Fastest — first test on mobile and desktop</td></tr>
+        <tr><td>Base</td><td><code>ggml-base.bin</code></td><td>~74 MB</td><td>Better accuracy, still reasonable on mid-range phones</td></tr>
+        <tr><td>Small</td><td><code>ggml-small.bin</code></td><td>~244 MB</td><td>Higher quality; slower on weak devices</td></tr>
       </tbody>
     </table>
+
+    <h2>How to download (Blueprint — recommended)</h2>
+    <ol>
+      <li>Run PIE or a packaged build with internet access.</li>
+      <li>Add async node <strong>Download Model</strong> (<em>Whisper2Text | Models</em>) → pick <strong>Tiny</strong>, <strong>Base</strong>, or <strong>Small</strong>.</li>
+      <li>Wait for pin <strong>Completed</strong> (optional: wire <strong>Progress</strong> to a UI bar).</li>
+      <li>Call <strong>Initialize Whisper</strong>. Check with <strong>Is Model Downloaded</strong> if needed.</li>
+    </ol>
+    <div class="callout"><strong>Project Settings → Model Download Url Tiny</strong> is the <em>direct file URL</em> the plugin requests in step 2 — not a “download page”. You normally do <strong>not</strong> open it in a browser unless downloading manually (see below).</div>
+
+    <h2>Default download URLs (Hugging Face)</h2>
+    <p>Pre-filled in <code>Config/DefaultWhisper2Text.ini</code> and <strong>Edit → Project Settings → Plugins → Whisper2Text → Models</strong>:</p>
+    <table>
+      <thead><tr><th>Setting</th><th>Default URL</th></tr></thead>
+      <tbody>
+        <tr><td>Model Download Url Tiny</td><td><a href="https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.bin" target="_blank" rel="noopener">ggml-tiny.bin</a></td></tr>
+        <tr><td>Model Download Url Base</td><td><a href="https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin" target="_blank" rel="noopener">ggml-base.bin</a></td></tr>
+        <tr><td>Model Download Url Small</td><td><a href="https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin" target="_blank" rel="noopener">ggml-small.bin</a></td></tr>
+      </tbody>
+    </table>
+    <p>Full catalog (quantized variants, <code>.en</code> models, etc.): <a href="https://huggingface.co/ggerganov/whisper.cpp/tree/main" target="_blank" rel="noopener">huggingface.co/ggerganov/whisper.cpp</a>. If you use another file, update the matching URL in Project Settings and use the exact filename the plugin expects (<code>ggml-tiny.bin</code> by default for Tiny).</p>
+
+    <h2>Manual download (browser)</h2>
+    <ol>
+      <li>Open one of the links above (or the Hugging Face file page) and save the <code>.bin</code> file.</li>
+      <li>Copy it to the models folder with the <strong>exact name</strong> (e.g. <code>ggml-tiny.bin</code>):</li>
+    </ol>
+    <ul>
+      <li><strong>Win64 / Editor:</strong> <code>&lt;YourProject&gt;/Saved/Whisper2Text/Models/ggml-tiny.bin</code></li>
+      <li><strong>Android:</strong> app persistent download dir → <code>Whisper2Text/Models/</code> (same filename)</li>
+    </ul>
+    <p>The file must be larger than 1 MB or the plugin treats it as missing. Then run <strong>Initialize Whisper</strong> (no Download node required).</p>
+
     <h2>Storage paths</h2>
     <ul>
       <li><strong>Win64:</strong> <code>&lt;Project&gt;/Saved/Whisper2Text/Models/</code></li>
       <li><strong>Android:</strong> persistent app download directory (survives reinstall depending on OS)</li>
     </ul>
-    <p>Models are <strong>not</strong> included in the Fab/marketplace ZIP. Buyers download via the <strong>Download Model</strong> node or you ship models separately in your game content pipeline.</p>
+    <p>Models are <strong>not</strong> included in the Fab/marketplace ZIP. Use <strong>Download Model</strong> in Blueprint, or manual copy (see above).</p>
     <h2>Recognition modes</h2>
     <ul>
       <li><strong>Auto</strong> — <em>Initialize Whisper</em> loads the best <em>already downloaded</em> model: Small → Base → Tiny. On low-RAM Android, Project Settings can force Tiny preference.</li>
@@ -264,7 +298,9 @@
     <h3>Empty transcription</h3>
     <p>Verify PCM is 16 kHz mono float; capture actually ran; language code matches speech (try <code>auto</code>).</p>
     <h3>Download fails on device</h3>
-    <p>Check HTTPS access to Hugging Face (or your custom URL in Project Settings). Corporate firewalls may block downloads.</p>
+    <p>Check HTTPS access to <code>huggingface.co</code>. Ensure <strong>Model Download Url Tiny</strong> (etc.) in Project Settings is not empty — it must be a direct <code>.bin</code> link, not a folder page. See Output Log: <code>LogWhisper2Text</code>. For offline installs, download in a browser and copy to <code>Saved/Whisper2Text/Models/</code> (see Models &amp; Download).</p>
+    <h3>Where is Model Download Url Tiny?</h3>
+    <p><strong>Edit → Project Settings → Plugins → Whisper2Text → Models</strong>. It is the URL the plugin uses internally; open the link in a browser only for manual download.</p>
     <h3>Slow on Android</h3>
     <p>Use Tiny; reduce capture length; lower thread count if thermals spike; disable Small on &lt;4 GB RAM devices.</p>
     <h3>Third party</h3>
