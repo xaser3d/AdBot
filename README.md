@@ -8,6 +8,7 @@ Unreal Engine **Android** plugin: **Yandex Mobile Ads SDK 8**, **AppMetrica Anal
 
 | Topic | Page |
 |--------|------|
+| Whisper2Text — offline STT, models, Blueprint | [Whisper2Text docs](https://xaser3d.github.io/AdBot/whisper2text/index.html) |
 | Overview, setup, Project Settings | [AdBot docs](https://xaser3d.github.io/AdBot/adbot/index.html) |
 | **What changed** (ini, push policy, notifications, banner) | [Integration checklist](https://xaser3d.github.io/AdBot/adbot/index.html#integration-changes) |
 | AppMetrica statistics (events, profiles, nodes) | Analytics + Blueprint: AppMetrica |

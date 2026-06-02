@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whisper2Text — Offline Speech-to-Text for Unreal Engine</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<button id="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+
+<nav id="sidebar">
+  <div class="brand">
+    <h1>Whisper2Text</h1>
+    <div class="tagline">whisper.cpp · Offline STT · Win64 &amp; Android</div>
+    <p style="margin-top:12px;font-size:12px;"><a href="../index.html" style="color:#5b8cff;">← All plugins</a></p>
+  </div>
+  <nav>
+    <div class="nav-section">Overview</div>
+    <a href="#" class="top-level active" onclick="show('home',this)">Plugin Details</a>
+    <a href="#" onclick="show('features',this)">Features</a>
+    <a href="#" onclick="show('setup',this)">Get Started</a>
+    <a href="#" onclick="show('settings',this)">Project Settings</a>
+    <div class="nav-section">Usage</div>
+    <a href="#" onclick="show('models',this)">Models &amp; Download</a>
+    <a href="#" onclick="show('bp',this)">Blueprint Guide</a>
+    <a href="#" onclick="show('wav',this)">WAV Files</a>
+    <div class="nav-section">Platforms</div>
+    <a href="#" onclick="show('android',this)">Android</a>
+    <a href="#" onclick="show('windows',this)">Windows</a>
+    <div class="nav-section">Support</div>
+    <a href="#" onclick="show('faq',this)">FAQ &amp; Tips</a>
+  </nav>
+</nav>
+
+<div id="content">
+
+<section id="home" class="page-section active">
+  <div class="topbar"><h2>Plugin Details</h2></div>
+  <article>
+    <h1>Whisper2Text</h1>
+    <p>Offline <strong>speech-to-text</strong> for Unreal Engine <strong>5.7</strong> on <span class="badge android">Android</span> and <span class="badge bp">Win64</span>, powered by <a href="https://github.com/ggerganov/whisper.cpp" target="_blank" rel="noopener">whisper.cpp</a>. No cloud API — models download once, inference runs on device.</p>
+    <div class="feature-grid">
+      <div class="feature-card"><div class="icon">🎤</div><h4>Microphone capture</h4><p>16 kHz mono PCM via async Start Voice Capture and Stop Recording.</p></div>
+      <div class="feature-card"><div class="icon">📥</div><h4>Model download</h4><p>Tiny, Base, Small from Hugging Face (configurable URLs).</p></div>
+      <div class="feature-card"><div class="icon">🔵</div><h4>Blueprint async</h4><p>Download Model, Initialize Whisper, Transcribe buffer or WAV file.</p></div>
+      <div class="feature-card"><div class="icon">🌐</div><h4>Languages</h4><p><code>auto</code>, <code>en</code>, <code>ru</code>, and other Whisper language codes.</p></div>
+      <div class="feature-card"><div class="icon">⚙️</div><h4>Auto / Manual mode</h4><p>Auto picks the best downloaded model; Manual fixes Tiny/Base/Small.</p></div>
+      <div class="feature-card"><div class="icon">📦</div><h4>Fab-ready</h4><p>Models are not shipped in the plugin ZIP — downloaded at runtime.</p></div>
+    </div>
+    <div class="callout"><strong>Subsystem</strong> <code>UWhisper2TextSubsystem</code> (Game Instance) coordinates models, engine, and capture. Log category: <code>LogWhisper2Text</code>.</div>
+    <div class="page-nav">
+      <span></span>
+      <a href="#" class="next" onclick="show('features',document.querySelector('[onclick*=features]'))"><span class="label">Next</span>Features</a>
+    </div>
+  </article>
+</section>
+
+<section id="features" class="page-section">
+  <div class="topbar"><h2>Features</h2></div>
+  <article>
+    <h1>Blueprint nodes</h1>
+    <p>Search the node menu under category <strong>Whisper2Text</strong> (subcategories <em>Models</em>, <em>Recognition</em>, <em>Audio</em>).</p>
+    <table>
+      <thead><tr><th>Node</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Download Model</td><td>Async</td><td>Progress, Completed, Failed — downloads <code>ggml-*.bin</code></td></tr>
+        <tr><td>Initialize Whisper</td><td>Async</td><td>Loads model into memory (Then → Initialized / Failed)</td></tr>
+        <tr><td>Transcribe Audio Buffer</td><td>Async</td><td>PCM float32, 16 kHz mono → Transcribed text</td></tr>
+        <tr><td>Transcribe WAV File</td><td>Async</td><td>16-bit PCM WAV absolute path</td></tr>
+        <tr><td>Start Voice Capture</td><td>Async</td><td>Optional max duration (seconds)</td></tr>
+        <tr><td>Stop Recording</td><td>Sync</td><td>Returns PCM buffer + error struct</td></tr>
+        <tr><td>Is Model Downloaded</td><td>Pure</td><td>Per Tiny / Base / Small</td></tr>
+        <tr><td>Get Downloaded Models</td><td>Pure</td><td>Array of available sizes</td></tr>
+        <tr><td>Set Recognition Mode</td><td>Callable</td><td>Manual or Auto</td></tr>
+        <tr><td>Set Model Size</td><td>Callable</td><td>For Manual mode</td></tr>
+        <tr><td>List Input Devices</td><td>Pure</td><td>Microphone list with display names</td></tr>
+        <tr><td>Set Active Input Device</td><td>Callable</td><td>By device index</td></tr>
+        <tr><td>Get Whisper Status</td><td>Pure</td><td>Not Initialized / Ready / Processing / Downloading / Error</td></tr>
+        <tr><td>Cancel Transcription</td><td>Callable</td><td>Abort in-flight recognize</td></tr>
+        <tr><td>Cancel Model Download</td><td>Callable</td><td>Abort download</td></tr>
+      </tbody>
+    </table>
+    <div class="page-nav">
+      <a href="#" onclick="show('home',document.querySelector('[onclick*=home]'))"><span class="label">Back</span>Plugin Details</a>
+      <a href="#" class="next" onclick="show('setup',document.querySelector('[onclick*=setup]'))"><span class="label">Next</span>Get Started</a>
+    </div>
+  </article>
+</section>
+
+<section id="setup" class="page-section">
+  <div class="topbar"><h2>Get Started</h2></div>
+  <article>
+    <h1>Quick start (Blueprint)</h1>
+    <ol>
+      <li>Copy <code>Plugins/Whisper2Text</code> into your UE 5.7 project.</li>
+      <li><strong>Edit → Plugins</strong> — enable <em>Whisper2Text</em> (Win64 Editor + target platform).</li>
+      <li>On first run: <strong>Download Model</strong> → choose <em>Tiny</em> (fastest test).</li>
+      <li><strong>Initialize Whisper</strong> (async).</li>
+      <li><strong>List Input Devices</strong> → <strong>Set Active Input Device</strong> (index 0).</li>
+      <li><strong>Start Voice Capture</strong> → speak → <strong>Stop Recording</strong> → PCM buffer.</li>
+      <li><strong>Transcribe Audio Buffer</strong> (Language: <code>auto</code>, <code>en</code>, or <code>ru</code>) → print <em>Transcribed</em> string.</li>
+    </ol>
+    <div class="callout warn"><strong>Internet required once</strong> for model download. After that, transcription works offline.</div>
+    <h2>Requirements</h2>
+    <ul>
+      <li>Unreal Engine <strong>5.7</strong></li>
+      <li><strong>Windows Editor (Win64)</strong> for plugin UI and Blueprint authoring</li>
+      <li>Packaged targets: <strong>Win64</strong> or <strong>Android (ARM64)</strong></li>
+      <li>Microphone permission on Android (<code>RECORD_AUDIO</code> added by plugin UPL)</li>
+      <li>Disk space for models: Tiny ~75 MB, Base ~150 MB, Small ~500 MB</li>
+    </ul>
+    <div class="page-nav">
+      <a href="#" onclick="show('features',document.querySelector('[onclick*=features]'))"><span class="label">Back</span>Features</a>
+      <a href="#" class="next" onclick="show('settings',document.querySelector('[onclick*=settings]'))"><span class="label">Next</span>Project Settings</a>
+    </div>
+  </article>
+</section>
+
+<section id="settings" class="page-section">
+  <div class="topbar"><h2>Project Settings</h2></div>
+  <article>
+    <h1>Project Settings → Plugins → Whisper2Text</h1>
+    <p>Settings use <code>config = Whisper2Text</code> and are stored in <code>Config/DefaultWhisper2Text.ini</code> in the <strong>project root</strong> (plugin defaults in <code>Plugins/Whisper2Text/Config/DefaultWhisper2Text.ini</code>).</p>
+    <table>
+      <thead><tr><th>Field</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Default Language</td><td><code>auto</code></td><td>Whisper language code for transcription when Blueprint pin is empty</td></tr>
+        <tr><td>Recognition Mode</td><td>Auto</td><td>Auto: best downloaded model (small → base → tiny); Manual: use Manual Model Size</td></tr>
+        <tr><td>Manual Model Size</td><td>Tiny</td><td>Used when Recognition Mode = Manual</td></tr>
+        <tr><td>Whisper Thread Count</td><td>4</td><td>CPU threads for inference (1–16)</td></tr>
+        <tr><td>Max Capture Duration Seconds</td><td>30</td><td>Upper limit for voice capture</td></tr>
+        <tr><td>Prefer Tiny On Low Memory Android</td><td>On</td><td>When RAM &lt; threshold, Auto mode prefers Tiny</td></tr>
+        <tr><td>Android Low Memory Threshold Mb</td><td>4096</td><td>RAM threshold for prefer-tiny logic</td></tr>
+        <tr><td>Model Download URLs</td><td>Hugging Face</td><td><code>ggml-tiny.bin</code>, <code>ggml-base.bin</code>, <code>ggml-small.bin</code> — override if needed</td></tr>
+      </tbody>
+    </table>
+    <div class="page-nav">
+      <a href="#" onclick="show('setup',document.querySelector('[onclick*=setup]'))"><span class="label">Back</span>Get Started</a>
+      <a href="#" class="next" onclick="show('models',document.querySelector('[onclick*=models]'))"><span class="label">Next</span>Models</a>
+    </div>
+  </article>
+</section>
+
+<section id="models" class="page-section">
+  <div class="topbar"><h2>Models &amp; Download</h2></div>
+  <article>
+    <h1>Whisper models</h1>
+    <table>
+      <thead><tr><th>Size</th><th>Approx. download</th><th>Use case</th></tr></thead>
+      <tbody>
+        <tr><td>Tiny</td><td>~75 MB</td><td>Fastest — first test on mobile and desktop</td></tr>
+        <tr><td>Base</td><td>~150 MB</td><td>Better accuracy, still reasonable on mid-range phones</td></tr>
+        <tr><td>Small</td><td>~500 MB</td><td>Higher quality; 5–15+ s per phrase on weak devices</td></tr>
+      </tbody>
+    </table>
+    <h2>Storage paths</h2>
+    <ul>
+      <li><strong>Win64:</strong> <code>&lt;Project&gt;/Saved/Whisper2Text/Models/</code></li>
+      <li><strong>Android:</strong> persistent app download directory (survives reinstall depending on OS)</li>
+    </ul>
+    <p>Models are <strong>not</strong> included in the Fab/marketplace ZIP. Buyers download via the <strong>Download Model</strong> node or you ship models separately in your game content pipeline.</p>
+    <h2>Recognition modes</h2>
+    <ul>
+      <li><strong>Auto</strong> — <em>Initialize Whisper</em> loads the best <em>already downloaded</em> model: Small → Base → Tiny. On low-RAM Android, Project Settings can force Tiny preference.</li>
+      <li><strong>Manual</strong> — call <em>Set Recognition Mode</em> = Manual, <em>Set Model Size</em>, then <em>Initialize Whisper</em>.</li>
+    </ul>
+    <div class="page-nav">
+      <a href="#" onclick="show('settings',document.querySelector('[onclick*=settings]'))"><span class="label">Back</span>Settings</a>
+      <a href="#" class="next" onclick="show('bp',document.querySelector('[onclick*=bp]'))"><span class="label">Next</span>Blueprint</a>
+    </div>
+  </article>
+</section>
+
+<section id="bp" class="page-section">
+  <div class="topbar"><h2>Blueprint Guide</h2></div>
+  <article>
+    <h1>Example graph (Game Instance or Actor)</h1>
+    <pre><code>Event BeginPlay
+  → Download Model (Tiny) [Completed]
+  → Initialize Whisper [Initialized]
+  → List Input Devices
+  → Set Active Input Device (Index 0)
+  → Start Voice Capture (Max Duration 15)
+  → (user speaks)
+  → Stop Recording → Pcm Buffer
+  → Transcribe Audio Buffer (Language: "ru" or "auto")
+  → Print String (Transcribed text)</code></pre>
+    <h2>Async node pins</h2>
+    <table>
+      <thead><tr><th>Node</th><th>Success output</th><th>Failure</th></tr></thead>
+      <tbody>
+        <tr><td>Download Model</td><td>Completed (+ Progress)</td><td>Failed (FWhisper2TextError)</td></tr>
+        <tr><td>Initialize Whisper</td><td>Initialized</td><td>Failed</td></tr>
+        <tr><td>Transcribe Audio Buffer / WAV</td><td>Transcribed (FString)</td><td>Failed</td></tr>
+        <tr><td>Start Voice Capture</td><td>Started</td><td>Failed</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Status</strong> Poll <em>Get Whisper Status</em> before chaining multiple transcriptions. Use <em>Cancel Transcription</em> if the user skips voice input.</div>
+    <div class="page-nav">
+      <a href="#" onclick="show('models',document.querySelector('[onclick*=models]'))"><span class="label">Back</span>Models</a>
+      <a href="#" class="next" onclick="show('wav',document.querySelector('[onclick*=wav]'))"><span class="label">Next</span>WAV Files</a>
+    </div>
+  </article>
+</section>
+
+<section id="wav" class="page-section">
+  <div class="topbar"><h2>WAV Files</h2></div>
+  <article>
+    <h1>Transcribe without microphone</h1>
+    <p>Skip capture nodes and call <strong>Transcribe WAV File</strong> with an <strong>absolute path</strong> to a 16-bit PCM WAV file (mono, 16 kHz recommended — same format as capture output).</p>
+    <pre><code>Download Model → Initialize Whisper
+  → Transcribe WAV File (Path: "C:/Temp/voice.wav", Language: "en")
+  → Transcribed</code></pre>
+    <div class="page-nav">
+      <a href="#" onclick="show('bp',document.querySelector('[onclick*=bp]'))"><span class="label">Back</span>Blueprint</a>
+      <a href="#" class="next" onclick="show('android',document.querySelector('[onclick*=android]'))"><span class="label">Next</span>Android</a>
+    </div>
+  </article>
+</section>
+
+<section id="android" class="page-section">
+  <div class="topbar"><h2>Android</h2></div>
+  <article>
+    <h1>Android notes</h1>
+    <ul>
+      <li>Target <strong>ARM64 (arm64-v8a)</strong>.</li>
+      <li>Plugin UPL adds <code>RECORD_AUDIO</code> — request runtime mic permission in your game if needed.</li>
+      <li>JNI capture: <code>com.whisper2text.AudioCaptureBridge</code> (16 kHz mono).</li>
+      <li>Test with <strong>Tiny</strong> or <strong>Base</strong> first; avoid Small on low-end devices until profiled.</li>
+      <li>Long recordings use CPU and battery — respect <em>Max Capture Duration</em>.</li>
+    </ul>
+    <div class="page-nav">
+      <a href="#" onclick="show('wav',document.querySelector('[onclick*=wav]'))"><span class="label">Back</span>WAV</a>
+      <a href="#" class="next" onclick="show('windows',document.querySelector('[onclick*=windows]'))"><span class="label">Next</span>Windows</a>
+    </div>
+  </article>
+</section>
+
+<section id="windows" class="page-section">
+  <div class="topbar"><h2>Windows</h2></div>
+  <article>
+    <h1>Windows (Win64)</h1>
+    <ul>
+      <li>Editor and packaged Win64 games supported.</li>
+      <li>Models under <code>Saved/Whisper2Text/Models/</code>.</li>
+      <li>Uses platform audio capture for microphone list and recording.</li>
+      <li>whisper.cpp compiled into the plugin — no separate DLL install for end users.</li>
+    </ul>
+    <div class="page-nav">
+      <a href="#" onclick="show('android',document.querySelector('[onclick*=android]'))"><span class="label">Back</span>Android</a>
+      <a href="#" class="next" onclick="show('faq',document.querySelector('[onclick*=faq]'))"><span class="label">Next</span>FAQ</a>
+    </div>
+  </article>
+</section>
+
+<section id="faq" class="page-section">
+  <div class="topbar"><h2>FAQ &amp; Tips</h2></div>
+  <article>
+    <h1>FAQ</h1>
+    <h3>Initialize Whisper fails</h3>
+    <p>Ensure the model finished downloading (<em>Is Model Downloaded</em>). Check Output Log for <code>LogWhisper2Text</code>.</p>
+    <h3>Empty transcription</h3>
+    <p>Verify PCM is 16 kHz mono float; capture actually ran; language code matches speech (try <code>auto</code>).</p>
+    <h3>Download fails on device</h3>
+    <p>Check HTTPS access to Hugging Face (or your custom URL in Project Settings). Corporate firewalls may block downloads.</p>
+    <h3>Slow on Android</h3>
+    <p>Use Tiny; reduce capture length; lower thread count if thermals spike; disable Small on &lt;4 GB RAM devices.</p>
+    <h3>Third party</h3>
+    <p>whisper.cpp and ggml are bundled in the plugin source. See <code>THIRD_PARTY_NOTICES.md</code> in the plugin folder (MIT license).</p>
+    <h2>Performance tips</h2>
+    <ul>
+      <li>Download only the model sizes you need.</li>
+      <li>Initialize once per session; reuse the same subsystem.</li>
+      <li>Do not run transcription on the game thread — async nodes already offload work.</li>
+    </ul>
+  </article>
+</section>
+
+</div>
+
+<script>
+function show(id, link) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('#sidebar nav a').forEach(a => a.classList.remove('active'));
+  if (link) link.classList.add('active');
+  window.scrollTo(0, 0);
+  if (window.innerWidth < 900) document.getElementById('sidebar').classList.remove('open');
+  return false;
+}
+</script>
+</body>
+</html>
