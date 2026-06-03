@@ -58,8 +58,38 @@ This plugin is sold and distributed via Fab (Epic Games). By installing or using
 
 For questions about this EULA, contact Viktar Karpuk via https://sync3d.com</pre>
 
+    <h2 id="distribution" style="margin-top:48px;">Android SDK distribution model</h2>
+    <p>AdBot is an integration layer for Unreal Engine. It does <strong>not</strong> redistribute third-party ad or analytics SDK binaries inside the Fab/marketplace plugin package.</p>
+    <ul style="margin:12px 0 0 20px;">
+      <li><strong>In the plugin ZIP:</strong> C++ and Blueprint API, <code>AdBot_UPL.xml</code>, Java bridge sources, Gradle/Maven coordinates, documentation.</li>
+      <li><strong>At Android package time:</strong> Gradle downloads SDK artifacts from vendor Maven repositories on the <em>game developer’s</em> machine when building an APK/AAB.</li>
+      <li><strong>Legal acceptance:</strong> Each developer accepts Yandex, Google, Huawei, and (if enabled) mediation network terms when using those SDKs in their shipped app.</li>
+    </ul>
+    <div class="callout" style="margin:20px 0;padding:16px 20px;background:#f4f6fa;border-left:4px solid #5b8cff;border-radius:4px;">
+      <strong>Yandex Mobile Ads SDK License (Section 3.2–3.3)</strong>
+      <p style="margin:8px 0 0;">Section <strong>3.2</strong> prohibits distributing the Yandex Mobile Ads SDK itself. AdBot complies by not bundling SDK binaries in the marketplace product. Section <strong>3.3</strong> allows distributing <em>your application</em> built with the SDK if you include the attribution: <em>&ldquo;Developed with the use of Yandex Mobile Ads SDK&rdquo;</em> (About screen, store listing, installer description file).</p>
+      <p style="margin:8px 0 0;">Full agreement: <a href="https://yandex.com/legal/mobileads_sdk_agreement/" target="_blank" rel="noopener">yandex.com/legal/mobileads_sdk_agreement</a></p>
+    </div>
+    <div class="callout" style="margin:20px 0;padding:16px 20px;background:#fff8e6;border-left:4px solid #e6a800;border-radius:4px;">
+      <strong>Mintegral (mediation)</strong>
+      <p style="margin:8px 0 0;">When <em>Enable Mintegral</em> is ON, Gradle resolves Yandex&rsquo;s adapter <code>mobileads-mintegral:17.0.41.0</code>. The Mintegral SDK may be pulled as a transitive dependency. AdBot does not ship the Mintegral SDK in the plugin ZIP. You need Yandex mediation setup plus Mintegral&rsquo;s <strong>Terms of Service / SDK license</strong> (not only the Privacy Policy): <a href="https://www.mintegral.com/en/terms-of-service/" target="_blank" rel="noopener">Terms of Service</a>, <a href="https://www.mintegral.com/en/privacy/" target="_blank" rel="noopener">Privacy Policy</a>.</p>
+    </div>
+
     <h2 id="third-party" style="margin-top:48px;">Third-Party Notices</h2>
-    <p>AdBot is an integration layer. <strong>SDK binaries are not included in the plugin ZIP.</strong> Gradle resolves them when you package Android. Full file: <a href="THIRD_PARTY_NOTICES.md">THIRD_PARTY_NOTICES.md</a>.</p>
+    <p>Gradle coordinates and buyer checklist: <a href="THIRD_PARTY_NOTICES.md">THIRD_PARTY_NOTICES.md</a>.</p>
+
+    <h3>Vendor licenses (software — not privacy-only)</h3>
+    <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;">
+      <thead><tr style="background:#f4f6fa;"><th style="text-align:left;padding:10px;border:1px solid #e0e4ec;">Component</th><th style="text-align:left;padding:10px;border:1px solid #e0e4ec;">License / terms</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:10px;border:1px solid #e0e4ec;">Yandex Mobile Ads SDK 8.0.0</td><td style="padding:10px;border:1px solid #e0e4ec;"><a href="https://yandex.com/legal/mobileads_sdk_agreement/" target="_blank" rel="noopener">SDK License Agreement</a></td></tr>
+        <tr><td style="padding:10px;border:1px solid #e0e4ec;">AppMetrica Analytics 8.2.0</td><td style="padding:10px;border:1px solid #e0e4ec;"><a href="https://yandex.com/legal/appmetrica_termsofuse/" target="_blank" rel="noopener">AppMetrica Terms of Use</a></td></tr>
+        <tr><td style="padding:10px;border:1px solid #e0e4ec;">AppMetrica Push 4.3 (optional)</td><td style="padding:10px;border:1px solid #e0e4ec;">Same Yandex/AppMetrica terms; plus Firebase / HMS vendor terms if enabled</td></tr>
+        <tr><td style="padding:10px;border:1px solid #e0e4ec;">Mintegral (via Yandex adapter)</td><td style="padding:10px;border:1px solid #e0e4ec;"><a href="https://www.mintegral.com/en/terms-of-service/" target="_blank" rel="noopener">Mintegral Terms of Service</a> + SDK terms from Mintegral developer portal</td></tr>
+        <tr><td style="padding:10px;border:1px solid #e0e4ec;">Firebase / Google (push)</td><td style="padding:10px;border:1px solid #e0e4ec;"><a href="https://firebase.google.com/terms" target="_blank" rel="noopener">Firebase Terms</a></td></tr>
+        <tr><td style="padding:10px;border:1px solid #e0e4ec;">Huawei HMS (push, optional)</td><td style="padding:10px;border:1px solid #e0e4ec;"><a href="https://developer.huawei.com/" target="_blank" rel="noopener">Huawei Developer</a> agreements</td></tr>
+      </tbody>
+    </table>
 
     <h3>Always included (Android package)</h3>
     <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;">
@@ -79,9 +109,11 @@ For questions about this EULA, contact Viktar Karpuk via https://sync3d.com</pre
     <h3>Your responsibilities as a game developer</h3>
     <ul style="margin:12px 0 0 20px;">
       <li>Yandex Advertising Network and AppMetrica accounts; production ad unit IDs and API keys.</li>
+      <li>Yandex Mobile Ads SDK attribution text in your app/store listing (Section 3.3).</li>
+      <li>Separate partner agreements for each enabled mediation network (Mintegral, VK, BIGO, Liftoff, InMobi) in the Yandex cabinet.</li>
       <li>Compliance with GDPR, COPPA, personalized ads consent, and location policies — use AdBot privacy Blueprint nodes and your own legal UI.</li>
       <li>Android 13+ <code>POST_NOTIFICATIONS</code> runtime permission for push (see <a href="../adbot/index.html#push-setup">Push setup</a>).</li>
-      <li>Review vendor terms: <a href="https://ads.yandex.com/helpcenter/en/" target="_blank" rel="noopener">Yandex Ads</a>, <a href="https://appmetrica.yandex.com/" target="_blank" rel="noopener">AppMetrica</a>, <a href="https://firebase.google.com/terms" target="_blank" rel="noopener">Firebase</a>, <a href="https://developer.huawei.com/" target="_blank" rel="noopener">Huawei HMS</a>.</li>
+      <li>Review <strong>software licenses</strong> in the table above (privacy policies are additional, not a replacement).</li>
     </ul>
 
     <h2 id="privacy" style="margin-top:48px;">Privacy integration (not legal advice)</h2>

@@ -1343,6 +1343,10 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
       <li>Enable only needed toggles in UE (smaller APK).</li>
       <li>Verify in <strong>Show Yandex Ads Debug Panel</strong> after install.</li>
     </ol>
+    <div class="callout">
+      <strong>Legal — Mintegral and other networks</strong>
+      Gradle pulls Yandex <em>mediation adapters</em>, not SDKs bundled inside AdBot. For Mintegral, you may also need Mintegral&rsquo;s partner/SDK terms in addition to Yandex setup. See <a href="../legal/index.html#distribution">Android SDK distribution</a> and <a href="../legal/THIRD_PARTY_NOTICES.md">THIRD_PARTY_NOTICES.md</a>.
+    </div>
     <div class="page-nav">
       <a href="#" onclick="show('cpp-rewarded',document.querySelector('[onclick*=cpp-rewarded]'))"><span class="label">Previous</span>C++: Rewarded</a>
       <a href="#" class="next" onclick="show('faq',document.querySelector('[onclick*=faq]'))"><span class="label">Next</span>FAQ</a>
@@ -1375,14 +1379,22 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
       <li>Third-party Android SDKs are resolved at APK build time — separate vendor licenses apply.</li>
       <li>Provided &ldquo;AS IS&rdquo; without warranty. Publisher: Viktar Karpuk (Sync3D) — <a href="https://sync3d.com" target="_blank" rel="noopener">sync3d.com</a>.</li>
     </ul>
+    <h2>Android SDK distribution</h2>
+    <p>AdBot does <strong>not</strong> ship Yandex, AppMetrica, or mediation SDK binaries in the marketplace plugin ZIP. Your Android build resolves them from Maven. You accept each vendor&rsquo;s license when you build and ship your game.</p>
+    <ul>
+      <li><strong>Yandex Mobile Ads SDK</strong> — <a href="https://yandex.com/legal/mobileads_sdk_agreement/" target="_blank" rel="noopener">License Agreement</a>. Do not redistribute the SDK; apps built with it must include: <em>&ldquo;Developed with the use of Yandex Mobile Ads SDK&rdquo;</em> (Section 3.3).</li>
+      <li><strong>AppMetrica</strong> — <a href="https://yandex.com/legal/appmetrica_termsofuse/" target="_blank" rel="noopener">Terms of Use</a>.</li>
+      <li><strong>Mintegral (optional)</strong> — Yandex adapter <code>mobileads-mintegral:17.0.41.0</code>; Mintegral SDK/terms apply when enabled — <a href="https://www.mintegral.com/en/terms-of-service/" target="_blank" rel="noopener">Terms of Service</a> (not privacy policy only).</li>
+    </ul>
+    <p>Details: <a href="../legal/index.html#distribution">standalone legal page</a> · <a href="../legal/THIRD_PARTY_NOTICES.md">THIRD_PARTY_NOTICES.md</a></p>
     <h2>Third-party SDKs (summary)</h2>
-    <p>SDK binaries are <strong>not</strong> bundled in the plugin ZIP. When you package Android, Gradle downloads for example:</p>
+    <p>When you package Android, Gradle downloads for example:</p>
     <ul>
       <li><code>com.yandex.android:mobileads:8.0.0</code></li>
       <li><code>io.appmetrica.analytics:analytics:8.2.0</code></li>
       <li>Optional: mediation adapters, AppMetrica Push, Firebase/HMS (when enabled in Project Settings)</li>
     </ul>
-    <p>You need your own Yandex / AppMetrica accounts; for push also Firebase and/or Huawei setup. See <a href="../legal/THIRD_PARTY_NOTICES.md">THIRD_PARTY_NOTICES.md</a>.</p>
+    <p>You need your own Yandex / AppMetrica accounts; for push also Firebase and/or Huawei setup.</p>
     <h2>Privacy &amp; compliance (your game)</h2>
     <p>AdBot exposes technical privacy controls — it does <strong>not</strong> provide legal text or a CMP. You are responsible for GDPR, COPPA, ad consent, and Android 13+ notification permission.</p>
     <ul>
@@ -1410,6 +1422,8 @@ Ads-><span class="fn">OnRewardedDismissed</span>.AddDynamic(<span class="kw">thi
     <p>No. The plugin targets <strong>Android</strong> only via the Yandex Mobile Ads Android SDK. All JNI/UPL code is Android-specific. Blueprint nodes are safe to call on non-Android platforms (they do nothing).</p>
     <h3>Which Yandex SDK version is included?</h3>
     <p>Gradle resolves <code>com.yandex.android:mobileads:8.0.0</code> and <code>io.appmetrica.analytics:analytics:8.2.0</code> from Maven at Android package time (not bundled in the plugin ZIP). Optional VK mediation adapter: <code>mobileads-mytarget:5.45.3.1</code> when enabled.</p>
+    <h3>Where are third-party licenses documented?</h3>
+    <p><a href="../legal/index.html">License &amp; Legal</a> explains the Gradle distribution model, Yandex Section 3.2/3.3 attribution, and links to vendor <strong>software licenses</strong> (including Mintegral Terms of Service). Privacy policies are listed separately in <a href="../legal/THIRD_PARTY_NOTICES.md">THIRD_PARTY_NOTICES.md</a>.</p>
     <h3>How do I test ads without a real Yandex account?</h3>
     <p>Use the demo placement IDs:<br>
     <code>demo-banner-yandex</code>, <code>demo-interstitial-yandex</code>, <code>demo-rewarded-yandex</code>, <code>demo-appopenad-yandex</code></p>
