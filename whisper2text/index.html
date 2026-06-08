@@ -13,7 +13,7 @@
 <nav id="sidebar">
   <div class="brand">
     <h1>Whisper2Text</h1>
-    <div class="tagline">whisper.cpp · Offline STT · Win64 &amp; Android</div>
+    <div class="tagline">whisper.cpp · VAD · Streaming · Spatial · Win64 &amp; Android</div>
     <p style="margin-top:12px;font-size:12px;"><a href="../index.html" style="color:#5b8cff;">← All plugins</a></p>
   </div>
   <nav>
@@ -24,7 +24,10 @@
     <a href="#" onclick="show('settings',this)">Project Settings</a>
     <div class="nav-section">Usage</div>
     <a href="#" onclick="show('models',this)">Models &amp; Download</a>
-    <a href="#" onclick="show('bp',this)">Blueprint Guide</a>
+    <a href="#" onclick="show('bp',this)">Blueprint Guide (batch)</a>
+    <a href="#" onclick="show('streaming',this)">Streaming Recognition</a>
+    <a href="#" onclick="show('spatial',this)">Spatial Audio</a>
+    <a href="#" onclick="show('components',this)">Components</a>
     <a href="#" onclick="show('wav',this)">WAV Files</a>
     <div class="nav-section">Platforms</div>
     <a href="#" onclick="show('android',this)">Android</a>
@@ -40,13 +43,15 @@
   <div class="topbar"><h2>Plugin Details</h2></div>
   <article>
     <h1>Whisper2Text</h1>
-    <p>Offline <strong>speech-to-text</strong> for Unreal Engine <strong>5.7</strong> on <span class="badge android">Android</span> and <span class="badge bp">Win64</span>, powered by <a href="https://github.com/ggerganov/whisper.cpp" target="_blank" rel="noopener">whisper.cpp</a>. No cloud API — models download once, inference runs on device.</p>
+    <p>Offline <strong>speech-to-text</strong> for Unreal Engine <strong>5.7</strong> on <span class="badge android">Android</span> and <span class="badge bp">Win64</span>, powered by <a href="https://github.com/ggerganov/whisper.cpp" target="_blank" rel="noopener">whisper.cpp</a>. Includes <strong>VAD</strong>, <strong>streaming partial results</strong>, optional <strong>spatial triangulation</strong>, and on-device <strong>intent tagging</strong>. No cloud API — models download once, inference runs on device.</p>
     <div class="feature-grid">
-      <div class="feature-card"><div class="icon">🎤</div><h4>Microphone capture</h4><p>16 kHz mono PCM via async Start Voice Capture and Stop Recording.</p></div>
+      <div class="feature-card"><div class="icon">🎤</div><h4>Microphone capture</h4><p>16 kHz mono PCM — batch (Start Voice Capture) or live streaming pipeline.</p></div>
+      <div class="feature-card"><div class="icon">📡</div><h4>Streaming STT</h4><p>Continuous recognition with <em>On Streaming Partial Result</em> and <em>On Streaming Final Result</em>.</p></div>
+      <div class="feature-card"><div class="icon">🔊</div><h4>Voice activity (VAD)</h4><p>Energy-based speech gating — configurable threshold and min speech duration.</p></div>
+      <div class="feature-card"><div class="icon">📍</div><h4>Spatial audio</h4><p>Dual Whisper Microphone components + TDOA azimuth estimation.</p></div>
+      <div class="feature-card"><div class="icon">🧠</div><h4>Intent tagging</h4><p>Keyword classifier: Command, Question, Anger, Greeting, Fear, Neutral.</p></div>
       <div class="feature-card"><div class="icon">📥</div><h4>Model download</h4><p>Tiny, Base, Small from Hugging Face (configurable URLs).</p></div>
-      <div class="feature-card"><div class="icon">🔵</div><h4>Blueprint async</h4><p>Download Model, Initialize Whisper, Transcribe buffer or WAV file.</p></div>
-      <div class="feature-card"><div class="icon">🌐</div><h4>Languages</h4><p><code>auto</code>, <code>en</code>, <code>ru</code>, and other Whisper language codes.</p></div>
-      <div class="feature-card"><div class="icon">⚙️</div><h4>Auto / Manual mode</h4><p>Auto picks the best downloaded model; Manual fixes Tiny/Base/Small.</p></div>
+      <div class="feature-card"><div class="icon">🔵</div><h4>Blueprint async</h4><p>Download Model, Initialize Whisper, Transcribe, Start Continuous Recognition.</p></div>
       <div class="feature-card"><div class="icon">📦</div><h4>Fab-ready</h4><p>Models are not shipped in the plugin ZIP — downloaded at runtime.</p></div>
     </div>
     <div class="callout"><strong>Subsystem</strong> <code>UWhisper2TextSubsystem</code> (Game Instance) coordinates models, engine, and capture. Log category: <code>LogWhisper2Text</code>.</div>
@@ -80,6 +85,28 @@
         <tr><td>Get Whisper Status</td><td>Pure</td><td>Not Initialized / Ready / Processing / Downloading / Error</td></tr>
         <tr><td>Cancel Transcription</td><td>Callable</td><td>Abort in-flight recognize</td></tr>
         <tr><td>Cancel Model Download</td><td>Callable</td><td>Abort download</td></tr>
+        <tr><td>Request Microphone Permission</td><td>Async</td><td>Android <code>RECORD_AUDIO</code> → Granted / Denied</td></tr>
+        <tr><td>Has Microphone Permission</td><td>Pure</td><td>Always true on Win64</td></tr>
+        <tr><td>Is Microphone Available</td><td>Pure</td><td>Device present + permission</td></tr>
+        <tr><td>Transcribe Pcm To Text</td><td>Latent</td><td>Sync-style node with Transcribed Text output pin</td></tr>
+        <tr><td>Is Whisper Ready</td><td>Pure</td><td>Model loaded and subsystem Ready</td></tr>
+        <tr><td>Start Continuous Recognition</td><td>Callable / Async</td><td>Live mic + VAD + streaming whisper</td></tr>
+        <tr><td>Stop Continuous Recognition</td><td>Callable</td><td>Stops live capture and pipeline</td></tr>
+        <tr><td>Classify Voice Intent</td><td>Pure</td><td>Text → intent enum + confidence</td></tr>
+        <tr><td>Intent To MetaSound Value</td><td>Pure</td><td>Maps intent to 0..1 float (MetaSound hook)</td></tr>
+      </tbody>
+    </table>
+    <h2>Subsystem delegates</h2>
+    <p>On <code>UWhisper2TextSubsystem</code> (get via <em>Get Whisper2Text Subsystem</em> or bind on Game Instance):</p>
+    <table>
+      <thead><tr><th>Delegate</th><th>When</th></tr></thead>
+      <tbody>
+        <tr><td>On Streaming Partial Result</td><td>Interim transcription while user speaks (Text, Confidence)</td></tr>
+        <tr><td>On Streaming Final Result</td><td>End of VAD speech segment (Text, Language)</td></tr>
+        <tr><td>On Speech Started / On Speech Ended</td><td>VAD events (Level)</td></tr>
+        <tr><td>On VAD Level</td><td>Per-frame voice probability 0..1</td></tr>
+        <tr><td>On Spatial Speech Result</td><td>When spatial enabled: Text, SpatialResult, NearestSource actor</td></tr>
+        <tr><td>On Model Download Progress</td><td>Bytes received / total during model download</td></tr>
       </tbody>
     </table>
     <div class="page-nav">
@@ -133,7 +160,14 @@
         <tr><td>Max Capture Duration Seconds</td><td>30</td><td>Upper limit for voice capture</td></tr>
         <tr><td>Prefer Tiny On Low Memory Android</td><td>On</td><td>When RAM &lt; threshold, Auto mode prefers Tiny</td></tr>
         <tr><td>Android Low Memory Threshold Mb</td><td>4096</td><td>RAM threshold for prefer-tiny logic</td></tr>
-        <tr><td>Model Download URL Tiny / Base / Small</td><td>Hugging Face (defaults)</td><td>Direct HTTPS links to <code>ggml-*.bin</code> — not a web page. Used by <strong>Download Model</strong>. Details in sidebar <strong>Models &amp; Download</strong>.</td></tr>
+        <tr><td>Model Download URL Tiny / Base / Small</td><td>Hugging Face (defaults)</td><td>Direct HTTPS links to <code>ggml-*.bin</code></td></tr>
+        <tr><td>Num Channels To Analyze</td><td>1</td><td>Mono (1) or stereo volume hint (2)</td></tr>
+        <tr><td>Enable Spatial Triangulation</td><td>Off</td><td>Dual-mic TDOA + <em>On Spatial Speech Result</em></td></tr>
+        <tr><td>Speech Threshold Db</td><td>-25</td><td>VAD sensitivity (higher = stricter)</td></tr>
+        <tr><td>Min Speech Duration Sec</td><td>0.3</td><td>Minimum speech segment before VAD fires</td></tr>
+        <tr><td>Partial Inference Interval Sec</td><td>1.5</td><td>How often streaming whisper runs during speech</td></tr>
+        <tr><td>Execution Priority</td><td>High</td><td>Worker thread priority hint</td></tr>
+        <tr><td>Silero VAD Model URL</td><td>GitHub</td><td>Reserved for future ONNX Silero integration</td></tr>
       </tbody>
     </table>
     <div class="page-nav">
@@ -236,7 +270,7 @@
     <div class="callout"><strong>Status</strong> Poll <em>Get Whisper Status</em> before chaining multiple transcriptions. Use <em>Cancel Transcription</em> if the user skips voice input.</div>
     <div class="page-nav">
       <a href="#" onclick="show('models',document.querySelector('[onclick*=models]'))"><span class="label">Back</span>Models</a>
-      <a href="#" class="next" onclick="show('wav',document.querySelector('[onclick*=wav]'))"><span class="label">Next</span>WAV Files</a>
+      <a href="#" class="next" onclick="show('streaming',document.querySelector('[onclick*=streaming]'))"><span class="label">Next</span>Streaming</a>
     </div>
   </article>
 </section>
@@ -286,6 +320,100 @@
     </ul>
     <div class="page-nav">
       <a href="#" onclick="show('android',document.querySelector('[onclick*=android]'))"><span class="label">Back</span>Android</a>
+      <a href="#" class="next" onclick="show('streaming',document.querySelector('[onclick*=streaming]'))"><span class="label">Next</span>Streaming</a>
+    </div>
+  </article>
+</section>
+
+<section id="streaming" class="page-section">
+  <div class="topbar"><h2>Streaming Recognition</h2></div>
+  <article>
+    <h1>Continuous speech recognition</h1>
+    <p>Unlike batch mode (capture → stop → transcribe), <strong>streaming</strong> keeps the microphone open, runs <strong>VAD</strong> to detect speech segments, and emits partial text while the user is still talking.</p>
+    <h2>Quick start</h2>
+    <ol>
+      <li><strong>Download Model</strong> → <strong>Initialize Whisper</strong>.</li>
+      <li>Check <strong>Is Whisper Ready</strong> (or <em>Get Whisper Status</em> = Ready).</li>
+      <li>Call <strong>Start Continuous Recognition</strong> (language <code>auto</code>, <code>en</code>, or <code>ru</code>).</li>
+      <li>Bind subsystem delegates <strong>On Streaming Partial Result</strong> and <strong>On Streaming Final Result</strong>.</li>
+      <li>Call <strong>Stop Continuous Recognition</strong> when done (e.g. EndPlay).</li>
+    </ol>
+    <pre><code>Event BeginPlay
+  → Request Microphone Permission (Android) [Granted]
+  → Download Model (Tiny) [Completed]
+  → Initialize Whisper [Initialized]
+  → Start Continuous Recognition (Language: "auto")
+  → On Streaming Partial Result → Print String (subtitle UI)
+  → On Streaming Final Result → Classify Voice Intent → game logic
+
+Event EndPlay
+  → Stop Continuous Recognition</code></pre>
+    <h2>Async node</h2>
+    <p><strong>Start Continuous Recognition</strong> (async, category Whisper2Text) — pins: <em>Then</em>, <em>Started</em>, <em>Failed</em>. Callable alternative: same name on Blueprint Function Library.</p>
+    <h2>VAD tuning</h2>
+    <p><strong>Edit → Project Settings → Plugins → Whisper2Text</strong>:</p>
+    <ul>
+      <li><strong>Speech Threshold Db</strong> — default <code>-25</code>. Raise (e.g. <code>-20</code>) in noisy environments.</li>
+      <li><strong>Min Speech Duration Sec</strong> — ignore clicks shorter than this (default <code>0.3</code>).</li>
+      <li><strong>Partial Inference Interval Sec</strong> — lower = faster subtitles, more CPU (default <code>1.5</code>).</li>
+    </ul>
+    <div class="callout warn"><strong>CPU cost:</strong> Each partial inference runs whisper on the accumulated segment. Use <em>Tiny</em> model and longer partial interval on mobile.</div>
+    <div class="page-nav">
+      <a href="#" onclick="show('bp',document.querySelector('[onclick*=bp]'))"><span class="label">Back</span>Blueprint</a>
+      <a href="#" class="next" onclick="show('spatial',document.querySelector('[onclick*=spatial]'))"><span class="label">Next</span>Spatial</a>
+    </div>
+  </article>
+</section>
+
+<section id="spatial" class="page-section">
+  <div class="topbar"><h2>Spatial Audio</h2></div>
+  <article>
+    <h1>Direction-of-arrival (2 microphones)</h1>
+    <p>When <strong>Enable Spatial Triangulation</strong> is on, place two <strong>Whisper Microphone</strong> components (e.g. left/right ear on an NPC). The plugin estimates azimuth from cross-correlation on VAD speech segments.</p>
+    <h2>Setup</h2>
+    <ol>
+      <li>Project Settings → enable <strong>Enable Spatial Triangulation</strong>.</li>
+      <li>Add <strong>Whisper Microphone</strong> ×2 to your listener actor (offset in 3D).</li>
+      <li>Optional: add <strong>Whisper Sound Source</strong> markers on NPCs/interactables.</li>
+      <li>Bind <strong>On Spatial Speech Result</strong> — outputs Text, <code>FWhisper2TextSpatialResult</code> (AzimuthDegrees, Confidence, EstimatedDirection), and NearestSource actor.</li>
+    </ol>
+    <h2>Spatial result struct</h2>
+    <table>
+      <thead><tr><th>Field</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Azimuth Degrees</td><td>Rough left/center/right angle</td></tr>
+        <tr><td>Confidence</td><td>0..1 correlation strength</td></tr>
+        <tr><td>Estimated Direction</td><td>World-space unit vector</td></tr>
+        <tr><td>Mic Pair Index</td><td>Which mic pair was used</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Note:</strong> Uses one physical microphone + virtual mic positions or two components sharing the same capture stream. Best for gameplay direction hints, not precision acoustics.</div>
+    <div class="page-nav">
+      <a href="#" onclick="show('streaming',document.querySelector('[onclick*=streaming]'))"><span class="label">Back</span>Streaming</a>
+      <a href="#" class="next" onclick="show('components',document.querySelector('[onclick*=components]'))"><span class="label">Next</span>Components</a>
+    </div>
+  </article>
+</section>
+
+<section id="components" class="page-section">
+  <div class="topbar"><h2>Components</h2></div>
+  <article>
+    <h1>Actor components</h1>
+    <table>
+      <thead><tr><th>Component</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Whisper Voice Command Listener</strong></td><td>Drag-and-drop: auto-binds streaming/spatial delegates; <em>Start Listening</em> / <em>Stop Listening</em></td></tr>
+        <tr><td><strong>Whisper Microphone</strong></td><td>Spatial mic node — register position for TDOA</td></tr>
+        <tr><td><strong>Whisper Sound Source</strong></td><td>Marker for nearest-source lookup</td></tr>
+      </tbody>
+    </table>
+    <h2>Intent classification</h2>
+    <p>After transcription, call <strong>Classify Voice Intent</strong> on the final text string. Returns <code>EWhisper2TextIntent</code>: Neutral, Command, Question, Anger, Fear, Greeting (keyword-based, on-device, no cloud).</p>
+    <p><strong>Intent To MetaSound Value</strong> maps intent to a float 0..1 for MetaSound parameters or audio modulation (future Control Bus integration).</p>
+    <h2>Presets (C++ / Data Asset)</h2>
+    <p><code>UWhisper2TextPreset</code> — Lightweight, Quality, UltraLowLatency presets for model size, threads, VAD, and spatial flags. Create Data Assets in Content Browser or use <code>CreateBuiltinPreset</code> in C++.</p>
+    <div class="page-nav">
+      <a href="#" onclick="show('spatial',document.querySelector('[onclick*=spatial]'))"><span class="label">Back</span>Spatial</a>
       <a href="#" class="next" onclick="show('faq',document.querySelector('[onclick*=faq]'))"><span class="label">Next</span>FAQ</a>
     </div>
   </article>
@@ -305,6 +433,12 @@
     <p><strong>Edit → Project Settings → Plugins → Whisper2Text → Models</strong>. It is the URL the plugin uses internally; open the link in a browser only for manual download.</p>
     <h3>Slow on Android</h3>
     <p>Use Tiny; reduce capture length; lower thread count if thermals spike; disable Small on &lt;4 GB RAM devices.</p>
+    <h3>Streaming shows no partial results</h3>
+    <p>Ensure <em>Is Whisper Ready</em> before <em>Start Continuous Recognition</em>. Speak long enough for VAD (&gt;0.3 s). Check <em>Speech Threshold Db</em> — mic may be too quiet. Partial results need at least ~0.1 s of speech audio.</p>
+    <h3>Continuous recognition uses too much CPU</h3>
+    <p>Increase <em>Partial Inference Interval Sec</em> to 2.0; use Tiny model; call <em>Stop Continuous Recognition</em> when UI is closed.</p>
+    <h3>Spatial azimuth always zero</h3>
+    <p>Enable <em>Enable Spatial Triangulation</em>; place two <em>Whisper Microphone</em> components; ensure speech triggers VAD while both mics receive audio.</p>
     <h3>Third party</h3>
     <p>whisper.cpp and ggml are bundled in the plugin source. See <code>THIRD_PARTY_NOTICES.md</code> in the plugin folder (MIT license).</p>
     <h2>Performance tips</h2>
