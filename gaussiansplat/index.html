@@ -184,7 +184,6 @@
         <tr><td><code>FGaussianSplatSystemBudget</code></td><td>Queries RAM/VRAM; computes splat caps and pool budget bytes</td></tr>
         <tr><td><code>FGaussianSplatGPUScene</code></td><td>Merges actor splats into GPU buffers; revision tracking</td></tr>
         <tr><td><code>FGaussianSplatVisibleSet</code></td><td>Frustum cull + visible budget compute shader</td></tr>
-        <tr><td><code>FGaussianSplatStreamingManager</code></td><td>Legacy tile streaming (disk LOD tiles); <em>not used</em> for .gsrad Virtual Pages</td></tr>
         <tr><td><code>FGaussianSplatEditToolManager</code></td><td>Selection/transform edit mode, undo integration</td></tr>
         <tr><td><code>UGaussianSplat4DGSComponent</code></td><td>Lazy frame load, LRU cache, CPU/GPU morph</td></tr>
       </tbody>
@@ -513,11 +512,6 @@
         <tr><td><code>gs.VirtualPages.DebugOverlay</code></td><td>Virtual page HUD (same as settings)</td></tr>
       </tbody>
     </table>
-
-    <h2>Legacy tile streaming — <code>gs.Streaming.*</code></h2>
-    <div class="callout warn"><strong>Note:</strong> These CVars apply to the older disk-tile LOD pipeline (<code>tile_X_Y_lodN.ply</code>). They do <strong>not</strong> affect assets built with <strong>Virtual Pages</strong> (<code>.gsrad</code>). Listed for reference and small-scene tile workflows only.</div>
-    <p>Key legacy CVars: <code>gs.Streaming.Enabled</code>, <code>LoadRadiusCm</code>, <code>UnloadRadiusCm</code>, <code>MaxResidentTiles</code>, <code>MaxResidentSplats</code>, <code>BootstrapLodLevel</code>, <code>MaxConcurrentTileLoads</code>, <code>DebugDrawGrid</code>.</p>
-    <p>Full list: see <code>Plugins/GaussianSplatImporter/Config/DefaultEngine.ini</code> and <code>GaussianSplatStreamingManager.cpp</code>.</p>
   </article>
 </section>
 
