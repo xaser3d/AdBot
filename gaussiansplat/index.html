@@ -82,8 +82,7 @@
       <li><strong>Hardware-aware budgets</strong> — RAM/VRAM reserves, GPU pool auto-sizing, TDR-safe processing caps.</li>
       <li><strong>Occlusion culling</strong> — splats behind opaque UE geometry rejected before sort/draw (configurable bias).</li>
       <li><strong>Live stats overlay</strong> — resident splat count, Virtual Page scheduler metrics, sort mode.</li>
-      <li><strong>Custom GPU renderer</strong> — instanced splats via view extension (radix sort, frustum cull, optional baked SH view color).</li>
-      <li><strong>MLSLabs Pro (optional)</strong> — separate <code>MLSLabsRenderer</code> plugin when installed; otherwise always custom GPU path.</li>
+      <li><strong>Custom GPU renderer</strong> — instanced splats via view extension (radix sort, frustum cull, baked SH view color).</li>
       <li><strong>Sequencer</strong> — <code>UMovieSceneGaussianSplatTrack</code> drives 4DGS component time.</li>
     </ul>
     <h2>Not supported (v1)</h2>
@@ -115,8 +114,7 @@
       <li>For editing: <strong>Tools → Edit Gaussian Splats</strong>, select splats, use toolbar tools.</li>
     </ol>
     <h2>Renderer</h2>
-    <p>Viewport drawing is handled by <code>FGaussianSplatViewExtension</code> and <code>GaussianSplatActor</code> — no manual content assets or Niagara systems to create.</p>
-    <p>Optional: install <strong>MLSLabsRenderer</strong> (optional dependency in <code>GaussianSplatImporter.uplugin</code>) for an alternate preview path; the plugin falls back to the custom GPU renderer automatically.</p>
+    <p>Viewport drawing is handled by <code>FGaussianSplatViewExtension</code> and <code>GaussianSplatActor</code> — no third-party renderer plugins or manual content assets required.</p>
     <div class="callout warn"><strong>After C++ or shader changes:</strong> full editor rebuild + restart (not Live Coding only). Hot-reload leaves stale DLLs and missing log lines.</div>
     <div class="page-nav">
       <a href="#" onclick="show('features',document.querySelector('[onclick*=features]'))"><span class="label">Back</span>Features</a>
