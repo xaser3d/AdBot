@@ -8,6 +8,7 @@ Unreal Engine **Android** plugin: **Yandex Mobile Ads SDK 8**, **AppMetrica Anal
 
 | Topic | Page |
 |--------|------|
+| Gaussian Splat Importer — Virtual Pages, Splat Edit, 4DGS, CVars | [Gaussian Splat docs](https://xaser3d.github.io/AdBot/gaussiansplat/index.html) |
 | Whisper2Text — offline STT, VAD, streaming, spatial, Blueprint | [Whisper2Text docs](https://xaser3d.github.io/AdBot/whisper2text/index.html) |
 | Overview, setup, Project Settings | [AdBot docs](https://xaser3d.github.io/AdBot/adbot/index.html) |
 | **What changed** (ini, push policy, notifications, banner) | [Integration checklist](https://xaser3d.github.io/AdBot/adbot/index.html#integration-changes) |

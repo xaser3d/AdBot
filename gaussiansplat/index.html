@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gaussian Splat Importer — Unreal Engine 5.7 Plugin</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<button id="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+
+<nav id="sidebar">
+  <div class="brand">
+    <h1>Gaussian Splat Importer</h1>
+    <div class="tagline">Virtual Pages · GPU Renderer · Splat Edit · 4DGS</div>
+    <p style="margin-top:12px;font-size:12px;"><a href="../index.html" style="color:#5b8cff;">← All plugins</a></p>
+  </div>
+  <nav>
+    <div class="nav-section">Overview</div>
+    <a href="#" class="top-level active" onclick="show('home',this)">Plugin Details</a>
+    <a href="#" onclick="show('features',this)">Features</a>
+    <a href="#" onclick="show('setup',this)">Get Started</a>
+    <a href="#" onclick="show('formats',this)">Formats</a>
+    <div class="nav-section">Technology</div>
+    <a href="#" onclick="show('architecture',this)">Architecture</a>
+    <a href="#" onclick="show('virtualpages',this)">Virtual Pages</a>
+    <a href="#" onclick="show('rendering',this)">GPU Rendering</a>
+    <div class="nav-section">Workflows</div>
+    <a href="#" onclick="show('import',this)">Import &amp; Export</a>
+    <a href="#" onclick="show('edit',this)">Splat Edit Mode</a>
+    <a href="#" onclick="show('4dgs',this)">4DGS &amp; Sequencer</a>
+    <a href="#" onclick="show('worldlabs',this)">World Labs API</a>
+    <div class="nav-section">Configuration</div>
+    <a href="#" onclick="show('settings',this)">Project Settings</a>
+    <a href="#" onclick="show('profiles',this)">Virtual Page Profiles</a>
+    <a href="#" onclick="show('cvars',this)">Console Commands</a>
+    <div class="nav-section">Support</div>
+    <a href="#" onclick="show('faq',this)">FAQ &amp; Troubleshooting</a>
+  </nav>
+</nav>
+
+<div id="content">
+
+<section id="home" class="page-section active">
+  <div class="topbar"><h2>Plugin Details</h2></div>
+  <article>
+    <h1>Gaussian Splat Importer</h1>
+    <p>Editor plugin for <strong>Unreal Engine 5.7</strong> that imports, streams, edits, and renders <strong>3D Gaussian splats</strong> inside LingvoBot and compatible projects. Supports local files (PLY / SPZ / SOG), native <strong>Virtual Page</strong> containers (<code>.gsrad</code>), optional <strong>World Labs Marble</strong> cloud generation, in-viewport <strong>Splat Edit</strong> tools, and <strong>4DGS</strong> frame sequences with Sequencer integration.</p>
+    <div class="feature-grid">
+      <div class="feature-card"><div class="icon">📦</div><h4>Multi-format import</h4><p>PLY, SPZ, SOG; compressed bake-on-import or keep-on-disk decode.</p></div>
+      <div class="feature-card"><div class="icon">🌐</div><h4>Virtual Pages</h4><p>SplatTree streaming for 100M+ splat city-scale scenes from <code>.gsrad</code>.</p></div>
+      <div class="feature-card"><div class="icon">🎮</div><h4>Custom GPU path</h4><p>Instanced splat renderer with radix depth sort, frustum cull, optional SH lighting.</p></div>
+      <div class="feature-card"><div class="icon">✂️</div><h4>Splat Edit</h4><p>Rect/lasso/box selection, delete, lock, move/rotate/scale with UE gizmo.</p></div>
+      <div class="feature-card"><div class="icon">🎬</div><h4>4DGS playback</h4><p>Frame sequences (.ply/.sog/.spz), morph blend, Sequencer track.</p></div>
+      <div class="feature-card"><div class="icon">☁️</div><h4>World Labs</h4><p>Marble API: text/image prompt → download SPZ → spawn actor in level.</p></div>
+      <div class="feature-card"><div class="icon">💾</div><h4>Save As</h4><p>Export edited static scenes to PLY / SPZ / SOG from toolbar or Details.</p></div>
+      <div class="feature-card"><div class="icon">⚙️</div><h4>Hardware presets</h4><p>Auto-detected RAM/VRAM profiles; Custom mode for advanced tuning.</p></div>
+    </div>
+    <div class="callout"><strong>Log category:</strong> <code>LogGaussianSplatImporter</code>. Plugin folder: <code>Plugins/GaussianSplatImporter</code>. Requires <strong>Niagara</strong> enabled (CPU/GPU fallback renderer).</div>
+    <h2>Editor entry points</h2>
+    <table>
+      <thead><tr><th>Menu</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Tools → Gaussian Splat Importer</strong></td><td>Main window: World Labs prompts, Import File, Save As, 4DGS→SOG conversion</td></tr>
+        <tr><td><strong>Tools → Edit Gaussian Splats</strong></td><td>Dockable <strong>Splat Edit</strong> toolbar tab (horizontal or vertical)</td></tr>
+        <tr><td><strong>Level Editor toolbar</strong></td><td>Quick buttons next to Add Content</td></tr>
+        <tr><td><strong>Edit → Project Settings → Plugins → Gaussian Splat Importer</strong></td><td>API key, Virtual Page profile, rendering defaults</td></tr>
+      </tbody>
+    </table>
+    <div class="page-nav"><span></span><a href="#" class="next" onclick="show('features',document.querySelector('[onclick*=features]'))"><span class="label">Next</span>Features</a></div>
+  </article>
+</section>
+
+<section id="features" class="page-section">
+  <div class="topbar"><h2>Features</h2></div>
+  <article>
+    <h1>Core capabilities</h1>
+    <ul>
+      <li><strong>GaussianSplatActor</strong> — level actor with <code>UGaussianSplatRenderComponent</code>, quality presets (Low → Ultra), optional Virtual Page manifest.</li>
+      <li><strong>Automatic Virtual Page preparation</strong> — large imports (&gt; threshold splats) build a SplatTree + <code>.gsrad</code> sidecar for disk streaming.</li>
+      <li><strong>Hardware-aware budgets</strong> — RAM/VRAM reserves, GPU pool auto-sizing, TDR-safe processing caps.</li>
+      <li><strong>Occlusion culling</strong> — splats behind opaque UE geometry rejected before sort/draw (configurable bias).</li>
+      <li><strong>Live stats overlay</strong> — resident splat count, Virtual Page scheduler metrics, sort mode.</li>
+      <li><strong>Niagara fallback</strong> — CPU or GPU sim systems for compatibility; optional MLSLabs Pro path.</li>
+      <li><strong>Sequencer</strong> — <code>UMovieSceneGaussianSplatTrack</code> drives 4DGS component time.</li>
+    </ul>
+    <h2>Not supported (v1)</h2>
+    <ul>
+      <li>Single-file <code>.sog4d</code> / TRBF checkpoint import</li>
+      <li>Save As on Virtual Page / streaming-only actors (splats not fully in RAM)</li>
+      <li>4DGS sequence export from editor</li>
+    </ul>
+    <div class="page-nav">
+      <a href="#" onclick="show('home',document.querySelector('[onclick*=home]'))"><span class="label">Back</span>Plugin Details</a>
+      <a href="#" class="next" onclick="show('setup',document.querySelector('[onclick*=setup]'))"><span class="label">Next</span>Get Started</a>
+    </div>
+  </article>
+</section>
+
+<section id="setup" class="page-section">
+  <div class="topbar"><h2>Get Started</h2></div>
+  <article>
+    <h1>Installation &amp; first scene</h1>
+    <ol>
+      <li>Enable plugins <strong>Gaussian Splat Importer</strong> and <strong>Niagara</strong> in your <code>.uproject</code>.</li>
+      <li>Rebuild the editor after C++ changes: <code>Build.bat LingvoBotEditor Win64 Development</code>.</li>
+      <li>Open <strong>Project Settings → Plugins → Gaussian Splat Importer</strong>.</li>
+      <li>Set <strong>Virtual Page Profile</strong> to <strong>Auto (Recommended)</strong> — or pick a tier matching your GPU.</li>
+      <li>For World Labs cloud generation, enter your <strong>WLT-Api-Key</strong>.</li>
+      <li>Open <strong>Tools → Gaussian Splat Importer → Import File</strong> and choose <code>.ply</code>, <code>.spz</code>, or <code>.sog</code>.</li>
+      <li>Select the spawned <code>GaussianSplatActor</code> in Outliner; press <strong>F</strong> to frame the camera.</li>
+      <li>For editing: <strong>Tools → Edit Gaussian Splats</strong>, select splats, use toolbar tools.</li>
+    </ol>
+    <h2>Niagara content (fallback renderer)</h2>
+    <p>Create under <code>Content/Materials/</code> (see plugin README):</p>
+    <ul>
+      <li><code>NS_GaussianSplat_C</code> — CPU Sim, NDI <code>Gaussian Splat Data</code></li>
+      <li><code>NS_GaussianSplat_G</code> — GPU Compute Sim, NDI <code>Gaussian Splat Data (GPU)</code></li>
+      <li><code>M_GaussianSplat</code> — Unlit Translucent material on Sprite Renderer; use <strong>Linear Color</strong> for vertex color (SH is linear)</li>
+    </ul>
+    <p>Bind user parameters <code>User.GaussianSplatData</code> and <code>User.SplatCount</code> in both systems. Assign Niagara systems in Project Settings → Rendering.</p>
+    <div class="callout warn"><strong>After C++ or shader changes:</strong> full editor rebuild + restart (not Live Coding only). Hot-reload leaves stale DLLs and missing log lines.</div>
+    <div class="page-nav">
+      <a href="#" onclick="show('features',document.querySelector('[onclick*=features]'))"><span class="label">Back</span>Features</a>
+      <a href="#" class="next" onclick="show('formats',document.querySelector('[onclick*=formats]'))"><span class="label">Next</span>Formats</a>
+    </div>
+  </article>
+</section>
+
+<section id="formats" class="page-section">
+  <div class="topbar"><h2>Formats</h2></div>
+  <article>
+    <h1>Supported file types</h1>
+    <table>
+      <thead><tr><th>Extension</th><th>Import</th><th>Export (Save As)</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>.ply</code></td><td>✓</td><td>✓</td><td>Standard 3DGS PLY; primary interchange format</td></tr>
+        <tr><td><code>.spz</code></td><td>✓</td><td>✓</td><td>Compressed; native decoder (spz bundled in ThirdParty)</td></tr>
+        <tr><td><code>.sog</code></td><td>✓</td><td>✓</td><td>Texture-atlas SOG; fast load for 4DGS sequences</td></tr>
+        <tr><td><code>.gsrad</code></td><td>✓ (manifest)</td><td>—</td><td>Virtual Page container; paired with scene asset manifest</td></tr>
+        <tr><td><code>Frame_{0000}.ply/.sog/.spz</code></td><td>✓ (4DGS)</td><td>—</td><td>Per-frame folders for animated splats</td></tr>
+        <tr><td><code>Frame_0000.gsorder</code></td><td>✓ (sidecar)</td><td>—</td><td>Morton order hash for frame morph validation</td></tr>
+      </tbody>
+    </table>
+    <h2>Compressed import modes</h2>
+    <table>
+      <thead><tr><th>Mode</th><th>Behavior</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Bake On Import</strong> (default)</td><td>Decode SOG/SPZ once; stage PLY under <code>Content/GaussianSplats/</code></td></tr>
+        <tr><td><strong>Keep Compressed</strong></td><td>Keep compressed file on disk; decode on each load</td></tr>
+      </tbody>
+    </table>
+    <h2>GSPL v3 virtual page payload</h2>
+    <p>Large scenes use quantized page bytes (position uint16, packed scales/rotations, optional proxy pages). Proxy spatial sampling picks the most significant splats per 3D grid cell instead of uniform decimation.</p>
+  </article>
+</section>
+
+<section id="architecture" class="page-section">
+  <div class="topbar"><h2>Architecture</h2></div>
+  <article>
+    <h1>System overview</h1>
+    <p>The plugin splits into an <strong>editor module</strong> (import UI, Splat Edit, World Labs HTTP, asset factories) and a <strong>runtime renderer</strong> registered via a view extension on the deferred renderer path.</p>
+    <pre class="diagram">World Labs API / local file
+        │
+        ▼
+  Asset importer (PLY / SPZ / SOG decoder)
+        │
+        ├── Small scene ──► UGaussianSplatRenderComponent (full RAM resident)
+        │
+        └── Large scene ──► SplatTree build ──► .gsrad container + manifest asset
+                                    │
+                                    ▼
+                    FGaussianSplatVirtualPageManager (async IO, GPU pool, cut selection)
+                                    │
+                                    ▼
+                    FGaussianSplatGPUScene + persistent pack buffers
+                                    │
+                                    ▼
+                    FGaussianSplatViewExtension (RDG pass, instanced VS/PS, radix sort)
+                                    │
+                                    ▼
+                         Level viewport / PIE</pre>
+    <h2>Major subsystems</h2>
+    <table>
+      <thead><tr><th>Component</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td><code>FGaussianSplatVirtualPageManager</code></td><td>Schedules page reads, GPU uploads, SplatTree cut refinement, eviction</td></tr>
+        <tr><td><code>FGaussianSplatSystemBudget</code></td><td>Queries RAM/VRAM; computes splat caps and pool budget bytes</td></tr>
+        <tr><td><code>FGaussianSplatGPUScene</code></td><td>Merges actor splats into GPU buffers; revision tracking</td></tr>
+        <tr><td><code>FGaussianSplatVisibleSet</code></td><td>Frustum cull + visible budget compute shader</td></tr>
+        <tr><td><code>FGaussianSplatStreamingManager</code></td><td>Legacy tile streaming (disk LOD tiles); <em>not used</em> for .gsrad Virtual Pages</td></tr>
+        <tr><td><code>FGaussianSplatEditToolManager</code></td><td>Selection/transform edit mode, undo integration</td></tr>
+        <tr><td><code>UGaussianSplat4DGSComponent</code></td><td>Lazy frame load, LRU cache, CPU/GPU morph</td></tr>
+      </tbody>
+    </table>
+    <h2>Config file layout</h2>
+    <table>
+      <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>Plugins/.../Config/DefaultGaussianSplatImporter.ini</code></td><td><code>UGaussianSplatImporterSettings</code> (Project Settings UI)</td></tr>
+        <tr><td><code>Plugins/.../Config/DefaultEngine.ini</code> section <code>[SystemSettings]</code></td><td>Runtime CVars (<code>gs.*</code>, <code>r.GaussianSplat.*</code>)</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">Named Virtual Page profiles apply CVars at module init and when you change Project Settings. <strong>Custom</strong> exposes every field in the UI.</div>
+  </article>
+</section>
+
+<section id="virtualpages" class="page-section">
+  <div class="topbar"><h2>Virtual Pages</h2></div>
+  <article>
+    <h1>SplatTree streaming</h1>
+    <p>Virtual Pages let city-scale scenes (10M–100M+ splats) render from disk without loading everything into RAM or VRAM.</p>
+    <h2>Data model</h2>
+    <ul>
+      <li><strong>SplatTree</strong> — hierarchical nodes with geometric error; each node has a <em>proxy page</em> (coarse) and optional leaf pages (full detail).</li>
+      <li><strong>.gsrad file</strong> — binary page store (up to 64K splats per page, ~80 bytes/splat GPU pack).</li>
+      <li><strong>Manifest asset</strong> — bounds, page directory, tree nodes, version metadata.</li>
+    </ul>
+    <h2>Runtime behavior</h2>
+    <ol>
+      <li>Camera position + velocity drive <strong>visible cut</strong> selection (projected error threshold).</li>
+      <li>Missing pages are read asynchronously from disk (<code>MaxInFlightReadMB</code> cap).</li>
+      <li>Decoded pages upload to a fixed <strong>GPU page pool</strong> (auto-sized from VRAM fraction).</li>
+      <li>Eviction reuses pool slots; <code>ProxyRetainFrames</code> protects fresh proxy from immediate eviction.</li>
+      <li>Only <strong>active</strong> pages participate in depth sort and draw — typically 1–4M splats visible, not the full scene count.</li>
+    </ol>
+    <h2>Why VRAM stays ~3–5 GB on a 12 GB GPU</h2>
+    <p>This is <strong>by design</strong>. The profile reserves VRAM for UE rendering, then allocates a <em>fraction</em> (e.g. 25–30%) to the splat page pool. The rest of the scene lives on disk and in CPU RAM cache. Task Manager <strong>Dedicated GPU Memory</strong> will not show 12 GB filled unless you force Custom settings with very high pool fraction (risk of OOM).</p>
+    <h2>Debug overlay</h2>
+    <p>Enable <strong>Virtual Page Debug Overlay</strong> in Project Settings. Shows <code>activePages</code>, <code>activeSplats</code>, <code>poolPages</code>, upload/read counters. Log line:</p>
+    <pre>LogGaussianSplatImporter: Virtual Pages GPU publish: activePages=N activeSplats=M poolPages=P ...</pre>
+    <h2>Build Virtual Pages (manual)</h2>
+    <p>Automatic preparation runs when splat count exceeds <strong>Auto Prepare Threshold</strong> (default 5M). For manual rebuild: use actor Details or importer pipeline after large PLY import.</p>
+  </article>
+</section>
+
+<section id="rendering" class="page-section">
+  <div class="topbar"><h2>GPU Rendering</h2></div>
+  <article>
+    <h1>Render pipeline</h1>
+    <ul>
+      <li><strong>Instanced quads</strong> per splat — vertex shader projects 3D Gaussian to screen-space ellipse.</li>
+      <li><strong>Radix sort</strong> back-to-front per view (<code>r.GaussianSplat.SortMode</code>).</li>
+      <li><strong>Frustum + screen-radius cull</strong> before sort (<code>gs.FrustumCullRadiusScale</code>).</li>
+      <li><strong>SH view-dependent color</strong> optional (<code>gs.Render.UseSHViewColor</code>).</li>
+      <li><strong>Opaque occlusion</strong> — samples scene depth to drop splats behind UE meshes.</li>
+      <li><strong>Cluster LOD path</strong> (optional Nanite-style clusters) for non-virtual static scenes.</li>
+    </ul>
+    <h2>Per-actor quality (<code>EGaussianSplatQuality</code>)</h2>
+    <table>
+      <thead><tr><th>Preset</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td>Low / Medium / High / Ultra</td><td>Draw budget, sort rate, SH bands — independent from Virtual Page hardware profile</td></tr>
+      </tbody>
+    </table>
+    <p><code>Global Splat Budget</code> in Project Settings overrides all actors when &gt; 0.</p>
+  </article>
+</section>
+
+<section id="import" class="page-section">
+  <div class="topbar"><h2>Import &amp; Export</h2></div>
+  <article>
+    <h1>Gaussian Splat Importer window</h1>
+    <p><strong>Tools → Gaussian Splat Importer</strong></p>
+    <table>
+      <thead><tr><th>Control</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Import File</strong></td><td>Spawn <code>GaussianSplatActor</code> from PLY/SPZ/SOG</td></tr>
+        <tr><td><strong>Save As…</strong></td><td>Export selected editable actor(s) to PLY/SPZ/SOG (merge if multiple selected)</td></tr>
+        <tr><td><strong>4DGS → SOG</strong></td><td>Batch-convert <code>Frame_XXXX.ply</code> folder to SOG with shared Morton order</td></tr>
+        <tr><td><strong>Presets</strong></td><td>World Labs generation presets (when API configured)</td></tr>
+        <tr><td><strong>Clear Input</strong></td><td>Reset prompt fields</td></tr>
+      </tbody>
+    </table>
+    <h2>Save As rules</h2>
+    <ul>
+      <li>Requires splats in RAM (edited static scene).</li>
+      <li>Virtual Page / streaming-only actors: disabled with explanation.</li>
+      <li>Separate from <strong>Save trimmed to source</strong> on actor Details (overwrite same PLY).</li>
+    </ul>
+  </article>
+</section>
+
+<section id="edit" class="page-section">
+  <div class="topbar"><h2>Splat Edit Mode</h2></div>
+  <article>
+    <h1>Editing workflow</h1>
+    <ol>
+      <li>Open <strong>Tools → Edit Gaussian Splats</strong> (dock tab <strong>Splat Edit</strong>).</li>
+      <li>Select a <code>GaussianSplatActor</code> with in-memory or editable splats.</li>
+      <li>Use selection tools, then transform or delete.</li>
+      <li>Exit via door icon or Esc — restores standard actor transform gizmo.</li>
+    </ol>
+    <h2>Toolbar tools</h2>
+    <table>
+      <thead><tr><th>Tool</th><th>Shortcut</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Undo / Redo</td><td>Ctrl+Z / Ctrl+Y</td><td>Edit transaction undo</td></tr>
+        <tr><td>Rect Select</td><td>R</td><td>Box in viewport</td></tr>
+        <tr><td>Lasso Select</td><td>L</td><td>Freehand lasso</td></tr>
+        <tr><td>Polygon Select</td><td>P</td><td>Click vertices, close polygon</td></tr>
+        <tr><td>Circle Select</td><td>—</td><td>Drag edge to scale, inside to move</td></tr>
+        <tr><td>Square Select</td><td>—</td><td>Axis-aligned box gizmo in view</td></tr>
+        <tr><td>Select All / Clear / Invert</td><td>—</td><td>Selection ops</td></tr>
+        <tr><td>Restore Deleted</td><td>—</td><td>Undelete soft-deleted splats</td></tr>
+        <tr><td>Lock / Unlock All</td><td>—</td><td>Protect splats from edits</td></tr>
+        <tr><td>Move / Rotate / Scale</td><td>W / E / R</td><td>UE transform gizmo on selection pivot</td></tr>
+        <tr><td>Bound center</td><td>—</td><td>Pivot at selection bounds center</td></tr>
+        <tr><td>Local orientation</td><td>—</td><td>Local vs world transform axes</td></tr>
+        <tr><td>Frame Selection</td><td>—</td><td>Focus camera on selection bounds</td></tr>
+        <tr><td>Delete</td><td>Del</td><td>Soft-delete selected splats</td></tr>
+      </tbody>
+    </table>
+    <h2>Docking &amp; immersive mode</h2>
+    <ul>
+      <li>Dock tab bottom → horizontal toolbar; dock left/right → vertical icon column.</li>
+      <li>Sidebar mode: status text moves to viewport overlay; fixed tab width (72 px default).</li>
+      <li>Right-click tab → <strong>Show in Immersive Viewport</strong> keeps toolbar visible in F11 fullscreen.</li>
+      <li>Right-click tab → <strong>Show Tab Headers</strong> when docked vertically (for drag-relocate).</li>
+    </ul>
+  </article>
+</section>
+
+<section id="4dgs" class="page-section">
+  <div class="topbar"><h2>4DGS &amp; Sequencer</h2></div>
+  <article>
+    <h1>Animated splat sequences</h1>
+    <p>Add <code>UGaussianSplat4DGSComponent</code> to an actor. Load a folder of per-frame files.</p>
+    <h2>Setup</h2>
+    <ol>
+      <li>Add component → set <strong>Sequence Folder Path</strong> and <strong>File Pattern</strong> (<code>Frame_{0000}.sog</code> recommended).</li>
+      <li>Enable <strong>Load Sequence Now</strong> or call <code>LoadSequence</code> from Blueprint.</li>
+      <li>Optional: enable <strong>Frame Blend</strong> when <code>.gsorder</code> sidecar exists (from 4DGS→SOG tool).</li>
+      <li>Create Level Sequence → bind actor → add track <strong>4DGS Gaussian Splat</strong>.</li>
+    </ol>
+    <h2>Playback modes</h2>
+    <table>
+      <thead><tr><th>Mode</th><th>When</th></tr></thead>
+      <tbody>
+        <tr><td>Flipbook</td><td>Default — discrete frame swap at FPS</td></tr>
+        <tr><td>Frame morph</td><td><code>bEnableFrameBlend</code> + <code>.gsorder</code> — lerps position, scale, rotation, opacity, SH</td></tr>
+        <tr><td>GPU deform</td><td><code>gs.4DGS.UseGpuDeform=1</code> — compute shader morph path</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">Frame morph requires stable topology (same N gaussians deforming). Splats appearing/disappearing between frames need future correspondence support.</div>
+  </article>
+</section>
+
+<section id="worldlabs" class="page-section">
+  <div class="topbar"><h2>World Labs API</h2></div>
+  <article>
+    <h1>Marble cloud generation</h1>
+    <p>Generate splats from text or image prompts via World Labs Marble API.</p>
+    <h2>Settings</h2>
+    <table>
+      <thead><tr><th>Field</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Api Key</strong></td><td>World Labs <code>WLT-Api-Key</code></td></tr>
+        <tr><td><strong>Api Base Url</strong></td><td>Default <code>https://api.worldlabs.ai</code></td></tr>
+        <tr><td><strong>Marble Model</strong></td><td>Model id for <code>POST /marble/v1/worlds:generate</code></td></tr>
+        <tr><td><strong>Poll Interval Seconds</strong></td><td>Status polling while operation runs</td></tr>
+        <tr><td><strong>Operation Timeout Seconds</strong></td><td>Max wait before fail</td></tr>
+      </tbody>
+    </table>
+    <p>Pipeline: API job → download SPZ → decode → spawn actor → optional Virtual Page build for large results.</p>
+  </article>
+</section>
+
+<section id="settings" class="page-section">
+  <div class="topbar"><h2>Project Settings</h2></div>
+  <article>
+    <h1>Gaussian Splat Importer settings</h1>
+    <p><strong>Edit → Project Settings → Plugins → Gaussian Splat Importer</strong></p>
+    <h2>Streaming | Virtual Pages</h2>
+    <table>
+      <thead><tr><th>Setting</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Virtual Page Profile</strong></td><td>Auto or named hardware tier; Custom unlocks all fields below</td></tr>
+        <tr><td><strong>Enable Automatic Virtual Page Preparation</strong></td><td>Build .gsrad for large imports</td></tr>
+        <tr><td><strong>Auto Prepare Threshold (Splats)</strong></td><td>Min splat count to trigger build (default 5M)</td></tr>
+        <tr><td><strong>Virtual Page Debug Overlay</strong></td><td>Live scheduler/residency stats on screen</td></tr>
+      </tbody>
+    </table>
+    <h2>Custom-only Virtual Page fields</h2>
+    <p>Visible when profile = <strong>Custom</strong>:</p>
+    <ul>
+      <li>Visible Splat Budget, GPU Pool Pages / Auto / Fraction / Min / Max</li>
+      <li>Max Page Requests Per Tick, Max GPU Upload MB Per Frame</li>
+      <li>Projected Error Pixels, Predictive Lead Seconds, Prefetch Max Pages</li>
+      <li>Coarsen Stable Seconds, Budget Use System Memory, RAM/VRAM Reserve MB</li>
+    </ul>
+    <h2>Rendering</h2>
+    <ul>
+      <li><strong>Default Import Quality</strong> — Low → Ultra for new actors</li>
+      <li><strong>Global Splat Budget</strong> — scene-wide cap (0 = per-actor quality)</li>
+      <li><strong>Warn Splat Count</strong> — editor toast threshold</li>
+      <li><strong>Occlusion</strong> — enable opaque cull, depth bias, max screen radius</li>
+    </ul>
+    <h2>Editor | Splat Edit</h2>
+    <ul>
+      <li><strong>Show in Immersive Viewport</strong> — F11 toolbar persistence</li>
+      <li><strong>Sidebar Toolbar Width</strong> / <strong>Horizontal Toolbar Height</strong> — fixed dock sizes (72 px default)</li>
+      <li><strong>Auto Hide Tab Well in Sidebar</strong> — collapse tab headers when vertical</li>
+    </ul>
+  </article>
+</section>
+
+<section id="profiles" class="page-section">
+  <div class="topbar"><h2>Virtual Page Profiles</h2></div>
+  <article>
+    <h1>Hardware presets</h1>
+    <p>Profile names describe a <strong>target machine class</strong>, not exact memory usage. <strong>Auto</strong> detects RAM + dedicated VRAM and picks a proven preset.</p>
+    <table>
+      <thead><tr><th>Preset</th><th>Typical use</th><th>Visible budget*</th><th>Pool max pages*</th></tr></thead>
+      <tbody>
+        <tr><td>Auto (Recommended)</td><td>Detect hardware</td><td>—</td><td>—</td></tr>
+        <tr><td>Lightweight · iGPU / 16 GB</td><td>Integrated GPU</td><td>1.5M</td><td>192</td></tr>
+        <tr><td>Standard · 4 GB GPU</td><td>Entry discrete</td><td>1.5M</td><td>256</td></tr>
+        <tr><td>Balanced · 8 GB GPU</td><td>Mid GPU</td><td>2.5M</td><td>128</td></tr>
+        <tr><td>High · 12 GB GPU</td><td>RTX 3060 class</td><td>4M</td><td>192</td></tr>
+        <tr><td>High · 32 GB RAM</td><td>32 GB RAM + moderate GPU</td><td>3M</td><td>160</td></tr>
+        <tr><td>Ultra · 12–32 GB GPU</td><td>High-end workstation</td><td>4M</td><td>192–384</td></tr>
+        <tr><td>Maximum · 16–32 GB GPU</td><td>Top-tier GPU</td><td>4M</td><td>256–384</td></tr>
+        <tr><td>Custom</td><td>Manual tuning</td><td>user</td><td>user</td></tr>
+      </tbody>
+    </table>
+    <p>*Nominal values from profile table; actual pool size = min(VRAM fraction × usable VRAM, max pages, tier clamps on low VRAM).</p>
+    <div class="callout warn"><strong>RTX 3060 12 GB:</strong> use <strong>High · 12 GB GPU</strong> or <strong>Auto</strong>, not Maximum · 32 GB GPU. Maximum is for 24–32 GB VRAM cards; on 12 GB you still get ~3–5 GB splat VRAM — that is correct streaming behavior.</div>
+  </article>
+</section>
+
+<section id="cvars" class="page-section">
+  <div class="topbar"><h2>Console Commands</h2></div>
+  <article>
+    <h1>Console variables (CVars)</h1>
+    <p>Type in editor console (<code>`</code>) or set in <code>Plugins/GaussianSplatImporter/Config/DefaultEngine.ini</code> under <code>[SystemSettings]</code>. Profile apply overrides many at startup.</p>
+
+    <h2>Virtual Pages — <code>gs.VirtualPages.*</code></h2>
+    <table>
+      <thead><tr><th>CVar</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>gs.VirtualPages.VisibleSplatBudget</code></td><td>Max splats in active SplatTree cut</td></tr>
+        <tr><td><code>gs.VirtualPages.GpuPoolAuto</code></td><td>1 = size pool from VRAM fraction</td></tr>
+        <tr><td><code>gs.VirtualPages.GpuPoolFraction</code></td><td>Fraction of usable VRAM for page pool (0.01–0.90)</td></tr>
+        <tr><td><code>gs.VirtualPages.GpuPoolMinPages</code></td><td>Minimum resident pages when auto</td></tr>
+        <tr><td><code>gs.VirtualPages.GpuPoolMaxPages</code></td><td>Maximum resident pages when auto</td></tr>
+        <tr><td><code>gs.VirtualPages.GpuPoolPages</code></td><td>Fixed pool size when auto disabled</td></tr>
+        <tr><td><code>gs.VirtualPages.MaxPageRequestsPerTick</code></td><td>Async disk reads started per tick</td></tr>
+        <tr><td><code>gs.VirtualPages.MaxInFlightReadMB</code></td><td>Cap on bytes being read from disk</td></tr>
+        <tr><td><code>gs.VirtualPages.MaxGpuUploadMBPerFrame</code></td><td>Upload bytes published per frame</td></tr>
+        <tr><td><code>gs.VirtualPages.ProjectedErrorPixels</code></td><td>Screen-error threshold for cut refinement</td></tr>
+        <tr><td><code>gs.VirtualPages.PredictiveLeadSeconds</code></td><td>Camera motion lookahead for prefetch</td></tr>
+        <tr><td><code>gs.VirtualPages.PrefetchMaxPages</code></td><td>Max prefetch pages in flight (0 = off)</td></tr>
+        <tr><td><code>gs.VirtualPages.CoarsenStableSeconds</code></td><td>Delay before coarser cut replaces active</td></tr>
+        <tr><td><code>gs.VirtualPages.ProxyRetainFrames</code></td><td>Protect new proxy from eviction (frames)</td></tr>
+        <tr><td><code>gs.VirtualPages.RetireSlotPinFrames</code></td><td>Pin GPU slots after last draw</td></tr>
+        <tr><td><code>gs.VirtualPages.Debug</code></td><td>Verbose virtual page logging</td></tr>
+        <tr><td><code>gs.VirtualPages.DebugOverlay</code></td><td>On-screen virtual page stats</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Hardware budget — <code>gs.Budget.*</code></h2>
+    <table>
+      <thead><tr><th>CVar</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>gs.Budget.UseSystemMemory</code></td><td>1</td><td>Derive caps from RAM/VRAM</td></tr>
+        <tr><td><code>gs.Budget.RamReserveMB</code></td><td>2048</td><td>RAM kept for OS/UE</td></tr>
+        <tr><td><code>gs.Budget.VramReserveMB</code></td><td>512–3072</td><td>VRAM reserve (profile-dependent)</td></tr>
+        <tr><td><code>gs.Budget.RamBytesPerSplat</code></td><td>64</td><td>Estimated CPU bytes per splat</td></tr>
+        <tr><td><code>gs.Budget.VramBytesPerSplat</code></td><td>48</td><td>Estimated GPU bytes per splat</td></tr>
+        <tr><td><code>gs.Budget.GpuProcessingCap</code></td><td>-1</td><td>-1 = auto TDR-safe cap from VRAM tier</td></tr>
+        <tr><td><code>gs.Budget.GpuProcessingAutoMax</code></td><td>0</td><td>Optional ceiling on auto GPU cap</td></tr>
+        <tr><td><code>gs.Budget.RefreshIntervalSec</code></td><td>2</td><td>RAM re-query interval</td></tr>
+        <tr><td><code>gs.Budget.ShowTrimWarning</code></td><td>1</td><td>On-screen message when splats trimmed</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Depth sort — <code>r.GaussianSplat.*</code></h2>
+    <table>
+      <thead><tr><th>CVar</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>r.GaussianSplat.SortMode</code></td><td>0=none, 1=radix GPU sort</td></tr>
+        <tr><td><code>r.GaussianSplat.MaxSortSplats</code></td><td>Max splats sorted (0 = unlimited)</td></tr>
+        <tr><td><code>r.GaussianSplat.AsyncSortMinSplats</code></td><td>Min count for async sort path</td></tr>
+        <tr><td><code>r.GaussianSplat.SortEveryNthFrame</code></td><td>Sort rate decimation</td></tr>
+        <tr><td><code>r.GaussianSplat.LargeSetMinSortRate</code></td><td>Min sort interval for large sets</td></tr>
+      </tbody>
+    </table>
+
+    <h2>4DGS — <code>gs.4DGS.*</code></h2>
+    <table>
+      <thead><tr><th>CVar</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>gs.4DGS.FrameCacheMaxMB</code></td><td>1024</td><td>Global decoded-frame LRU</td></tr>
+        <tr><td><code>gs.4DGS.PrefetchFrames</code></td><td>2</td><td>Background prefetch count</td></tr>
+        <tr><td><code>gs.4DGS.PreferredFormat</code></td><td>0</td><td>0=auto, 1=ply, 2=sog, 3=spz</td></tr>
+        <tr><td><code>gs.4DGS.UseGpuDeform</code></td><td>0</td><td>GPU frame morph shader</td></tr>
+        <tr><td><code>gs.4DGS.DoubleBufferGpuUpload</code></td><td>-1</td><td>-1=auto, 0/1 force off/on</td></tr>
+        <tr><td><code>gs.4DGS.ProfileGpuSwap</code></td><td>0</td><td>Log GPU rebuild ms per swap</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Rendering &amp; debug — <code>gs.*</code></h2>
+    <table>
+      <thead><tr><th>CVar</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>gs.MaxRenderBudget</code></td><td>Max splats drawn per frame (0 = unlimited)</td></tr>
+        <tr><td><code>gs.ClusterCullMaxSplats</code></td><td>Cluster LOD cull path cap (0 = unlimited)</td></tr>
+        <tr><td><code>gs.Render.UseSHViewColor</code></td><td>View-dependent SH color</td></tr>
+        <tr><td><code>gs.Lighting.Enable</code></td><td>Scene lighting on splats</td></tr>
+        <tr><td><code>gs.Lighting.EnableCSMShadows</code></td><td>Receive CSM shadows</td></tr>
+        <tr><td><code>gs.ShowStats</code></td><td>Live splat stats overlay</td></tr>
+        <tr><td><code>gs.FrustumCullRadiusScale</code></td><td>Frustum cull sphere scale</td></tr>
+        <tr><td><code>gs.DebugForceLODLevel</code></td><td>Force cluster LOD (-1 = auto)</td></tr>
+        <tr><td><code>gs.UseNaniteLODRendering</code></td><td>Nanite-style cluster path</td></tr>
+        <tr><td><code>gs.ShowClusterBounds</code></td><td>Debug draw cluster AABBs</td></tr>
+        <tr><td><code>gs.VirtualPages.DebugOverlay</code></td><td>Virtual page HUD (same as settings)</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Legacy tile streaming — <code>gs.Streaming.*</code></h2>
+    <div class="callout warn"><strong>Note:</strong> These CVars apply to the older disk-tile LOD pipeline (<code>tile_X_Y_lodN.ply</code>). They do <strong>not</strong> affect assets built with <strong>Virtual Pages</strong> (<code>.gsrad</code>). Listed for reference and small-scene tile workflows only.</div>
+    <p>Key legacy CVars: <code>gs.Streaming.Enabled</code>, <code>LoadRadiusCm</code>, <code>UnloadRadiusCm</code>, <code>MaxResidentTiles</code>, <code>MaxResidentSplats</code>, <code>BootstrapLodLevel</code>, <code>MaxConcurrentTileLoads</code>, <code>DebugDrawGrid</code>.</p>
+    <p>Full list: see <code>Plugins/GaussianSplatImporter/Config/DefaultEngine.ini</code> and <code>GaussianSplatStreamingManager.cpp</code>.</p>
+  </article>
+</section>
+
+<section id="faq" class="page-section">
+  <div class="topbar"><h2>FAQ &amp; Troubleshooting</h2></div>
+  <article>
+    <h1>Common issues</h1>
+    <h3>Black viewport / Splats: 0 with Virtual Pages</h3>
+    <p>Cut stuck on root proxy only. Check log for <code>activePages=1 activeSplats=8192</code>. Fix: use <strong>Auto</strong> or a lower profile; restart editor after DLL rebuild; verify <code>poolPages</code> ≥ 64.</p>
+    <h3>Low VRAM usage on high preset</h3>
+    <p>Expected for streaming. Only visible pages occupy VRAM (~3–5 GB on 12 GB cards). Full scene is on disk. Pick profile matching <em>your</em> GPU, not Maximum · 32 GB GPU on a 12 GB card.</p>
+    <h3>Build failed: Live Coding active</h3>
+    <p>Close editor or press Ctrl+Alt+F11 before <code>Build.bat</code>.</p>
+    <h3>Save As greyed out</h3>
+    <p>Actor must have splats in RAM. Virtual Page streaming actors cannot Save As until edited splats are materialized.</p>
+    <h3>Export / import orientation wrong</h3>
+    <p>PLY uses mirror −1 X vs UE coordinates. Plugin applies consistent transform on import/export.</p>
+    <h3>4DGS flicker between frames</h3>
+    <p>Convert sequence with <strong>4DGS → SOG</strong> for shared Morton order; enable Frame Blend + <code>.gsorder</code> sidecar.</p>
+    <h3>Performance: sort lag on yaw</h3>
+    <p>Try <code>r.GaussianSplat.SortEveryNthFrame=2</code> or lower actor quality preset; for VP scenes ensure prefetch is not thrashing pool (<code>PrefetchMaxPages</code>).</p>
+    <h2>Log files</h2>
+    <ul>
+      <li><code>Saved/Logs/LingvoBot.log</code> — search <code>LogGaussianSplatImporter</code>, <code>Virtual Pages GPU publish</code></li>
+      <li>UBT build log: <code>%LOCALAPPDATA%/UnrealBuildTool/Log.txt</code></li>
+    </ul>
+    <h2>Third-party (bundled)</h2>
+    <p>zlib, libwebp, spz under <code>Plugins/GaussianSplatImporter/ThirdParty/</code>. No npm/Python required for editor workflows.</p>
+  </article>
+</section>
+
+</div>
+
+<script>
+function show(id, link) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('#sidebar nav a').forEach(a => a.classList.remove('active'));
+  if (link) link.classList.add('active');
+  window.scrollTo(0, 0);
+  if (window.innerWidth < 900) document.getElementById('sidebar').classList.remove('open');
+  return false;
+}
+</script>
+</body>
+</html>
