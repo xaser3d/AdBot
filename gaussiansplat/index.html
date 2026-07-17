@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gaussian Splat Importer — Unreal Engine 5.7 Plugin</title>
+<title>Gaussian Splat Importer — Unreal Engine 5.7+ Plugin</title>
 <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
@@ -13,7 +13,7 @@
 <nav id="sidebar">
   <div class="brand">
     <h1>Gaussian Splat Importer</h1>
-    <div class="tagline">Virtual Pages · GPU Renderer · Splat Edit · 4DGS</div>
+    <div class="tagline">UE 5.7+ · Virtual Pages · GPU Renderer · Splat Edit · 4DGS</div>
     <p style="margin-top:12px;font-size:12px;"><a href="../index.html" style="color:#5b8cff;">← All plugins</a></p>
   </div>
   <nav>
@@ -46,7 +46,7 @@
   <div class="topbar"><h2>Plugin Details</h2></div>
   <article>
     <h1>Gaussian Splat Importer</h1>
-    <p>Editor plugin for <strong>Unreal Engine 5.7</strong> that imports, streams, edits, and renders <strong>3D Gaussian splats</strong> inside LingvoBot and compatible projects. Supports local files (PLY / SPZ / SOG), native <strong>Virtual Page</strong> containers (<code>.gsrad</code>), optional <strong>World Labs Marble</strong> cloud generation, in-viewport <strong>Splat Edit</strong> tools, and <strong>4DGS</strong> frame sequences with Sequencer integration.</p>
+    <p>Editor plugin for <strong>Unreal Engine 5.7 and newer</strong>. Imports, streams, edits, and renders <strong>3D Gaussian splats</strong> in any compatible UE project — drop <code>Plugins/GaussianSplatImporter</code> into your game or tool project and enable the plugin. Supports local files (PLY / SPZ / SOG), native <strong>Virtual Page</strong> containers (<code>.gsrad</code>), optional <strong>World Labs Marble</strong> cloud generation, in-viewport <strong>Splat Edit</strong> tools, and <strong>4DGS</strong> frame sequences with Sequencer integration.</p>
     <div class="feature-grid">
       <div class="feature-card"><div class="icon">📦</div><h4>Multi-format import</h4><p>PLY, SPZ, SOG; compressed bake-on-import or keep-on-disk decode.</p></div>
       <div class="feature-card"><div class="icon">🌐</div><h4>Virtual Pages</h4><p>SplatTree streaming for 100M+ splat city-scale scenes from <code>.gsrad</code>.</p></div>
@@ -103,8 +103,9 @@
   <article>
     <h1>Installation &amp; first scene</h1>
     <ol>
+      <li>Copy <code>Plugins/GaussianSplatImporter</code> into your UE project (or install from marketplace/Fab when published).</li>
       <li>Enable plugins <strong>Gaussian Splat Importer</strong> and <strong>Niagara</strong> in your <code>.uproject</code>.</li>
-      <li>Rebuild the editor after C++ changes: <code>Build.bat LingvoBotEditor Win64 Development</code>.</li>
+      <li>Rebuild the editor target after C++ changes, e.g. <code>Build.bat YourProjectEditor Win64 Development -Project="YourProject.uproject"</code>.</li>
       <li>Open <strong>Project Settings → Plugins → Gaussian Splat Importer</strong>.</li>
       <li>Set <strong>Virtual Page Profile</strong> to <strong>Auto (Recommended)</strong> — or pick a tier matching your GPU.</li>
       <li>For World Labs cloud generation, enter your <strong>WLT-Api-Key</strong>.</li>
@@ -546,7 +547,7 @@
     <p>Try <code>r.GaussianSplat.SortEveryNthFrame=2</code> or lower actor quality preset; for VP scenes ensure prefetch is not thrashing pool (<code>PrefetchMaxPages</code>).</p>
     <h2>Log files</h2>
     <ul>
-      <li><code>Saved/Logs/LingvoBot.log</code> — search <code>LogGaussianSplatImporter</code>, <code>Virtual Pages GPU publish</code></li>
+      <li><code>&lt;Project&gt;/Saved/Logs/&lt;ProjectName&gt;.log</code> — search <code>LogGaussianSplatImporter</code>, <code>Virtual Pages GPU publish</code></li>
       <li>UBT build log: <code>%LOCALAPPDATA%/UnrealBuildTool/Log.txt</code></li>
     </ul>
     <h2>Third-party (bundled)</h2>
