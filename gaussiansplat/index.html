@@ -57,7 +57,7 @@
       <div class="feature-card"><div class="icon">💾</div><h4>Save As</h4><p>Export edited static scenes to PLY / SPZ / SOG from toolbar or Details.</p></div>
       <div class="feature-card"><div class="icon">⚙️</div><h4>Hardware presets</h4><p>Auto-detected RAM/VRAM profiles; Custom mode for advanced tuning.</p></div>
     </div>
-    <div class="callout"><strong>Log category:</strong> <code>LogGaussianSplatImporter</code>. Plugin folder: <code>Plugins/GaussianSplatImporter</code>. Requires <strong>Niagara</strong> enabled (CPU/GPU fallback renderer).</div>
+    <div class="callout"><strong>Log category:</strong> <code>LogGaussianSplatImporter</code>. Plugin folder: <code>Plugins/GaussianSplatImporter</code>. <strong>No Niagara required</strong> — rendering uses the built-in GPU instanced path on <code>GaussianSplatActor</code>.</div>
     <h2>Editor entry points</h2>
     <table>
       <thead><tr><th>Menu</th><th>Action</th></tr></thead>
@@ -82,7 +82,8 @@
       <li><strong>Hardware-aware budgets</strong> — RAM/VRAM reserves, GPU pool auto-sizing, TDR-safe processing caps.</li>
       <li><strong>Occlusion culling</strong> — splats behind opaque UE geometry rejected before sort/draw (configurable bias).</li>
       <li><strong>Live stats overlay</strong> — resident splat count, Virtual Page scheduler metrics, sort mode.</li>
-      <li><strong>Niagara fallback</strong> — CPU or GPU sim systems for compatibility; optional MLSLabs Pro path.</li>
+      <li><strong>Custom GPU renderer</strong> — instanced splats via view extension (radix sort, frustum cull, optional baked SH view color).</li>
+      <li><strong>MLSLabs Pro (optional)</strong> — separate <code>MLSLabsRenderer</code> plugin when installed; otherwise always custom GPU path.</li>
       <li><strong>Sequencer</strong> — <code>UMovieSceneGaussianSplatTrack</code> drives 4DGS component time.</li>
     </ul>
     <h2>Not supported (v1)</h2>
@@ -104,7 +105,7 @@
     <h1>Installation &amp; first scene</h1>
     <ol>
       <li>Copy <code>Plugins/GaussianSplatImporter</code> into your UE project (or install from marketplace/Fab when published).</li>
-      <li>Enable plugins <strong>Gaussian Splat Importer</strong> and <strong>Niagara</strong> in your <code>.uproject</code>.</li>
+      <li>Enable plugin <strong>Gaussian Splat Importer</strong> in your <code>.uproject</code> (Niagara is <em>not</em> required).</li>
       <li>Rebuild the editor target after C++ changes, e.g. <code>Build.bat YourProjectEditor Win64 Development -Project="YourProject.uproject"</code>.</li>
       <li>Open <strong>Project Settings → Plugins → Gaussian Splat Importer</strong>.</li>
       <li>Set <strong>Virtual Page Profile</strong> to <strong>Auto (Recommended)</strong> — or pick a tier matching your GPU.</li>
@@ -113,14 +114,9 @@
       <li>Select the spawned <code>GaussianSplatActor</code> in Outliner; press <strong>F</strong> to frame the camera.</li>
       <li>For editing: <strong>Tools → Edit Gaussian Splats</strong>, select splats, use toolbar tools.</li>
     </ol>
-    <h2>Niagara content (fallback renderer)</h2>
-    <p>Create under <code>Content/Materials/</code> (see plugin README):</p>
-    <ul>
-      <li><code>NS_GaussianSplat_C</code> — CPU Sim, NDI <code>Gaussian Splat Data</code></li>
-      <li><code>NS_GaussianSplat_G</code> — GPU Compute Sim, NDI <code>Gaussian Splat Data (GPU)</code></li>
-      <li><code>M_GaussianSplat</code> — Unlit Translucent material on Sprite Renderer; use <strong>Linear Color</strong> for vertex color (SH is linear)</li>
-    </ul>
-    <p>Bind user parameters <code>User.GaussianSplatData</code> and <code>User.SplatCount</code> in both systems. Assign Niagara systems in Project Settings → Rendering.</p>
+    <h2>Renderer</h2>
+    <p>Viewport drawing is handled by <code>FGaussianSplatViewExtension</code> and <code>GaussianSplatActor</code> — no manual content assets or Niagara systems to create.</p>
+    <p>Optional: install <strong>MLSLabsRenderer</strong> (optional dependency in <code>GaussianSplatImporter.uplugin</code>) for an alternate preview path; the plugin falls back to the custom GPU renderer automatically.</p>
     <div class="callout warn"><strong>After C++ or shader changes:</strong> full editor rebuild + restart (not Live Coding only). Hot-reload leaves stale DLLs and missing log lines.</div>
     <div class="page-nav">
       <a href="#" onclick="show('features',document.querySelector('[onclick*=features]'))"><span class="label">Back</span>Features</a>
