@@ -4,13 +4,15 @@ Unreal Engine **Android** plugin: **Yandex Mobile Ads SDK 8**, **AppMetrica Anal
 
 **Live site:** [https://xaser3d.github.io/sync3d/](https://xaser3d.github.io/sync3d/)
 
+**AdBot on Fab:** [https://www.fab.com/listings/3b5abcce-6957-423b-bfb4-ea51f73c232e](https://www.fab.com/listings/3b5abcce-6957-423b-bfb4-ea51f73c232e)
+
 ## What’s documented
 
 | Topic | Page |
 |--------|------|
 | Gaussian Splat Importer — Virtual Pages, Splat Edit, 4DGS, CVars | [Gaussian Splat docs](https://xaser3d.github.io/sync3d/gaussiansplat/index.html) |
 | Whisper2Text — offline STT, VAD, streaming, spatial, Blueprint | [Whisper2Text docs](https://xaser3d.github.io/sync3d/whisper2text/index.html) |
-| Overview, setup, Project Settings | [AdBot docs](https://xaser3d.github.io/sync3d/adbot/index.html) |
+| Overview, setup, Project Settings | [AdBot docs](https://xaser3d.github.io/sync3d/adbot/index.html) · [Fab listing](https://www.fab.com/listings/3b5abcce-6957-423b-bfb4-ea51f73c232e) |
 | **What changed** (ini, push policy, notifications, banner) | [Integration checklist](https://xaser3d.github.io/sync3d/adbot/index.html#integration-changes) |
 | AppMetrica statistics (events, profiles, nodes) | Analytics + Blueprint: AppMetrica |
 | AppMetrica Push (Firebase + HMS setup) | Push Notifications + Blueprint: Push |
