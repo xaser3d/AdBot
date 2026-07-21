@@ -22,7 +22,7 @@ This plugin is sold and distributed via Fab (Epic Games). By installing or using
    AdBot is provided "AS IS" without warranty of any kind. Viktar Karpuk and Epic Games disclaim liability for ad fill rates, revenue, SDK changes by third parties, store policy rejections, or damages arising from use of the plugin or integrated SDKs.
 
 6. SUPPORT
-   Support: https://github.com/xaser3d/AdBot/issues
-   Documentation: https://xaser3d.github.io/AdBot/adbot/index.html
+   Support: https://github.com/xaser3d/sync3d/issues
+   Documentation: https://xaser3d.github.io/sync3d/adbot/index.html
 
 For questions about this EULA, contact Viktar Karpuk via https://sync3d.com

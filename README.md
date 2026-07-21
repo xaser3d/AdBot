@@ -8,17 +8,17 @@ Unreal Engine **Android** plugin: **Yandex Mobile Ads SDK 8**, **AppMetrica Anal
 
 | Topic | Page |
 |--------|------|
-| Gaussian Splat Importer — Virtual Pages, Splat Edit, 4DGS, CVars | [Gaussian Splat docs](https://xaser3d.github.io/AdBot/gaussiansplat/index.html) |
-| Whisper2Text — offline STT, VAD, streaming, spatial, Blueprint | [Whisper2Text docs](https://xaser3d.github.io/AdBot/whisper2text/index.html) |
-| Overview, setup, Project Settings | [AdBot docs](https://xaser3d.github.io/AdBot/adbot/index.html) |
-| **What changed** (ini, push policy, notifications, banner) | [Integration checklist](https://xaser3d.github.io/AdBot/adbot/index.html#integration-changes) |
+| Gaussian Splat Importer — Virtual Pages, Splat Edit, 4DGS, CVars | [Gaussian Splat docs](https://xaser3d.github.io/sync3d/gaussiansplat/index.html) |
+| Whisper2Text — offline STT, VAD, streaming, spatial, Blueprint | [Whisper2Text docs](https://xaser3d.github.io/sync3d/whisper2text/index.html) |
+| Overview, setup, Project Settings | [AdBot docs](https://xaser3d.github.io/sync3d/adbot/index.html) |
+| **What changed** (ini, push policy, notifications, banner) | [Integration checklist](https://xaser3d.github.io/sync3d/adbot/index.html#integration-changes) |
 | AppMetrica statistics (events, profiles, nodes) | Analytics + Blueprint: AppMetrica |
 | AppMetrica Push (Firebase + HMS setup) | Push Notifications + Blueprint: Push |
-| **Android 13+ notifications** (cannot enable by default) | [POST_NOTIFICATIONS](https://xaser3d.github.io/AdBot/adbot/index.html#push-setup) |
+| **Android 13+ notifications** (cannot enable by default) | [POST_NOTIFICATIONS](https://xaser3d.github.io/sync3d/adbot/index.html#push-setup) |
 | Yandex Mediation (5 networks) | Mediation |
 | SDK versions & APK rebuild | SDK & Android Build |
-| License, EULA, Gradle/SDK distribution, vendor licenses (Yandex §3.3, Mintegral) | [License & Legal](https://xaser3d.github.io/AdBot/legal/index.html) · [THIRD_PARTY_NOTICES.md](legal/THIRD_PARTY_NOTICES.md) · [in docs](https://xaser3d.github.io/AdBot/adbot/index.html#legal) |
-| Bugs & feature requests | [GitHub Issues](https://github.com/xaser3d/AdBot/issues) · [Open new issue](https://github.com/xaser3d/AdBot/issues/new) |
+| License, EULA, Gradle/SDK distribution, vendor licenses (Yandex §3.3, Mintegral) | [License & Legal](https://xaser3d.github.io/sync3d/legal/index.html) · [THIRD_PARTY_NOTICES.md](legal/THIRD_PARTY_NOTICES.md) · [in docs](https://xaser3d.github.io/sync3d/adbot/index.html#legal) |
+| Bugs & feature requests | [GitHub Issues](https://github.com/xaser3d/sync3d/issues) · [Open new issue](https://github.com/xaser3d/sync3d/issues/new) |
 
 ## Local preview (Windows)
 
